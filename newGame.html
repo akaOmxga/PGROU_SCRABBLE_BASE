@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrabble Création d'une Partie</title>
+    <link rel="stylesheet" href="default.css">
+    <style> 
+        .players-section {
+            margin-bottom: 30px; /* Espacement en dessous de la section des joueurs */
+        }
+
+        #playersTable {
+            width: 100%; /* Le tableau prend toute la largeur */
+            border-collapse: collapse; /* Pour que les bordures des cellules soient collées */
+            margin-top: 15px; /* Espace au-dessus du tableau */
+        }
+
+        #playersTable th, #playersTable td {
+            border: 1px solid #ccc; /* Bordure autour des cellules */
+            padding: 10px; /* Espacement intérieur des cellules */
+            text-align: left; /* Alignement à gauche du texte */
+        }
+
+        .empty-row {
+            display: table-row; /* Affiche cette ligne quand il n'y a pas de joueurs */
+        }
+
+        /* Pour cacher la ligne vide si des joueurs sont présents */
+        .players-section .empty-row {
+            display: none; /* Masquer par défaut */
+        }
+
+        /* Ajouter une classe pour afficher la ligne si aucun joueur n'est présent */
+        .players-section.active .empty-row {
+            display: table-row; /* Afficher la ligne si aucun joueur est présent */
+        }
+
+        #pnjBtn{
+            background-color: rgb(216, 165, 12);
+        }
+
+        #startBtn{
+            background-color: rgb(164, 38, 16);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Création d'une Partie</h1>
+            <p>Invitez des joueurs via le code ci-dessous : </p>
+            <p> test </p>
+        </div>
+
+        <!-- Ici nous ajoutons la section pour afficher les joueurs -->
+        <div class="players-section">
+            <h4>Joueurs présents :</h4>
+            <table id="playersTable">
+                <thead>
+                    <tr>
+                        <th>Nom des Joueurs présents :</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Les lignes des joueurs seront ajoutées dynamiquement ici -->
+                    <tr class="empty-row">
+                        <td>Aucun joueur présent</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pnj-section" id="pnjSection">
+            <button id="pnjBtn"> Rajouter un Robot</button>
+        </div>
+
+        <div class="start-section" id="startSection">
+            <button id="startBtn">Lancer la Partie !</button>
+        </div>
+
+    <script type ="module" src="./js/firebaseConfig.js"></script>
+    <script type ="module" src="./js/script_index.js"></script>
+    <script src="./js/game.js"></script>
+
+</body>
+</html>

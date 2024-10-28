@@ -3,74 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scrabble en ligne - Authentification</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Scrabble</title>
+    <link rel="stylesheet" href="style_index.css">
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
-            <!-- En-tête -->
-            <h1 class="text-2xl font-bold text-center mb-6">Scrabble en ligne</h1>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bienvenue sur ScrabbleWeb :</h1>
+            <p>Jouez au Scrabble avec des amis ou des joueurs du monde entier !</p>
+        </div>
 
-            <!-- Message de statut -->
-            <div id="status-message" class="hidden mb-4 p-4 rounded"></div>
+        <div class="auth-section" id="authSection">
+            <button id="loginBtn">Se connecter</button>
+            <button id="registerBtn">S'inscrire</button>
+        </div>
+        
+        <div class="user-section" id="userSection" style="display: none;">
+            <p id="welcomeMessage"></p>
+        </div>
 
-            <!-- État de connexion -->
-            <div id="user-status" class="text-center mb-6">
-                <p>Statut : <span id="connection-status">Non connecté</span></p>
-            </div>
-
-            <!-- Formulaire d'inscription -->
-            <form id="inscription-form" class="mb-6">
-                <h2 class="text-xl font-semibold mb-4">S'inscrire</h2>
-                <div class="space-y-4">
-                    <input type="email" id="email" placeholder="Email" 
-                           class="w-full px-4 py-2 border rounded" required>
-                    <input type="password" id="motDePasse" placeholder="Mot de passe" 
-                           class="w-full px-4 py-2 border rounded" required>
-                    <button type="submit" 
-                            class="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-                        S'inscrire
-                    </button>
-                </div>
-            </form>
-
-            <!-- Formulaire de connexion -->
-            <form id="connexion-form" class="mb-6">
-                <h2 class="text-xl font-semibold mb-4">Se connecter</h2>
-                <div class="space-y-4">
-                    <input type="email" id="emailConnexion" placeholder="Email" 
-                           class="w-full px-4 py-2 border rounded" required>
-                    <input type="password" id="motDePasseConnexion" placeholder="Mot de passe" 
-                           class="w-full px-4 py-2 border rounded" required>
-                    <button type="submit" 
-                            class="w-full bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">
-                        Se connecter
-                    </button>
-                </div>
-            </form>
-
-            <!-- Connexion avec Google -->
-            <div class="text-center">
-                <button id="google-auth" 
-                        class="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600">
-                    Se connecter avec Google
-                </button>
-            </div>
-
-            <!-- Bouton de déconnexion -->
-            <div class="mt-6 text-center">
-                <button id="logout-button" 
-                        class="hidden w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600">
-                    Se déconnecter
-                </button>
-            </div>
+        <div class="game-options" id="gameOption">
+            <button id="logoutBtn">Se déconnecter</button>
+            <button id="newGameBtn">Nouvelle partie</button>
+            <button id="joinGameBtn">Rejoindre une partie</button>
+            <button id="rulesBtn">Règles du jeu</button>
+            <button id="profileBtn">Mon profil</button>
         </div>
     </div>
 
-    <!-- Import des scripts -->
-    <script type="module" src="js/firebaseConfig.js"></script>
-    <script type="module" src="js/auth.js"></script>
-    <script type="module" src="js/firestore.js"></script>
+    <div id="loginPopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closePopup('loginPopup')">&times;</span>
+            <h2>Connexion</h2>
+            <form id="loginForm">
+                <label for="loginEmail">Email :</label>
+                <input type="email" id="loginEmail" required>
+                <label for="loginPassword">Mot de passe :</label>
+                <input type="password" id="loginPassword" required>
+                <button type="submit">Se connecter</button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="registerPopup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn" onclick="closePopup('registerPopup')">&times;</span>
+            <h2>Inscription</h2>
+            <form id="registerForm">
+                <label for="registerEmail">Email :</label>
+                <input type="email" id="registerEmail" required>
+                <label for="registerPassword">Mot de passe :</label>
+                <input type="password" id="registerPassword" required>
+                <button type="submit">S'inscrire</button>
+            </form>
+        </div>
+    </div>
+
+    <script type ="module" src="./js/firebaseConfig.js"></script>
+    <script type ="module" src="./js/script_index.js"></script>
+
 </body>
 </html>

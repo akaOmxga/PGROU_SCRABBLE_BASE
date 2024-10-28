@@ -1,0 +1,206 @@
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 500px; /* Réduit pour mieux correspondre à une colonne */
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
+
+.header p {
+    color: #7f8c8d;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+.auth-section {
+    display: block;
+    text-align: center; /* Centre le texte et les éléments inline */
+}
+
+.game-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+button {
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%; /* Modification : assure que tous les boutons ont la même largeur */
+    margin-bottom: 10px; /* Ajout : espace entre les boutons */
+}
+
+button:hover {
+    transform: translateY(-3px); /* Soulever le bouton de 5 pixels */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ajoute une ombre pour un effet de profondeur */
+}
+
+/* Style spécifique pour les boutons d'authentification */
+#loginBtn, #registerBtn {
+    background-color: #3498db;
+    display: inline-block; /* Ajout : garde ces boutons côte à côte */
+    width: auto; /* Ajout : permet aux boutons de s'adapter à leur contenu */
+    margin: 0 10px; /* Ajout : espace entre les boutons */
+}
+
+/* Style des boutons de jeu */
+
+#logoutBtn{     
+    background-color: rgb(173, 216, 230);
+}
+
+#logoutBtn:hover {
+    background-color: rgb(138, 197, 213);
+}
+
+#newGameBtn {
+    background-color: rgb(231, 76, 60);
+}
+
+#newGameBtn:hover {
+    background-color: rgb(192, 57, 43);
+}
+
+#joinGameBtn {
+    background-color: #2ecc71;
+}
+
+#joinGameBtn:hover {
+    background-color: #27ae60;
+}
+
+#rulesBtn {
+    background-color: #f1c40f;
+}
+
+#rulesBtn:hover {
+    background-color: #f39c12;
+}
+
+#profileBtn {
+    background-color: #9b59b6;
+}
+
+#profileBtn:hover {
+    background-color: #8e44ad;
+}
+
+/* Media queries pour la responsivité */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .auth-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .auth-section button {
+        width: 100%;
+    }
+
+    .header h1 {
+        font-size: 1.5em;
+    }
+}
+
+/* Style de base pour masquer les pop-ups */
+.popup {
+    display: none; /* Masque par défaut */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Arrière-plan semi-transparent */
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px; /* Largeur augmentée */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: left; /* Alignement à gauche pour une meilleure lisibilité */
+}
+
+.close-btn {
+    cursor: pointer;
+    color: #aaa;
+    font-size: 24px;
+    float: right;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+/* Style des formulaires */
+form {
+    display: flex;
+    flex-direction: column; /* Aligne les éléments verticalement */
+}
+
+label {
+    margin: 10px 0 5px; /* Espacement autour des labels */
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 15px; /* Espacement en dessous des champs */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button[type="submit"] {
+    padding: 10px;
+    background-color: #4CAF50; /* Couleur du bouton */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049; /* Couleur du bouton au survol */
+}
+
+#welcomeMessage{
+    display : flex;
+    align-items: center;
+}

@@ -1,0 +1,87 @@
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 500px; /* Réduit pour mieux correspondre à une colonne */
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header h1 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
+
+.header p {
+    color: #7f8c8d;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+.auth-section {
+    display: block;
+    text-align: center; /* Centre le texte et les éléments inline */
+}
+
+.game-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+button {
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color : green;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%; /* Modification : assure que tous les boutons ont la même largeur */
+    margin-bottom: 10px; /* Ajout : espace entre les boutons */
+}
+
+button:hover {
+    transform: translateY(-3px); /* Soulever le bouton de 5 pixels */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Ajoute une ombre pour un effet de profondeur */
+}
+
+/* Style des formulaires */
+form {
+    display: flex;
+    flex-direction: column; /* Aligne les éléments verticalement */
+}
+
+label {
+    margin: 10px 0 5px; /* Espacement autour des labels */
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 15px; /* Espacement en dessous des champs */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%; /* Assurez-vous que la largeur est à 100% */
+    box-sizing: border-box; /* Inclut le padding et la bordure dans la largeur totale */
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrabble Profils</title>
+    <link rel="stylesheet" href="default.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Votre Profil</h1>
+            <p>Visualisez vos statistiques ci-dessous : </p>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="stat-section">
+            <h4>Statistiques :</h4>
+            <table id="statTable">
+
+                <!-- Nombre de Parties jouées -->
+                <thead>
+                    <tr>
+                        <th>Nombre de Parties jouées :</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="stat-row">
+                        <td> ajouter les statistiques </td>
+                    </tr>
+                </tbody>
+
+                <!-- Nombre de Parties gagnées -->
+                <thead>
+                    <tr>
+                        <th>Nombre de Parties gagnées :</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="stat-row">
+                        <td> ajouter les statistiques </td>
+                    </tr>
+                </tbody>
+                
+                <!-- Meilleur Score obtenu à la fin d'une partie : -->
+                <thead>
+                    <tr>
+                        <th>Meilleur Score obtenu à la fin d'une partie :</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="stat-row">
+                        <td> ajouter les statistiques </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+
+        <h2>Rechercher les Statistiques d'un Joueur : </h2>
+
+        <input type="text" id="username" placeholder="Entrez le nom d'utilisateur" required>
+        
+
+        <div class="search-section" id="searchSection">
+            <button id="searchBtn">Rechercher</button>
+        </div>
+
+    <script type ="module" src="./js/firebaseConfig.js"></script>
+    <script type ="module" src="./js/script_index.js"></script>
+    <script type ="module" src="./js/stat.js"></script>
+
+</body>
+</html>
