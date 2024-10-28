@@ -68,10 +68,14 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     
     const email = document.getElementById("registerEmail").value;
     const password = document.getElementById("registerPassword").value;
+    const pseudo = document.getElementById("registerPseudo").value;
     
     try {
+        // aspect firebase Authentification
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log("Utilisateur créé avec succès:", userCredential.user);
+        // aspect firebase Firestore : Création de l'User :
+        firestore.addUser({pseudo : pseudo});
         closePopup("registerPopup");
         document.getElementById("registerForm").reset();
         
@@ -109,7 +113,6 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     }
 });
 
-// Ajoute des écouteurs d'événements aux boutons
 document.getElementById("loginBtn").addEventListener("click", function() {
     openPopup("loginPopup");
 });
@@ -149,20 +152,29 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// Changement de Page via les Boutons : 
+////////////////////////////////////////////////////////////////
+////////////////////// Changement de Page //////////////////////
+////////////////////////////////////////////////////////////////
 
+// New Game Page
 document.getElementById("newGameBtn").addEventListener("click", function() {
-    window.location.href = "newGame.html"; // Redirige vers index2.html
+    // Création de la partie et ajout du créateur en tant que joueur par défaut
+    firestore.addPartie({nom : "partieTest" , joueurs : []})
+    // Redirige vers newGame.html
+    window.location.href = "newGame.html"; 
 });
 
+// Join Game Page
 document.getElementById("joinGameBtn").addEventListener("click", function() {
     window.location.href = "joinGame.html"; // Redirige vers index2.html
 });
 
+// Rules Game Page
 document.getElementById("rulesBtn").addEventListener("click", function() {
     window.open("https://www.ffsc.fr/files/public/fichiers/reglements/classique/Reglement.international.du.Scrabble.classique.pdf", "_blank"); // Ouvre les Regles Officielles du Scrabble dans un nouvel onglet
 });
 
+// Profil Page
 document.getElementById("profileBtn").addEventListener("click", function() {
     window.location.href = "profilePage.html"; // Redirige vers index2.html
 });
