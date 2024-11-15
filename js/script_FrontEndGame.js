@@ -103,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         // supprimer la lettre du plateau et ajouter la lettre à l'inventaire du joueur
         else if (!activeLetter && square.dataset.occupied === "true" && square.dataset.removable === "true") {
-            console.log("gg ???")
             // Create a new letter element and add it to the player's letters
             const newLetter = document.createElement("div");
             newLetter.className = "letter";
