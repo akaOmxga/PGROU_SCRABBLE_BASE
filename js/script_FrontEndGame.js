@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const playerInventory = document.querySelector("#player-letters");
     const playerLetters = document.querySelectorAll("#player-letters .letter");
     const board = document.getElementById("board");
 
@@ -38,8 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const square = document.createElement("div");
         square.classList.add("square");
         square.dataset.occupied = "false";
-        board.appendChild(square);
+        square.dataset.removable = "false";
         square.setAttribute("data-type", getSquareType(i));
+        board.appendChild(square);
     } 
 
     function applyColors() {
@@ -71,6 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
     applyColors();
+
     let activeLetter = null;
 
     // Gérer la sélection d'une lettre
@@ -89,22 +92,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Gérer le placement sur le plateau
     board.addEventListener("click", (e) => {
-        if (!activeLetter || !e.target.classList.contains("square")) return;
-
+        // placer la lettre
         const square = e.target;
-        if (square.dataset.occupied === "false") {
+        if (activeLetter && square.dataset.occupied === "false") {
             square.textContent = activeLetter.textContent;
             square.dataset.occupied = "true";
-            activeLetter.classList.add("sparkle");
-            setTimeout(() => activeLetter.classList.remove("sparkle"), 1000);
+            square.dataset.removable = "true";
             activeLetter.remove(); // Retirer du jeu
+            activeLetter = null;
+            }
+        // supprimer la lettre du plateau et ajouter la lettre à l'inventaire du joueur
+        else if (!activeLetter && square.dataset.occupied === "true" && square.dataset.removable === "true") {
+            console.log("gg ???")
+            // Create a new letter element and add it to the player's letters
+            const newLetter = document.createElement("div");
+            newLetter.className = "letter";
+            newLetter.draggable = "true";
+            newLetter.textContent = square.textContent;
+            newLetter.dataset.letter = square.textContent;
+            playerInventory.appendChild(newLetter);
+    
+            // Reset the square
+            square.textContent = '';
+            square.dataset.occupied = "false";
+            square.dataset.removable = "false";
+            activeLetter = null;
+        }
+        else {
             activeLetter = null;
         }
     });
 });
 
+// Réinitialise toutes les data-removable à False, à appeler à chaque début de tour
+export function removableOffAll() {
+    const squares = document.querySelectorAll('.square'); // Sélectionner toutes les cases
+    squares.forEach(square => {
+        square.dataset.removable = "false";
+    });
+}
+
 // Terminer la Partie
 document.getElementById("end-game").addEventListener("click", function() {
     window.location.href = "endGame.html"; // Redirige vers endGame.html
 });
-

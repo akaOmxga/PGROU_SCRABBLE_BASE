@@ -56,24 +56,67 @@ body {
 }
 
 /* Couleurs des cases de Scrabble */
+
+/* lettre compte double */
 .board div[data-type="letter-double"] {
-    background-color: #aad8f6;
+    background-color: rgb(170, 216, 246);
+    transition: transform 0.4s, background-color 0.2s;
 }
 
+.board div[data-type="letter-double"]:hover {
+    transform: scale(1.1);
+    background-color: rgb(197, 227, 248);
+}
+
+/* lettre compte triple */
 .board div[data-type="letter-triple"] {
-    background-color: #307cc7;
+    background-color: rgb(48, 124, 199);
+    transition: transform 0.4s, background-color 0.2s;
 }
 
+.board div[data-type="letter-triple"]:hover {
+    transform: scale(1.1);
+    background-color: rgb(89, 142, 196);
+}
+
+/* mot compte double */
 .board div[data-type="word-double"] {
-    background-color: #f7a6a3;
+    background-color: rgb(247, 166, 163);
+    transition: transform 0.4s, background-color 0.2s;
 }
 
+.board div[data-type="word-double"]:hover {
+    transform: scale(1.1);
+    background-color: rgb(215, 166, 165);
+}
+
+/* mot compte triple */
 .board div[data-type="word-triple"] {
-    background-color: #c33027;
+    background-color: rgb(195, 48, 39);
+    transition: transform 0.4s, background-color 0.2s;
 }
 
+.board div[data-type="word-triple"]:hover {
+    transform: scale(1.1);
+    background-color: rgb(215, 95, 88);
+}
+
+/* case du centre */
 .board div[data-type="center"] {
-    background-color: #fdd835;
+    background-color: rgb(253, 216, 53);
+    transition: transform 0.4s, background-color 0.2s;
+}
+
+.board div[data-type="center"]:hover {
+    transform: scale(1.1);
+    background-color: rgb(223, 200, 94);
+}
+
+/* case normal */
+.board div[data-type="normal"]:hover {
+    transform: scale(1.1);
+    background-color: rgb(255, 255, 255);
+    transition: transform 0.4s, background-color 0.2s;
 }
 
 .board div.occupied {

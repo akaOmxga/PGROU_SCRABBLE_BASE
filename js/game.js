@@ -1,4 +1,7 @@
 
+
+import { removableOffAll } from './script_FrontEndGame.js'; 
+
 ////////////////////////////////////////////////////////////////
 /////////////////////// Fonction du Lobby///////////////////////
 ////////////////////////////////////////////////////////////////
@@ -92,6 +95,9 @@ class Game {
     // le joueur qui doit jouer est le suivant. fin du tour 
 
     async executerTour() {
+        // Réinitialiser toutes les valeurs removable à Off 
+        removableOffAll();
+
         // Récupération de l'état actuel depuis Firebase au début du tour
         // await this.chargerEtat();
 
