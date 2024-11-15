@@ -178,3 +178,4 @@ document.getElementById("rulesBtn").addEventListener("click", function() {
 document.getElementById("profileBtn").addEventListener("click", function() {
     window.location.href = "profilePage.html"; // Redirige vers index2.html
 });
+

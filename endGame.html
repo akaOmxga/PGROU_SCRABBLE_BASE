@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrabble Game</title>
+    <link rel="stylesheet" href="style_endGame.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Titre principal -->
+        <div id="title">Bravo à tous et merci d'avoir joué sur Scrabble Web !</div> 
+
+        <!-- Tableau des scores -->
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th>Nom du Joueur</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody id="score-board">
+                <tr>
+                    <td>Joueur 3</td>
+                    <td>67</td>
+                </tr>
+                <tr>
+                    <td>Joueur 2</td>
+                    <td>54</td>
+                </tr>
+                <tr>
+                    <td>Joueur 4</td>
+                    <td>41</td>
+                </tr>
+                <tr>
+                    <td>Joueur 1</td>
+                    <td>23</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Boutons -->
+        <div class="buttons">
+            <button id="restart-game">Relancer une Partie</button>
+            <button id="main-menu">Vers le Menu Principal</button>
+            <button id="disconnect">Se Déconnecter</button>
+        </div>
+    </div>
+
+    <script>
+
+        /////////// endGame Script ///////////
+
+        // Recommencer la Partie
+        document.getElementById("restart-game").addEventListener("click", function() {
+            console.log("clickrestart ");
+            window.location.href = "newGame.html"; // Redirige vers endGame.html
+        });
+
+        // Retourner vers le Menu Principale 
+        document.getElementById("main-menu").addEventListener("click", function() {
+            window.location.href = "index.html"; // Redirige vers endGame.html
+        });
+
+        // Se déconnecter après la partie
+        document.getElementById("disconnect").addEventListener("click", function() {
+            // TODO : déconnecter l'utilisateur puis 
+
+            // Redirige vers endGame.html
+            window.location.href = "index.html"; 
+        });
+
+    </script>
+</body>
+</html>

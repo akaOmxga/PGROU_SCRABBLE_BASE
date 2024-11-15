@@ -1,0 +1,159 @@
+/* Style global */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #fff5e1; /* Couleur chaude */
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    gap: 40px; /* Plus d'espace entre les éléments */
+}
+
+/* Centrer le titre au-dessus du plateau */
+#title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px; /* Ajoute un espace entre le titre et le plateau */
+    position: absolute; /* Fixe le titre en haut de la page */
+    top: 10px; /* Positionne le titre à 10px du haut de l'écran */
+    left: 50%; /* Centrer horizontalement */
+    transform: translateX(-50%); /* Ajuste le positionnement pour être parfaitement centré */
+    z-index: 10; /* Assure que le titre soit toujours visible au-dessus du plateau */
+}
+
+
+/* Plateau */
+.board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(15, 40px);
+    grid-template-rows: repeat(15, 40px);
+    gap: 2px;
+    margin-bottom: 20px;
+}
+
+.board div {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #0700c9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fafafa;
+    transition: background-color 0.2s;
+}
+
+/* Couleurs des cases de Scrabble */
+.board div[data-type="letter-double"] {
+    background-color: #aad8f6;
+}
+
+.board div[data-type="letter-triple"] {
+    background-color: #307cc7;
+}
+
+.board div[data-type="word-double"] {
+    background-color: #f7a6a3;
+}
+
+.board div[data-type="word-triple"] {
+    background-color: #c33027;
+}
+
+.board div[data-type="center"] {
+    background-color: #fdd835;
+}
+
+.board div.occupied {
+    background-color: #ccc;
+    pointer-events: none;
+}
+
+/* Lettres du joueur */
+.player-letters {
+    display: flex;
+    gap: 10px;
+    position: relative;
+}
+
+.player-letters .letter {
+    width: 40px;
+    height: 40px;
+    background-color: #ffa726;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    transition: transform 0.2s, background-color 0.2s;
+    cursor: pointer;
+}
+
+.player-letters .letter:hover {
+    transform: scale(1.1);
+    background-color: #ffcc80;
+}
+
+.player-letters .letter.sparkle {
+    animation: sparkle 1s ease-out;
+}
+
+@keyframes sparkle {
+    0%, 100% { background-color: #ffeb3b; }
+    50% { background-color: #ffa726; }
+}
+
+.player-letters .underline {
+    position: absolute;
+    bottom: -10px;
+    width: 100%;
+    height: 2px;
+    background-color: #6d4c41;
+}
+
+/* Tableau des scores */
+.score-table {
+    border-collapse: collapse;
+}
+
+.score-table th, .score-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+/* Boutons */
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.buttons button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #ff8a65;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.buttons button:hover {
+    transform: scale(1.1);
+    background-color: #ffab91;
+}
