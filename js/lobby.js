@@ -3,6 +3,31 @@
 
 import { db } from './firebaseConfig.js';
 import { collection, addDoc, query, where, getDocs, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+import { getJoueurNomById } from './firestoreFunction.js';
+
+const players = []; // tableau pour stocker les noms des joueurs
+
+function addPlayer(name) {
+    players.push(name); // ajoute un joueur
+    updatePlayersTable(); // met à jour le tableau
+}
+
+function updatePlayersTable() {
+    const tbody = document.querySelector('#playersTable tbody');
+    tbody.innerHTML = ''; // vide le corps du tableau
+
+    if (players.length === 0) {
+        tbody.innerHTML = '<tr class="empty-row"><td>Aucun joueur présent</td></tr>'; // ligne vide
+    } else {
+        players.forEach(player => {
+            const row = document.createElement('tr');
+            const cell = document.createElement('td');
+            cell.textContent = player; // ajoute le nom du joueur
+            row.appendChild(cell);
+            tbody.appendChild(row); // ajoute la ligne au tableau
+        });
+    }
+}
 
 // Fonction pour générer un code unique de 4 lettres
 export function generateUniqueCode() {
@@ -79,11 +104,14 @@ export async function joinPartieWithCode(code, userId) {
             throw new Error('Cette partie a déjà commencé');
         }
         
-        // Ajouter le joueur à la liste
+        // Ajouter le joueur à la liste firebase
         const newJoueurs = [...partieData.joueurs, userId];
         await updateDoc(doc(db, 'parties', partieDoc.id), {
             joueurs: newJoueurs
         });
+
+        // Ajouter visuellement le joueur au lobby
+        addPlayer(firestoreFunction.getJoueurNomById(userId));
         
         return partieDoc.id;
     } catch (error) {
@@ -91,3 +119,4 @@ export async function joinPartieWithCode(code, userId) {
         throw error;
     }
 }
+

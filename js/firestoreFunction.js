@@ -77,6 +77,23 @@ async function getJoueur(id) {
     return docSnap.exists() ? docSnap.data() : null;
 }
 
+async function getJoueurNomById(playerId) {
+    try {
+        const playerDocRef = doc(db, "players", playerId); // Référence au document
+        const playerDoc = await getDoc(playerDocRef); // Récupération du document
+
+        if (playerDoc.exists()) {
+            return playerDoc.data().name; // Retourne le nom du joueur
+        } else {
+            console.error("Aucun joueur trouvé avec cet ID.");
+            return null;
+        }
+    } catch (error) {
+        console.error("Erreur lors de la récupération du joueur :", error);
+        return null;
+    }
+}
+
 // Function to update an existing Joueur document
 async function updateJoueur(id, data) {
     try {
@@ -148,4 +165,4 @@ async function updatePioche(id, data) {
     }
 }
 
-export { getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
+export { getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };

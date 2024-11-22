@@ -1,5 +1,4 @@
-import * as fstore from './firestoreFunction.js';
-import * as lobby from './lobby.js';
+import { Scrabble } from './objet/Scrabble.js';
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -42,22 +41,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Fonction modifiée pour créer une nouvelle partie et afficher le code
 async function CreateNewGame() {
-    let UID = await fstore.getCurrentUID();
-    if (UID) {
-        try {
-            const { code } = await lobby.addPartie({ joueurs: [UID] });
-            // Afficher le code dans le paragraphe prévu
-            document.querySelector('.header p:nth-child(3)').textContent = code;
-            console.log("Partie créée avec le code:", code);
-        } catch (error) {
-            console.error("Erreur lors de la création de la partie:", error);
-        }
-    } else {
-        console.log("Aucun utilisateur connecté, impossible de créer une partie.");
-    }
+    const scrabble = new Scrabble();
+    scrabble.initializeGame();
+    return(scrabble)
 }
 
 // Attendre que le DOM soit complètement chargé
 document.addEventListener("DOMContentLoaded", function() {
-    CreateNewGame(); // Création de la partie
+    const scrabble = CreateNewGame(); // Création de la partie
 });
+
+ 

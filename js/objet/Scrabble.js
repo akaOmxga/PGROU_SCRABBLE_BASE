@@ -1,79 +1,93 @@
+// Imports des classes précédemment définies
 
-
-import { removableOffAll } from './script_FrontEndGame.js'; 
-
-////////////////////////////////////////////////////////////////
-/////////////////////// Fonction du Lobby///////////////////////
-////////////////////////////////////////////////////////////////
-
-const players = []; // tableau pour stocker les noms des joueurs
-
-function addPlayer(name) {
-    players.push(name); // ajoute un joueur
-    updatePlayersTable(); // met à jour le tableau
-}
-
-function updatePlayersTable() {
-    const tbody = document.querySelector('#playersTable tbody');
-    tbody.innerHTML = ''; // vide le corps du tableau
-
-    if (players.length === 0) {
-        tbody.innerHTML = '<tr class="empty-row"><td>Aucun joueur présent</td></tr>'; // ligne vide
-    } else {
-        players.forEach(player => {
-            const row = document.createElement('tr');
-            const cell = document.createElement('td');
-            cell.textContent = player; // ajoute le nom du joueur
-            row.appendChild(cell);
-            tbody.appendChild(row); // ajoute la ligne au tableau
-        });
-    }
-}
-
-// Exemple d'utilisation
-// addPlayer('Alice'); // Ajouter un joueur
-// addPlayer('Bob'); // Ajouter un autre joueur
+import { removableOffAll } from '../script_FrontEndGame.js'; 
+import { ScrabbleValidator } from './ScrabbleValidator.js';
+import { Plateau } from './Plateau.js';
+import { Pioche } from './Pioche.js';
+import { Joueur } from './Joueur.js';
+import * as fstore from '../firestoreFunction.js';
+import * as lobby from '../lobby.js';
 
 ////////////////////////////////////////////////////////////////
 /////////////////////// Fonction In Game ///////////////////////
 ////////////////////////////////////////////////////////////////
 
-// Imports des classes précédemment définies
-// import { Jeu, Joueur, Plateau, Pioche } from './classes.js';
 
-class Game {
+export class Scrabble {
     constructor() {
-        this.jeu = null;
-        this.partieEnCours = false;
+        this.joueurs = [];   
+        this.scores = [];          
+        this.plateau = new Plateau();
+        this.pioche = new Pioche();
+        this.tourActuel = 0;      
+        this.partieEnCours = true;
+        this.validator = new ScrabbleValidator(this.plateau, this.pioche);
+
+    }
+
+    passerAuJoueurSuivant() {
+        this.tourActuel = (this.tourActuel + 1) % this.joueurs.length;
+        // TODO Firebase: Mettre à jour le joueur actif
+    }
+
+    updateScore(points, joueurIndex) {
+        // Vérification que l'index est valide
+        if (joueurIndex >= 0 && joueurIndex < this.scores.length) {
+            this.scores[joueurIndex] += points;
+            // TODO Firebase: Mettre à jour le score du joueur
+        }
+    }
+
+    getJoueurActuel() {
+        return this.joueurs[this.tourActuel];
+    }
+
+    getScoreJoueur(joueurIndex) {
+        return this.scores[joueurIndex];
+    }
+
+    getSquare(x, y) {
+        return document.querySelector(`#board .square[data-x="${x}"][data-y="${y}"]`);
     }
 
     // Procédure de début de partie : 
-    // Initialisation des variables : Jeu, Joueurs, Plateau, Pioche - par défaut, on rajoutera ensuite les différents aspects
+    // Initialisation des variables : Joueurs, Plateau, Pioche - par défaut, on rajoutera ensuite les différents aspects
     async initializeGame(listeJoueurs) {
-        if (listeJoueurs.length < 2 || listeJoueurs.length > 4) {
-            throw new Error("Le nombre de joueurs doit être entre 2 et 4");
+        if (listeJoueurs.length < 1 || listeJoueurs.length > 4) {
+            throw new Error("Le nombre de joueurs doit être entre 1 et 4");
         }
 
-        // Création d'une nouvelle partie
-        this.jeu = new Jeu(Date.now().toString()); // ID unique pour la partie
-        this.partieEnCours = true;
+        // Création d'une nouvelle partie aspect firebase
+        let UID = await fstore.getCurrentUID();
+        if (UID) {
+            try {
+                const { code } = await lobby.addPartie({ joueurs: [UID] });
+                // Afficher le code dans le paragraphe prévu
+                document.querySelector('.header p:nth-child(3)').textContent = code;
+                console.log("Partie créée avec le code:", code);
+            } catch (error) {
+                console.error("Erreur lors de la création de la partie:", error);
+            }
+        } else {
+            console.log("Aucun utilisateur connecté, impossible de créer une partie.");
+        }
 
         // Initialisation des joueurs
         listeJoueurs.forEach(joueurInfo => {
             const joueur = new Joueur(joueurInfo.id, joueurInfo.nom);
-            this.jeu.joueurs.push(joueur);
+            this.game.joueurs.push(joueur);
         });
 
         // Initialisation du plateau et de la pioche
-        this.jeu.plateau = new Plateau();
-        this.jeu.pioche = new Pioche();
+        this.plateau = new Plateau();
+        this.pioche = new Pioche();
 
         // Distribution des 7 lettres initiales à chaque joueur
         for (let joueur of this.jeu.joueurs) {
             this.distribuerLettresInitiales(joueur);
         }
 
-        // Firebase: Sauvegarder l'état initial de la partie
+        // TODO Firebase: Sauvegarder l'état initial de la partie
         // await this.sauvegarderEtat();
     }
 
@@ -85,7 +99,6 @@ class Game {
             }
         }
     }
-
     
     // Gestion d'un tour : 
     // prendre les données du jeu : quel joueur doit jouer -> ces lettres -> le plateau -> la pioche

@@ -1,3 +1,7 @@
+import { Scrabble } from './objet/Scrabble.js';
+
+const scrabble = new Scrabble();
+
 document.addEventListener("DOMContentLoaded", () => {
     const playerInventory = document.querySelector("#player-letters");
     const playerLetters = document.querySelectorAll("#player-letters .letter");
@@ -36,10 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Créer un plateau de Scrabble interactif
     for (let i = 0; i < 225; i++) {
+        const [x,y] = scrabble.validator.getCoordinates(i);
         const square = document.createElement("div");
         square.classList.add("square");
         square.dataset.occupied = "false";
         square.dataset.removable = "false";
+        square.dataset.x = x;
+        square.dataset.y = y;
         square.setAttribute("data-type", getSquareType(i));
         board.appendChild(square);
     } 
@@ -130,6 +137,68 @@ function removableOffAll() {
         square.dataset.removable = "false";
     });
 }
+
+// Valider le mot
+document.getElementById('validate-word').addEventListener('click', async () => {
+
+    // prendre les informations du tour : 
+    const infos = scrabble.validator.getPlacementInfo();
+
+    const mot = infos.mot // récupérer le mot formé
+    const position = infos.position // récupérer la position [x, y]
+    const direction = infos.direction // récupérer la direction
+    const lettresJoueur = infos.lettresJoueur // récupérer les lettres du joueur
+
+    const resultat = await scrabble.validator.validerPlacement(mot, position, direction, lettresJoueur);
+    
+    if (resultat.valide) {
+        // Placer le mot et mettre à jour le score
+        plateau.placerMot(mot, position, direction);
+        // Mettre à jour le score du joueur
+        // Retirer les lettres utilisées
+    } else {
+        // Redonner les lettres aux joueurs : 
+
+        for (let lettre in scrabble.validator.getNewlyPlacedLetters()){ // toutes les cases du plateau : si removable : 
+            const playerInventory = document.querySelector("#player-letters");
+            const square = scrabble.getSquare(lettre.x, lettre.y);
+            const newLetter = document.createElement("div");
+            newLetter.className = "letter";
+            newLetter.draggable = "true";
+            newLetter.textContent = lettre.textContent;
+            newLetter.dataset.letter = square.textContent;
+            playerInventory.appendChild(newLetter);
+
+            // Reset the square
+            square.textContent = '';
+            square.dataset.occupied = "false";
+            square.dataset.removable = "false";
+            activeLetter = null;
+        } 
+    }
+});
+
+// Piocher une lettre
+document.getElementById("draw-letter").addEventListener("click", function() {
+    const playerInventory = document.querySelector("#player-letters");
+    if (playerInventory.children.length <= 7) { // 7 lettres + une barre 
+        const lettre = scrabble.pioche.piocherLettre();
+        const newLetter = document.createElement("div");
+        newLetter.className = "letter";
+        newLetter.draggable = "true";
+        newLetter.textContent = lettre.valeur;
+        newLetter.dataset.letter = lettre.valeur;
+        playerInventory.appendChild(newLetter);
+        console.log("Letter Drew Successfully");
+    } else {
+        console.log("Player already have 7 letters"); 
+    }   
+});
+
+// Passer son tour
+document.getElementById("pass-turn").addEventListener("click", function() {
+    window.location.href = "endGame.html"; // Redirige vers endGame.html
+});
 
 // Terminer la Partie
 document.getElementById("end-game").addEventListener("click", function() {

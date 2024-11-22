@@ -3,7 +3,7 @@
 // possède en attribut les différentes lettres restantes (sous forme d'un dictionnaire dont les clés sont les lettres et les valeurs leurs occurences restantes)
 // méthode : elle peut donner une lettre aléatoire (tout en updatant son nombre d'occurence dans le dictionnaire)
 
-class Lettre {
+ class Lettre {
     constructor(valeur, points, occurrences) {
         this.valeur = valeur;
         this.points = points;
@@ -11,7 +11,7 @@ class Lettre {
     }
 }
 
-class Pioche {
+export class Pioche {
     constructor() {
         // Initialisation du dictionnaire des lettres
         this.lettres = {

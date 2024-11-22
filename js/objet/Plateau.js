@@ -3,7 +3,7 @@
 // possède en attribut une description du plateau (tableau 15x15 de char)
 // méthode : il peut modifier le contenu de la description du plateau, vérifier la validité d'un mot (à partir de la dernière lettre posée), calculer le score d'un mot valide
 
-class Plateau {
+export class Plateau {
     constructor() {
         // Grille pour les lettres posées
         this.grille = Array(15).fill().map(() => Array(15).fill(''));

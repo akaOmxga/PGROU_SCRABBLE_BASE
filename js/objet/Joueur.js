@@ -3,7 +3,7 @@
 // possède en attribut son score, son inventaire de lettres
 // méthode : il peut jouer le tour (poser un mot), le valider, ou passer son tour
 
-class Joueur {
+export class Joueur {
     constructor(id, nom) {
         this.id = id;
         this.nom = nom;
