@@ -124,7 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Réinitialise toutes les data-removable à False, à appeler à chaque début de tour
-export function removableOffAll() {
+function removableOffAll() {
     const squares = document.querySelectorAll('.square'); // Sélectionner toutes les cases
     squares.forEach(square => {
         square.dataset.removable = "false";
@@ -135,3 +135,5 @@ export function removableOffAll() {
 document.getElementById("end-game").addEventListener("click", function() {
     window.location.href = "endGame.html"; // Redirige vers endGame.html
 });
+
+export { removableOffAll }

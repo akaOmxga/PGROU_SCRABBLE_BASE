@@ -1,12 +1,40 @@
-import { auth } from './firebaseConfig.js';
+import { auth, checkAuth } from './firebaseConfig.js';
 import { 
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    onAuthStateChanged,
     signOut 
 } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
 
 import * as fstore from './firestoreFunction.js';
+
+// Fonction pour gérer l'UI en fonction de l'authentification
+function updateUI(isAuthenticated, user = null) {
+    const authSection = document.getElementById("authSection");
+    const userSection = document.getElementById("userSection");
+    const welcomeMessage = document.getElementById("welcomeMessage");
+    const gameOption = document.getElementById("gameOption");
+    
+    if (isAuthenticated && authSection && userSection && welcomeMessage && gameOption) {
+        authSection.style.display = "none";
+        userSection.style.display = "block";
+        gameOption.style.display = "block";
+        welcomeMessage.textContent = `Vous êtes connecté en tant que : ${user.email}`;
+    } else if (authSection && userSection && gameOption) {
+        authSection.style.display = "block";
+        userSection.style.display = "none";
+        gameOption.style.display = "none";
+    }
+}
+
+// Vérifier l'authentification au chargement de la page
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const user = await checkAuth();
+        updateUI(!!user, user);
+    } catch (error) {
+        console.error("Erreur lors de la vérification de l'authentification:", error);
+    }
+});
 
 // Fonction pour afficher une pop-up
 export function openPopup(popupId) {
@@ -33,6 +61,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         console.log("Connexion réussie:", userCredential.user);
+        updateUI(true, userCredential.user);
         
         // Fermer la popup et réinitialiser le formulaire
         closePopup("loginPopup");
@@ -73,10 +102,9 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     const pseudo = document.getElementById("registerPseudo").value;
     
     try {
-        // aspect firebase Authentification
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log("Utilisateur créé avec succès:", userCredential.user);
-        // aspect firebase Firestore : Création de l'User :
+        updateUI(true, userCredential.user);
         fstore.addUser({pseudo : pseudo});
         closePopup("registerPopup");
         document.getElementById("registerForm").reset();
@@ -108,6 +136,7 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
 document.getElementById("logoutBtn").addEventListener("click", async () => {
     try {
         await signOut(auth);
+        updateUI(false);
         console.log("Déconnexion réussie");
     } catch (error) {
         console.error("Erreur lors de la déconnexion:", error);
@@ -115,15 +144,11 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
     }
 });
 
-document.getElementById("loginBtn").addEventListener("click", function() {
-    openPopup("loginPopup");
-});
+// Gestionnaires des boutons
+document.getElementById("loginBtn").addEventListener("click", () => openPopup("loginPopup"));
+document.getElementById("registerBtn").addEventListener("click", () => openPopup("registerPopup"));
 
-document.getElementById("registerBtn").addEventListener("click", function() {
-    openPopup("registerPopup");
-});
-
-// Ajoute des écouteurs d'événements pour fermer les pop-ups
+// Fermeture des pop-ups
 document.querySelectorAll('.close-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const popupId = btn.closest('.popup').id;
@@ -131,53 +156,19 @@ document.querySelectorAll('.close-btn').forEach(btn => {
     });
 });
 
-// Vérifie l'état de connexion de l'utilisateur
-onAuthStateChanged(auth, (user) => {
-    const authSection = document.getElementById("authSection");
-    const userSection = document.getElementById("userSection");
-    const welcomeMessage = document.getElementById("welcomeMessage");
-    const gameOption = document.getElementById("gameOption");
-
-    if (user) {
-        // L'utilisateur est connecté
-        console.log("Utilisateur connecté :", user);
-        authSection.style.display = "none";
-        userSection.style.display = "block";
-        gameOption.style.display = "block";
-        welcomeMessage.textContent = `Vous êtes connecté en tant que : ${user.email} `;
-    } else {
-        // L'utilisateur n'est pas connecté
-        console.log("Aucun utilisateur connecté.");
-        authSection.style.display = "block";
-        userSection.style.display = "none";
-        gameOption.style.display = "none";
-    }
+// Gestionnaires des changements de page
+document.getElementById("newGameBtn").addEventListener("click", () => {
+    window.location.href = "newGame.html";
 });
 
-////////////////////////////////////////////////////////////////
-////////////////////// Changement de Page //////////////////////
-////////////////////////////////////////////////////////////////
-
-// New Game Page
-document.getElementById("newGameBtn").addEventListener("click", function() {
-    // Création de la partie et ajout du créateur en tant que joueur par défaut
-    fstore.addPartie({nom : "partieTest" , joueurs : []})
-    // Redirige vers newGame.html
-    window.location.href = "newGame.html"; 
+document.getElementById("joinGameBtn").addEventListener("click", () => {
+    window.location.href = "joinGame.html";
 });
 
-// Join Game Page
-document.getElementById("joinGameBtn").addEventListener("click", function() {
-    window.location.href = "joinGame.html"; // Redirige vers index2.html
+document.getElementById("rulesBtn").addEventListener("click", () => {
+    window.open("https://www.ffsc.fr/files/public/fichiers/reglements/classique/Reglement.international.du.Scrabble.classique.pdf", "_blank");
 });
 
-// Rules Game Page
-document.getElementById("rulesBtn").addEventListener("click", function() {
-    window.open("https://www.ffsc.fr/files/public/fichiers/reglements/classique/Reglement.international.du.Scrabble.classique.pdf", "_blank"); // Ouvre les Regles Officielles du Scrabble dans un nouvel onglet
+document.getElementById("profileBtn").addEventListener("click", () => {
+    window.location.href = "profilePage.html";
 });
-
-// Profil Page
-document.getElementById("profileBtn").addEventListener("click", function() {
-    window.location.href = "profilePage.html"; // Redirige vers index2.html
-});
-

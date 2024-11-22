@@ -1,6 +1,19 @@
-import { db } from "./firebaseConfig.js";
+import { db , checkAuth} from "./firebaseConfig.js";
 import { collection, addDoc, getDoc, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
 
+// Function to get User ID (from firebase authentification) 
+async function getCurrentUID() {
+    const auth = getAuth(); 
+    const user = await checkAuth(); 
+
+    if (user) {
+        return user.uid; 
+    } else {
+        console.log('Aucun utilisateur connecté');
+        return null;
+    }  
+}
 
 // Function to create a User 
 async function addUser(data) {
@@ -21,23 +34,17 @@ async function getUser(id) {
     return docSnap.exists() ? docSnap.data() : null;
 }
 
-// Function to create a new Partie document
-async function addPartie(data) {
+async function getPartieById(partieId) {
     try {
-        const docRef = await addDoc(collection(db, "Parties"), data);
-        console.log("Partie created with ID: ", docRef.id);
-        return docRef.id;
-    } catch (e) {
-        console.error("Error adding Partie: ", e);
+        const partieDoc = await getDoc(doc(db, 'parties', partieId));
+        if (partieDoc.exists()) {
+            return { id: partieDoc.id, ...partieDoc.data() };
+        }
         return null;
+    } catch (error) {
+        console.error("Erreur lors de la récupération de la partie:", error);
+        throw error;
     }
-}
-
-// Function to get a Partie document by ID
-async function getPartie(id) {
-    const docRef = doc(db, "Parties", id);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
 }
 
 // Function to update an existing Partie document
@@ -141,4 +148,4 @@ async function updatePioche(id, data) {
     }
 }
 
-export { addUser , getUser , addPartie , getPartie , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
+export { getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };

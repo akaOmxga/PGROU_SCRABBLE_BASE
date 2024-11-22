@@ -3,7 +3,6 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebas
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
 
-
 const firebaseConfig = {
     apiKey: "AIzaSyDLNJV8PraPrQMZUo2ee7CS9gVpJGnp1sc",
     authDomain: "scrabblewepapp.firebaseapp.com",
@@ -16,5 +15,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// Fonction simple pour vérifier l'authentification sans logique UI
+export function checkAuth() {
+    return new Promise((resolve, reject) => {
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("Utilisateur connecté:", user.email);
+                resolve(user);
+            } else {
+                console.log("Aucun utilisateur connecté");
+                resolve(null);
+            }
+        });
+    });
+}
 
 export { app, db, auth };
