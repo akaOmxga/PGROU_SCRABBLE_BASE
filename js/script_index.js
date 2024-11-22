@@ -4,7 +4,9 @@ import {
     signInWithEmailAndPassword,
     onAuthStateChanged,
     signOut 
-} from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js';
+} from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+
+import * as fstore from './firestoreFunction.js';
 
 // Fonction pour afficher une pop-up
 export function openPopup(popupId) {
@@ -75,7 +77,7 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log("Utilisateur créé avec succès:", userCredential.user);
         // aspect firebase Firestore : Création de l'User :
-        firestore.addUser({pseudo : pseudo});
+        fstore.addUser({pseudo : pseudo});
         closePopup("registerPopup");
         document.getElementById("registerForm").reset();
         
@@ -159,7 +161,7 @@ onAuthStateChanged(auth, (user) => {
 // New Game Page
 document.getElementById("newGameBtn").addEventListener("click", function() {
     // Création de la partie et ajout du créateur en tant que joueur par défaut
-    firestore.addPartie({nom : "partieTest" , joueurs : []})
+    fstore.addPartie({nom : "partieTest" , joueurs : []})
     // Redirige vers newGame.html
     window.location.href = "newGame.html"; 
 });

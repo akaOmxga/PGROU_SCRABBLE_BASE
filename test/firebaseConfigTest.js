@@ -1,4 +1,4 @@
-// firebaseConfig.js
+// firebaseConfigTest.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
@@ -18,3 +18,4 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 export { app, db, auth };
+console.log('Firebase initialized:', app.name); // Doit afficher [DEFAULT]

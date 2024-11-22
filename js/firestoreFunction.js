@@ -1,5 +1,5 @@
 import { db } from "./firebaseConfig.js";
-import { collection, addDoc, getDoc, updateDoc, doc } from 'firebase/firestore';
+import { collection, addDoc, getDoc, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 
 
 // Function to create a User 
@@ -140,3 +140,5 @@ async function updatePioche(id, data) {
         console.error("Error updating Pioche: ", e);
     }
 }
+
+export { addUser , getUser , addPartie , getPartie , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
