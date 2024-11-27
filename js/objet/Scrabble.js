@@ -1,6 +1,4 @@
 // Imports des classes précédemment définies
-
-import { removableOffAll } from '../script_FrontEndGame.js'; 
 import { ScrabbleValidator } from './ScrabbleValidator.js';
 import { Plateau } from './Plateau.js';
 import { Pioche } from './Pioche.js';
@@ -74,8 +72,8 @@ export class Scrabble {
 
         // Initialisation des joueurs
         listeJoueurs.forEach(joueurInfo => {
-            const joueur = new Joueur(joueurInfo.id, joueurInfo.nom);
-            this.game.joueurs.push(joueur);
+            const joueur = new Joueur(joueurInfo.id);
+            this.joueurs.push(joueur);
         });
 
         // Initialisation du plateau et de la pioche
@@ -83,7 +81,7 @@ export class Scrabble {
         this.pioche = new Pioche();
 
         // Distribution des 7 lettres initiales à chaque joueur
-        for (let joueur of this.jeu.joueurs) {
+        for (let joueur of this.joueurs) {
             this.distribuerLettresInitiales(joueur);
         }
 
@@ -93,7 +91,7 @@ export class Scrabble {
 
     distribuerLettresInitiales(joueur) {
         for (let i = 0; i < 7; i++) {
-            const lettre = this.jeu.pioche.piocherLettre();
+            const lettre = this.pioche.piocherLettre();
             if (lettre) {
                 joueur.ajouterLettre(lettre);
             }
@@ -108,9 +106,6 @@ export class Scrabble {
     // le joueur qui doit jouer est le suivant. fin du tour 
 
     async executerTour() {
-        // Réinitialiser toutes les valeurs removable à Off 
-        removableOffAll();
-
         // Récupération de l'état actuel depuis Firebase au début du tour
         // await this.chargerEtat();
 
@@ -268,3 +263,5 @@ export class Scrabble {
     }
 }
 
+const scrabbleInstance = new Scrabble();
+export { scrabbleInstance }

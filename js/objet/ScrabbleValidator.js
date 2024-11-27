@@ -3,8 +3,8 @@ export class ScrabbleValidator {
         this.plateau = plateau;
         this.pioche = pioche;
         this.BOARD_SIZE = 15;
-        this.CENTRE = 7; // Position centrale du plateau (7,7)
-        this.estPremierTour = true; // À gérer dans votre logique de jeu
+        this.CENTRE = 7; 
+        this.estPremierTour = true; 
     }
 
     async validerPlacement(mot, position, direction, lettresJoueur) {

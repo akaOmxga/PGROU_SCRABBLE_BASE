@@ -1,4 +1,5 @@
 import { Scrabble } from './objet/Scrabble.js';
+import { getCurrentUID } from './firestoreFunction.js';
 
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -39,16 +40,30 @@ document.addEventListener('DOMContentLoaded', async () => {
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
+
+let scrabble; // Déclaration de scrabble à l'échelle du module
+
 // Fonction modifiée pour créer une nouvelle partie et afficher le code
-async function CreateNewGame() {
-    const scrabble = new Scrabble();
-    scrabble.initializeGame();
-    return(scrabble)
+async function CreateNewGame(listeJoueurs) {
+    scrabble = new Scrabble(); 
+    await scrabble.initializeGame(listeJoueurs); 
+    return scrabble; // Retourne l'objet scrabble après l'initialisation grâce à await
 }
 
 // Attendre que le DOM soit complètement chargé
-document.addEventListener("DOMContentLoaded", function() {
-    const scrabble = CreateNewGame(); // Création de la partie
+document.addEventListener("DOMContentLoaded", async function() {
+    console.log("domContentCharged de scriptnewGame");
+    const listeJoueurs = [getCurrentUID()];
+    scrabble = await CreateNewGame(listeJoueurs); // Créer et attendre l'objet scrabble
+    console.log("La partie a été créée", scrabble);
+
+    // Enregistrer l'objet scrabble dans localStorage (en le convertissant en JSON)
+    localStorage.setItem('scrabble', JSON.stringify(scrabble));
+    console.log("Objet scrabble sauvegardé dans localStorage:", localStorage.getItem('scrabble'));
+
 });
 
- 
+// Bouton Lancer la Partie : 
+document.getElementById("startBtn").addEventListener("click", () => {
+    window.location.href = "game.html";
+});
