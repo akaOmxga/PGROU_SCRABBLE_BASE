@@ -47,9 +47,15 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
 
         /////////// endGame Script ///////////
+        import { auth, checkAuth } from './js/firebaseConfig.js';
+        import { 
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut 
+        } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
 
         // Recommencer la Partie
         document.getElementById("restart-game").addEventListener("click", function() {
@@ -62,12 +68,17 @@
             window.location.href = "index.html"; // Redirige vers endGame.html
         });
 
-        // Se déconnecter après la partie
-        document.getElementById("disconnect").addEventListener("click", function() {
-            // TODO : déconnecter l'utilisateur puis 
-
+        // Gestionnaire de déconnexion
+        document.getElementById("disconnect").addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                console.log("Déconnexion réussie");
+            } catch (error) {
+                console.error("Erreur lors de la déconnexion:", error);
+                showError("Une erreur est survenue lors de la déconnexion.");
+            }
             // Redirige vers endGame.html
-            window.location.href = "index.html"; 
+            window.location.href = "index.html";
         });
 
     </script>
