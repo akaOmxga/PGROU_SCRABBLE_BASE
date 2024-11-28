@@ -1,3 +1,5 @@
+import 'https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js';
+
 export class ScrabbleValidator {
     constructor(plateau, pioche) {
         this.plateau = plateau;
@@ -288,23 +290,20 @@ export class ScrabbleValidator {
         return score * multiplicateurMot;
     }
 
-    // TODO: Implémenter la vérification avec Firebase
+    // Vérification avec Firebase
     async verifierMotDansDict(mot) {
-        // TODO: Ajouter la logique de vérification avec Firebase
-        // Exemple de structure :
-        /*
-        try {
-            const motRef = ref(db, `dictionnaire/${mot.toLowerCase()}`);
-            const snapshot = await get(motRef);
-            return snapshot.exists();
-        } catch (error) {
-            console.error("Erreur lors de la vérification du mot:", error);
+        const db = getDatabase();
+        const dbRef = ref(db);
+        const snapshot = await get(child(dbRef, `words/${mot}`));
+        if (snapshot.exists()) {
+            console.log(`${mot} est un mot valide !`);
+            return true;
+        } else {
+            console.log(`${mot} n'est pas valide.`);
             return false;
-        }
-        */
-        return true; // Pour le moment, on accepte tous les mots
+        };
     }
-
+    
     trouverPositionMotPerpendiculaire(mot, xPrincipal, yPrincipal, directionPrincipale) {
         // TODO: Implémenter la logique pour trouver la position exacte du mot perpendiculaire
         return { x: 0, y: 0 }; // À adapter selon votre logique

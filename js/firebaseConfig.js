@@ -31,4 +31,4 @@ export function checkAuth() {
     });
 }
 
-export { app, db, auth };
+export { app, db, auth, firedb };

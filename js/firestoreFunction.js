@@ -165,4 +165,31 @@ async function updatePioche(id, data) {
     }
 }
 
+// Function to upload valid words : 
+
+import fs from 'fs';
+
+async function uploadWordsToFirestore(filePath) {
+  try {
+    // Lire le fichier contenant les mots
+    const data = fs.readFileSync(filePath, 'utf-8');
+    const words = data.split('\n').map(word => word.trim()).filter(word => word);
+
+    // Référence à la collection "words" dans Firestore
+    const wordsCollection = collection(db, 'words');
+
+    console.log(`Uploading ${words.length} words to Firestore...`);
+    for (const word of words) {
+      await addDoc(wordsCollection, { word });
+      console.log(`Uploaded: ${word}`);
+    }
+    console.log('Upload completed successfully!');
+  } catch (error) {
+    console.error('Error uploading words:', error);
+  }
+}
+
+// Appelle la fonction avec le chemin vers le fichier dico.txt
+uploadWordsToFirestore('../dico.txt');
+
 export { getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
