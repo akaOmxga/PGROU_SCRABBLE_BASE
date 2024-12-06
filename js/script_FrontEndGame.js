@@ -1,5 +1,8 @@
 let scrabble;
 
+import * as fstore from './firestoreFunction.js';
+
+// au chargement de la page, on effectue :
 document.addEventListener("DOMContentLoaded", async () => {
     const playerInventory = document.querySelector("#player-letters");
     const playerLetters = document.querySelectorAll("#player-letters .letter");
@@ -91,6 +94,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         applyColors();
 
+        // update le tableau des score : mettre le pseudo des joueurs contenu dans scrabble.joueur et les scores associées 
+        updateScoreBoard(scrabble, scrabble.partyID);
+
         let activeLetter = null;
 
         // Gérer la sélection d'une lettre
@@ -145,6 +151,39 @@ document.addEventListener("DOMContentLoaded", async () => {
         return ; 
     } 
 });
+
+// Fonction pour mettre à jour le tableau des scores
+async function updateScoreBoard(scrabble, partieID) {
+    const scoreBoard = document.getElementById("score-board");
+    const joueurs = scrabble.joueurs;
+    
+    // Récupérer les pseudos et les scores
+    let playersData = [];
+    for (let i = 0; i < joueurs.length; i++) {
+        const pseudo = await fstore.getPseudoFromID(joueurs[i]); // Récupère le pseudo
+        const score = await fstore.getScoreFromID(joueurs[i], partieID); // Récupère le score
+        playersData.push({ pseudo, score });
+    }
+
+    // Trier les joueurs par score croissant
+    playersData.sort((a, b) => a.score - b.score);
+
+    // Mettre à jour le tableau avec les données triées
+    scoreBoard.innerHTML = ""; // Vider le tableau
+    playersData.forEach(player => {
+        const row = document.createElement("tr");
+        const pseudoCell = document.createElement("td");
+        const scoreCell = document.createElement("td");
+        
+        pseudoCell.textContent = player.pseudo;
+        scoreCell.textContent = player.score;
+        
+        row.appendChild(pseudoCell);
+        row.appendChild(scoreCell);
+        scoreBoard.appendChild(row); // Ajoute la ligne au tableau
+    });
+}
+
 
 // Réinitialise toutes les data-removable à False, à appeler à chaque début de tour
 function removableOffAll() {

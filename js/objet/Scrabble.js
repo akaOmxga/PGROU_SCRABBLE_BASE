@@ -12,7 +12,8 @@ import * as lobby from '../lobby.js';
 
 
 export class Scrabble {
-    constructor() {
+    constructor(PID) {
+        this.partyId = PID;
         this.joueurs = [];   
         this.scores = [];          
         this.plateau = new Plateau();
@@ -59,7 +60,8 @@ export class Scrabble {
         let UID = await fstore.getCurrentUID();
         if (UID) {
             try {
-                const { code } = await lobby.addPartie({ joueurs: [UID] });
+                const { code, id } = await lobby.addPartie({ joueurs: [UID] });
+                this.id = id;
                 // Afficher le code dans le paragraphe prévu
                 document.querySelector('.header p:nth-child(3)').textContent = code;
                 console.log("Partie créée avec le code:", code);

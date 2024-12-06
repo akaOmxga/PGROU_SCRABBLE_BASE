@@ -8,23 +8,35 @@ import {
 import * as fstore from './firestoreFunction.js';
 
 // Fonction pour gérer l'UI en fonction de l'authentification
-function updateUI(isAuthenticated, user = null) {
+async function updateUI(isAuthenticated, user = null) {
     const authSection = document.getElementById("authSection");
     const userSection = document.getElementById("userSection");
     const welcomeMessage = document.getElementById("welcomeMessage");
     const gameOption = document.getElementById("gameOption");
-    
+
     if (isAuthenticated && authSection && userSection && welcomeMessage && gameOption) {
         authSection.style.display = "none";
         userSection.style.display = "block";
         gameOption.style.display = "block";
-        welcomeMessage.textContent = `Vous êtes connecté en tant que : ${user.email}`;
+
+        try {
+            const pseudo = await fstore.getCurrentPseudo(); // Récupère le pseudo depuis Firestore
+            if (pseudo) {
+                welcomeMessage.textContent = `Vous êtes connecté en tant que : ${pseudo}`;
+            } else {
+                welcomeMessage.textContent = "Pseudo non trouvé. Veuillez vous reconnecter.";
+            }
+        } catch (error) {
+            console.error("Erreur lors de la récupération du pseudo :", error);
+            welcomeMessage.textContent = "Erreur lors de la récupération du pseudo.";
+        }
     } else if (authSection && userSection && gameOption) {
         authSection.style.display = "block";
         userSection.style.display = "none";
         gameOption.style.display = "none";
     }
 }
+
 
 // Vérifier l'authentification au chargement de la page
 document.addEventListener('DOMContentLoaded', async () => {
@@ -105,7 +117,7 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         console.log("Utilisateur créé avec succès:", userCredential.user);
         updateUI(true, userCredential.user);
-        fstore.addUser({pseudo : pseudo});
+        fstore.addUser({uid : await fstore.getCurrentUID(), pseudo : pseudo});
         closePopup("registerPopup");
         document.getElementById("registerForm").reset();
         

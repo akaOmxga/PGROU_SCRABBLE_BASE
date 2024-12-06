@@ -45,7 +45,7 @@ let scrabble; // Déclaration de scrabble à l'échelle du module
 
 // Fonction modifiée pour créer une nouvelle partie et afficher le code
 async function CreateNewGame(listeJoueurs) {
-    scrabble = new Scrabble(); 
+    scrabble = new Scrabble(""); 
     await scrabble.initializeGame(listeJoueurs); 
     return scrabble; // Retourne l'objet scrabble après l'initialisation grâce à await
 }
