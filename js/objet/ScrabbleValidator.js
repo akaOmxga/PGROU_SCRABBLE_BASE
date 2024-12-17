@@ -12,7 +12,7 @@ export class ScrabbleValidator {
     async validerPlacement(mot, position, direction, lettresJoueur) {
         const [x, y] = position;
         
-        // 1. Vérifier les limites du plateau
+        // 1. Vérifier les limites du plateau // TODO REMPLACER PAR UNE VERIFICATION DE MEME LIGNE OU MEME COLONNE (car les cases sont toujours contenu dans les limites du plateau)
         if (!this.verifierLimitesPlateau(mot, x, y, direction)) {
             return { 
                 valide: false, 
