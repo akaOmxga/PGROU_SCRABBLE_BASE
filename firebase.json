@@ -4,7 +4,7 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "PAPPL_SCRABBLE_BASE",
+    "public": "PAPPL_SCRABBLE_BASE/public",
     "ignore": [
       "firebase.json",
       "**/.*",
