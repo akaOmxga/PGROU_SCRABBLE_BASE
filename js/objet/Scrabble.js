@@ -78,7 +78,7 @@ export class Scrabble {
 
         // Initialisation des joueurs
         listeJoueurs.forEach(joueurID => {
-            const joueur = new Joueur(joueurID,fstore.getPseudoFromID(joueurID));
+            const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
             this.joueurs.push(joueur);
         });
 
@@ -90,7 +90,6 @@ export class Scrabble {
             // Distribution des 7 lettres initiales à chaque joueur
             this.distribuerLettresInitiales(joueur);
         }
-
 
         // TODO Firebase: Sauvegarder l'état initial de la partie
         // await this.sauvegarderEtat();

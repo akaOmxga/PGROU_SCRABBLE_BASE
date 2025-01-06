@@ -54,26 +54,23 @@ async function getCurrentPseudo() {
     }  
 }
 
-// Fonction pour obtenir le pseudo d'un joueur à partir de son ID
-async function getPseudoFromID(joueurID) {
-    
-    const db = getFirestore();
-    
-    // Crée une référence à la collection 'Users'
-    const usersCollection = collection(db, 'Users');
-    const q = query(usersCollection, where("uid", "==", joueurID)); // Filtre sur l'ID du joueur
 
+async function getPseudoFromId(joueurId) {
     try {
-        const querySnapshot = await getDocs(q); // Exécute la requête
+        // Référence à la collection 'Users'
+        const usersCollection = collection(db, "Users");
+
+        // Requête pour trouver le document avec l'UID spécifié
+        const q = query(usersCollection, where("uid", "==", joueurId));
+        const querySnapshot = await getDocs(q);
+
+        // Vérifier si un document a été trouvé
         if (!querySnapshot.empty) {
-            let pseudo = null;
-            querySnapshot.forEach((doc) => {
-                const userData = doc.data();
-                pseudo = userData.pseudo; // Récupère le pseudo du joueur
-            });
-            return pseudo;
+            const userDoc = querySnapshot.docs[0]; // Prend le premier document trouvé
+            const userData = userDoc.data(); // Récupère les données du document
+            return userData.pseudo; // Retourne le pseudo
         } else {
-            console.log("Aucun joueur trouvé avec cet ID");
+            console.error("Aucun joueur trouvé avec cet UID.");
             return null;
         }
     } catch (error) {
@@ -81,7 +78,6 @@ async function getPseudoFromID(joueurID) {
         return null;
     }
 }
-
 
 // Function to create a User 
 async function addUser(data) {
@@ -267,4 +263,4 @@ async function updatePioche(id, data) {
     }
 }
 
-export { getPseudoFromID, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
+export { getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };

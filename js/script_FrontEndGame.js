@@ -17,7 +17,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return
     }
     if (scrabbleInstance) {
-
         // Fonction pour déterminer le type de la case en fonction de son indice de création (i allant de 0 à 224)
         function getSquareType(i) {
             // Cas spécifiques pour les cases spéciales du plateau de Scrabble
@@ -144,12 +143,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 activeLetter = null;
             }
         });
-
         // Initialiser les joueurs et leur score dans le tableau :
-        ajouterLigneTableauScore()
-
-        return scrabbleInstance;
-
+        for (let i = 0; i < scrabbleInstance.joueurs.length; i++) {
+        let pseudo = await fstore.getPseudoFromId(scrabbleInstance.joueurs[i].id);
+        ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
+        }
+        return ;
     }
     else {
         console.log("scrabble not parsed")
@@ -180,7 +179,7 @@ async function updateScoreBoard(scrabbleInstance, partieID) {
     // Récupérer les pseudos et les scores
     let playersData = [];
     for (let i = 0; i < joueurs.length; i++) {
-        const pseudo = await fstore.getPseudoFromID(joueurs[i].id); // Récupère le pseudo
+        const pseudo = await fstore.getPseudoFromId(joueurs[i].id); // Récupère le pseudo
         const score = await fstore.getScoreFromID(joueurs[i].id, partieID); // Récupère le score
         playersData.push({ pseudo, score });
     }
@@ -202,6 +201,20 @@ async function updateScoreBoard(scrabbleInstance, partieID) {
         row.appendChild(scoreCell);
         scoreBoard.appendChild(row); // Ajoute la ligne au tableau
     });
+}
+
+
+const playerLettersDiv = document.getElementById("player-letters");
+// Fonction pour ajouter une nouvelle lettre sous forme de sous-div
+function ajouterLettre(nouvelleLettre) {
+    // Créer une nouvelle div pour la lettre
+    const lettreDiv = document.createElement("div");
+    lettreDiv.className = "letter"; 
+    lettreDiv.draggable = true;
+    lettreDiv.dataset.letter = nouvelleLettre; 
+    lettreDiv.textContent = nouvelleLettre;
+    // Ajouter la nouvelle lettre à la div principale
+    playerLettersDiv.appendChild(lettreDiv);
 }
 
 
