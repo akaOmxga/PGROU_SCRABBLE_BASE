@@ -8,6 +8,7 @@ export class Joueur {
         this.id = id;
         this.lettres = [];  // Inventaire limité à 7 lettres
         this.pseudo = playerPseudo;
+        this.score = 0;
     }
 
     // Ajoute une lettre à l'inventaire si possible

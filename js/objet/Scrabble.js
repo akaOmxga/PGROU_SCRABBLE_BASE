@@ -86,10 +86,11 @@ export class Scrabble {
         this.plateau = new Plateau();
         this.pioche = new Pioche();
 
-        // Distribution des 7 lettres initiales à chaque joueur
         for (let joueur of this.joueurs) {
+            // Distribution des 7 lettres initiales à chaque joueur
             this.distribuerLettresInitiales(joueur);
         }
+
 
         // TODO Firebase: Sauvegarder l'état initial de la partie
         // await this.sauvegarderEtat();

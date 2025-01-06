@@ -144,13 +144,33 @@ document.addEventListener("DOMContentLoaded", async () => {
                 activeLetter = null;
             }
         });
+
+        // Initialiser les joueurs et leur score dans le tableau :
+        ajouterLigneTableauScore()
+
         return scrabbleInstance;
+
     }
     else {
         console.log("scrabble not parsed")
         return ; 
     } 
 });
+
+// Fonction pour ajouter une ligne au tableau
+function ajouterLigneTableauScore(nomJoueur, score) {
+    const tableau = document.getElementById('score-board');
+    const nouvelleLigne = document.createElement('tr');
+        
+    // Créer les cellules pour le nom et le score puis la ligne et l'ajouter au tableau
+    const celluleNom = document.createElement('td');
+    const celluleScore = document.createElement('td');
+    celluleNom.textContent = nomJoueur;
+    celluleScore.textContent = score;
+    nouvelleLigne.appendChild(celluleNom);
+    nouvelleLigne.appendChild(celluleScore);
+    tableau.appendChild(nouvelleLigne);
+}
 
 // Fonction pour mettre à jour le tableau des scores
 async function updateScoreBoard(scrabbleInstance, partieID) {
