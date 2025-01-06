@@ -1,4 +1,4 @@
-import { getCurrentUID, getPseudoFromID } from './firestoreFunction.js';
+import { getCurrentUID, getCurrentPseudo } from './firestoreFunction.js';
 import { Scrabble } from './objet/Scrabble.js';
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -57,8 +57,8 @@ document.addEventListener("DOMContentLoaded", async function() {
     console.log("La partie a été créée", scrabbleInstance);
 
     // Afficher le joueur créateur de la partie : 
-    const pseudoJoueurCreateur = scrabbleInstance.joueurs[0].pseudo;
-    ajouterJoueurFrontEnd(pseudoJoueurCreateur);
+    const pseudo = await getCurrentPseudo(); // Récupère le pseudo depuis Firestore
+    ajouterJoueurFrontEnd(pseudo);
 
     // Enregistrer l'objet scrabble dans localStorage (en le convertissant en JSON)
     localStorage.setItem('scrabbleInstance', JSON.stringify(scrabbleInstance));
