@@ -84,7 +84,7 @@ export class Scrabble {
         listeJoueurs.forEach(joueurID => {
             const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
             // tirer des lettres dans la pioche :
-            joueur.completerLettres(pioche);
+            joueur.completerLettres(this.pioche);
             // ajouter le joueur à la partie de scrabble : 
             this.joueurs.push(joueur);
         });
