@@ -76,15 +76,19 @@ export class Scrabble {
             console.log("Aucun utilisateur connecté, impossible de créer une partie.");
         }
 
-        // Initialisation des joueurs
-        listeJoueurs.forEach(joueurID => {
-            const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
-            this.joueurs.push(joueur);
-        });
-
         // Initialisation du plateau et de la pioche
         this.plateau = new Plateau();
         this.pioche = new Pioche();
+
+        // Initialisation des joueurs
+        listeJoueurs.forEach(joueurID => {
+            const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
+            // tirer des lettres dans la pioche :
+            joueur.completerLettres(pioche);
+            // ajouter le joueur à la partie de scrabble : 
+            this.joueurs.push(joueur);
+        });
+
 
         for (let joueur of this.joueurs) {
             // Distribution des 7 lettres initiales à chaque joueur

@@ -143,11 +143,18 @@ document.addEventListener("DOMContentLoaded", async () => {
                 activeLetter = null;
             }
         });
-        // Initialiser les joueurs et leur score dans le tableau :
+        // Initialiser les joueurs + leur score dans le tableau et leurs lettres :
         for (let i = 0; i < scrabbleInstance.joueurs.length; i++) {
-        let pseudo = await fstore.getPseudoFromId(scrabbleInstance.joueurs[i].id);
-        ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
+            // tableau
+            let pseudo = await fstore.getPseudoFromId(scrabbleInstance.joueurs[i].id);
+            ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
+            // lettres :
+            for (let j=0; j<7; j++){
+                ajouterLettre(scrabbleInstance.joueurs[i].lettres[j]);
+            }
+            
         }
+
         return ;
     }
     else {
