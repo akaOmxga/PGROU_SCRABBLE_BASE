@@ -56,6 +56,7 @@ async function getCurrentPseudo() {
 
 // Fonction pour obtenir le pseudo d'un joueur à partir de son ID
 async function getPseudoFromID(joueurID) {
+    
     const db = getFirestore();
     
     // Crée une référence à la collection 'Users'

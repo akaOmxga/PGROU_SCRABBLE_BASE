@@ -1,6 +1,5 @@
+import { getCurrentUID, getPseudoFromID } from './firestoreFunction.js';
 import { Scrabble } from './objet/Scrabble.js';
-import { getCurrentUID } from './firestoreFunction.js';
-
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////    Authentification Check     //////////////////////////
@@ -41,27 +40,48 @@ document.addEventListener('DOMContentLoaded', async () => {
 //////////////////////////////////////////////////////////////////////////////////
 
 
-let scrabble; // Déclaration de scrabble à l'échelle du module
+let scrabbleInstance; // Déclaration de scrabble à l'échelle du module
 
-// Fonction modifiée pour créer une nouvelle partie et afficher le code
+// Fonction pour créer une nouvelle partie et afficher le code
 async function CreateNewGame(listeJoueurs) {
-    scrabble = new Scrabble(""); 
-    await scrabble.initializeGame(listeJoueurs); 
-    return scrabble; // Retourne l'objet scrabble après l'initialisation grâce à await
+    scrabbleInstance = new Scrabble(""); 
+    await scrabbleInstance.initializeGame(listeJoueurs); 
+    return scrabbleInstance; // Retourne l'objet scrabble après l'initialisation grâce à await
 }
 
 // Attendre que le DOM soit complètement chargé
 document.addEventListener("DOMContentLoaded", async function() {
     console.log("domContentCharged de scriptnewGame");
-    const listeJoueurs = [getCurrentUID()];
-    scrabble = await CreateNewGame(listeJoueurs); // Créer et attendre l'objet scrabble
-    console.log("La partie a été créée", scrabble);
+    const listeJoueurs = [await getCurrentUID()];
+    scrabbleInstance = await CreateNewGame(listeJoueurs); // Créer et attendre l'objet scrabble
+    console.log("La partie a été créée", scrabbleInstance);
+
+    // Afficher le joueur créateur de la partie : 
+    const pseudoJoueurCreateur = scrabbleInstance.joueurs[0].pseudo;
+    ajouterJoueurFrontEnd(pseudoJoueurCreateur);
 
     // Enregistrer l'objet scrabble dans localStorage (en le convertissant en JSON)
-    localStorage.setItem('scrabble', JSON.stringify(scrabble));
-    console.log("Objet scrabble sauvegardé dans localStorage:", localStorage.getItem('scrabble'));
+    localStorage.setItem('scrabbleInstance', JSON.stringify(scrabbleInstance));
+    console.log("Objet scrabble sauvegardé dans localStorage:", localStorage.getItem('scrabbleInstance'));
 
 });
+
+// Sélectionner le tableau
+const tableau = document.getElementById("playersTable");
+// Ajouter une ligne dans le tbody
+function ajouterJoueurFrontEnd(nomJoueur) {
+    // Sélectionne le tbody (ou crée la référence)
+    const tbody = tableau.querySelector("tbody");
+
+    // Crée une nouvelle ligne
+    const nouvelleLigne = tbody.insertRow();
+
+    // Ajoute une cellule
+    const cellule = nouvelleLigne.insertCell();
+
+    // Remplit la cellule avec le nom du joueur
+    cellule.textContent = nomJoueur;
+};
 
 // Bouton Lancer la Partie : 
 document.getElementById("startBtn").addEventListener("click", () => {

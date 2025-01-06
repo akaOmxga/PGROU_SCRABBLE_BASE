@@ -41,6 +41,10 @@ export class Scrabble {
         return this.joueurs[this.tourActuel];
     }
 
+    getJoueurs(){
+        return this.joueurs;
+    }
+
     getScoreJoueur(joueurIndex) {
         return this.scores[joueurIndex];
     }
@@ -60,7 +64,7 @@ export class Scrabble {
         let UID = await fstore.getCurrentUID();
         if (UID) {
             try {
-                const { code, id } = await lobby.addPartie({ joueurs: [UID] });
+                const { code, id } = await lobby.addPartie(listeJoueurs);
                 this.id = id;
                 // Afficher le code dans le paragraphe prévu
                 document.querySelector('.header p:nth-child(3)').textContent = code;
@@ -73,8 +77,8 @@ export class Scrabble {
         }
 
         // Initialisation des joueurs
-        listeJoueurs.forEach(joueurInfo => {
-            const joueur = new Joueur(joueurInfo.id);
+        listeJoueurs.forEach(joueurID => {
+            const joueur = new Joueur(joueurID,fstore.getPseudoFromID(joueurID));
             this.joueurs.push(joueur);
         });
 
@@ -263,7 +267,5 @@ export class Scrabble {
             console.log(`${index + 1}. ${score.nom}: ${score.score} points`);
         });
     }
-}
+};
 
-const scrabbleInstance = new Scrabble();
-export { scrabbleInstance }

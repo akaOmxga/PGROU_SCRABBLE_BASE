@@ -4,9 +4,10 @@
 // méthode : il peut jouer le tour (poser un mot), le valider, ou passer son tour
 
 export class Joueur {
-    constructor(id) {
+    constructor(id,playerPseudo) {
         this.id = id;
         this.lettres = [];  // Inventaire limité à 7 lettres
+        this.pseudo = playerPseudo;
     }
 
     // Ajoute une lettre à l'inventaire si possible
