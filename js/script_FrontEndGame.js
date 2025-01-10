@@ -2,6 +2,8 @@ let scrabbleInstance;
 
 import * as fstore from './firestoreFunction.js';
 
+let activeLetter = null;
+
 // au chargement de la page, on effectue :
 document.addEventListener("DOMContentLoaded", async () => {
     const playerInventory = document.querySelector("#player-letters");
@@ -94,13 +96,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         applyColors();
 
         // update le tableau des score : mettre le pseudo des joueurs contenu dans scrabble.joueur et les scores associées 
-        updateScoreBoard(scrabbleInstance, scrabbleInstance.partyID);
-
-        let activeLetter = null;
+        //updateScoreBoard(scrabbleInstance, scrabbleInstance.partyID);
 
         // Gérer la sélection d'une lettre
         playerLetters.forEach(letter => {
             letter.addEventListener("click", () => {
+                console.log("letter clicked");
                 if (activeLetter === letter) {
                     activeLetter = null; // Désactiver la lettre
                     letter.classList.remove("selected");
@@ -110,7 +111,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     letter.classList.add("selected");
                 }
             });
-        });
+        }); 
 
         // Gérer le placement sur le plateau
         board.addEventListener("click", (e) => {
@@ -155,7 +156,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             
         }
 
-        return ;
+        console.log("done");
+
+        return scrabbleInstance;
     }
     else {
         console.log("scrabble not parsed")
@@ -187,8 +190,8 @@ async function updateScoreBoard(scrabbleInstance, partieID) {
     let playersData = [];
     for (let i = 0; i < joueurs.length; i++) {
         const pseudo = await fstore.getPseudoFromId(joueurs[i].id); // Récupère le pseudo
-        const score = await fstore.getScoreFromID(joueurs[i].id, partieID); // Récupère le score
-        playersData.push({ pseudo, score });
+        //const score = await fstore.getScoreFromID(joueurs[i].id, partieID); // Récupère le score
+        //playersData.push({ pseudo, score });
     }
 
     // Trier les joueurs par score croissant
@@ -212,7 +215,6 @@ async function updateScoreBoard(scrabbleInstance, partieID) {
 
 
 const playerLettersDiv = document.getElementById("player-letters");
-// Fonction pour ajouter une nouvelle lettre sous forme de sous-div
 function ajouterLettre(nouvelleLettre) {
     // Créer une nouvelle div pour la lettre
     const lettreDiv = document.createElement("div");
@@ -220,9 +222,25 @@ function ajouterLettre(nouvelleLettre) {
     lettreDiv.draggable = true;
     lettreDiv.dataset.letter = nouvelleLettre; 
     lettreDiv.textContent = nouvelleLettre;
+
+    // Ajouter un gestionnaire d'événements
+    lettreDiv.addEventListener("click", () => {
+        console.log("letter clicked");
+        if (activeLetter === lettreDiv) {
+            activeLetter = null;
+            lettreDiv.classList.remove("selected");
+        } else {
+            activeLetter = lettreDiv;
+            const allLetters = document.querySelectorAll("#player-letters .letter");
+            allLetters.forEach(l => l.classList.remove("selected"));
+            lettreDiv.classList.add("selected");
+        }
+    });
+
     // Ajouter la nouvelle lettre à la div principale
     playerLettersDiv.appendChild(lettreDiv);
 }
+
 
 
 // Réinitialise toutes les data-removable à False, à appeler à chaque début de tour
