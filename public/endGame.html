@@ -47,40 +47,7 @@
         </div>
     </div>
 
-    <script type="module">
+    <script type="module" src="../js/script_endGame.js"></script>
 
-        /////////// endGame Script ///////////
-        import { auth, checkAuth } from './js/firebaseConfig.js';
-        import { 
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signOut 
-        } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
-
-        // Recommencer la Partie
-        document.getElementById("restart-game").addEventListener("click", function() {
-            console.log("clickrestart ");
-            window.location.href = "newGame.html"; // Redirige vers endGame.html
-        });
-
-        // Retourner vers le Menu Principale 
-        document.getElementById("main-menu").addEventListener("click", function() {
-            window.location.href = "index.html"; // Redirige vers endGame.html
-        });
-
-        // Gestionnaire de déconnexion
-        document.getElementById("disconnect").addEventListener("click", async () => {
-            try {
-                await signOut(auth);
-                console.log("Déconnexion réussie");
-            } catch (error) {
-                console.error("Erreur lors de la déconnexion:", error);
-                showError("Une erreur est survenue lors de la déconnexion.");
-            }
-            // Redirige vers endGame.html
-            window.location.href = "index.html";
-        });
-
-    </script>
 </body>
 </html>
