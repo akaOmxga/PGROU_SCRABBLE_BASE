@@ -1,73 +1,55 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Scrabble Game</title>
-    <link rel="stylesheet" href="/css/style_game.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style_game.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js"></script>
+  </head>
+  <body>
     <div class="container">
-        <!-- Titre en haut du plateau -->
-        <div id="title">C'est à votre tour de jouer !</div> <!-- TODO: Modifier dynamiquement selon le joueur -->
-       
+      <!-- Titre en haut du plateau -->
+      <div id="title">C'est à votre tour de jouer !</div>
+      <!-- TODO: Modifier dynamiquement selon le joueur -->
 
-        <!-- Tableau des scores -->
-        <table class="score-table">
-            <thead>
-                <tr>
-                    <th>Nom du Joueur</th>
-                    <th>Score</th>
-                </tr>
-            </thead>
-            <tbody id="score-board">
-                <tr>
-                    <td>Joueur 1</td>
-                    <td>23</td>
-                </tr>
-                <tr>
-                    <td>Joueur 2</td>
-                    <td>54</td>
-                </tr>
-                <tr>
-                    <td>Joueur 3</td>
-                    <td>67</td>
-                </tr>
-                <tr>
-                    <td>Joueur 4</td>
-                    <td>41</td>
-                </tr>
-            </tbody>
-        </table>
+      <!-- Tableau des scores -->
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th>Nom du Joueur</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="score-board">
+        </tbody>
+      </table>
 
-        <!-- Plateau de Scrabble -->
-        <div class="board-container">
-            <div id="board" class="board"> 
-                <!-- généré le board -->
-            </div>
+      <!-- Plateau de Scrabble -->
+      <div class="board-container">
+        <div id="board" class="board">
+          <!-- généré le board -->
 
-            <!-- Lettres du joueur -->
-            <div class="player-letters" id="player-letters">
-                <div class="letter" draggable="true" data-letter="A">A</div>
-                <div class="letter" draggable="true" data-letter="B">B</div>
-                <div class="letter" draggable="true" data-letter="C">C</div>
-                <div class="letter" draggable="true" data-letter="D">D</div>
-                <div class="letter" draggable="true" data-letter="E">E</div>
-                <div class="letter" draggable="true" data-letter="F">F</div>
-                <div class="letter" draggable="true" data-letter="G">G</div>
-                <div class="underline"></div>
-            </div>
         </div>
 
-        <!-- Boutons -->
-        <div class="buttons">
-            <button id="validate-word">Valider le mot</button>
-            <button id="pass-turn">Passer son tour</button>
-            <button id="end-game">Terminer la partie</button>
+        <!-- Lettres du joueur -->
+        <div class="player-letters" id="player-letters">
+
+          <div class="underline"></div>
         </div>
+      </div>
+
+      <!-- Boutons -->
+      <div class="buttons">
+        <button id="validate-word">Valider le mot</button>
+        <button id="pass-turn">Passer son tour</button>
+        <button id="end-game">Terminer la partie</button>
+      </div>
     </div>
 
-    <script type="module" src="../js/script_FrontEndGame.js"></script>
+    <script type="module" src="./js/script_FrontEndGame.js"></script>
 
 </body>
+
 </html>

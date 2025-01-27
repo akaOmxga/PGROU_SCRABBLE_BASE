@@ -1,6 +1,8 @@
-let scrabble;
+let scrabbleInstance;
 
 import * as fstore from './firestoreFunction.js';
+
+let activeLetter = null;
 
 // au chargement de la page, on effectue :
 document.addEventListener("DOMContentLoaded", async () => {
@@ -8,16 +10,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     const playerLetters = document.querySelectorAll("#player-letters .letter");
     const board = document.getElementById("board");
 
-    const scrabbleData = localStorage.getItem('scrabble');
+    const scrabbleData = localStorage.getItem('scrabbleInstance');
 
     if (scrabbleData) {
-        scrabble = JSON.parse(scrabbleData); // Convertir de JSON en objet
+        scrabbleInstance = JSON.parse(scrabbleData); // Convertir de JSON en objet
     } else {
         console.log("Aucune partie en cours.");
         return
     }
-    if (scrabble) {
-
+    if (scrabbleInstance) {
         // Fonction pour déterminer le type de la case en fonction de son indice de création (i allant de 0 à 224)
         function getSquareType(i) {
             // Cas spécifiques pour les cases spéciales du plateau de Scrabble
@@ -95,13 +96,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         applyColors();
 
         // update le tableau des score : mettre le pseudo des joueurs contenu dans scrabble.joueur et les scores associées 
-        updateScoreBoard(scrabble, scrabble.partyID);
-
-        let activeLetter = null;
+        //updateScoreBoard(scrabbleInstance, scrabbleInstance.partyID);
 
         // Gérer la sélection d'une lettre
         playerLetters.forEach(letter => {
             letter.addEventListener("click", () => {
+                console.log("letter clicked");
                 if (activeLetter === letter) {
                     activeLetter = null; // Désactiver la lettre
                     letter.classList.remove("selected");
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     letter.classList.add("selected");
                 }
             });
-        });
+        }); 
 
         // Gérer le placement sur le plateau
         board.addEventListener("click", (e) => {
@@ -144,7 +144,21 @@ document.addEventListener("DOMContentLoaded", async () => {
                 activeLetter = null;
             }
         });
-        return scrabble;
+        // Initialiser les joueurs + leur score dans le tableau et leurs lettres :
+        for (let i = 0; i < scrabbleInstance.joueurs.length; i++) {
+            // tableau
+            let pseudo = await fstore.getPseudoFromId(scrabbleInstance.joueurs[i].id);
+            ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
+            // lettres :
+            for (let j=0; j<7; j++){
+                ajouterLettre(scrabbleInstance.joueurs[i].lettres[j]);
+            }
+            
+        }
+
+        console.log("done");
+
+        return scrabbleInstance;
     }
     else {
         console.log("scrabble not parsed")
@@ -152,17 +166,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     } 
 });
 
+// Fonction pour ajouter une ligne au tableau
+function ajouterLigneTableauScore(nomJoueur, score) {
+    const tableau = document.getElementById('score-board');
+    const nouvelleLigne = document.createElement('tr');
+        
+    // Créer les cellules pour le nom et le score puis la ligne et l'ajouter au tableau
+    const celluleNom = document.createElement('td');
+    const celluleScore = document.createElement('td');
+    celluleNom.textContent = nomJoueur;
+    celluleScore.textContent = score;
+    nouvelleLigne.appendChild(celluleNom);
+    nouvelleLigne.appendChild(celluleScore);
+    tableau.appendChild(nouvelleLigne);
+}
+
 // Fonction pour mettre à jour le tableau des scores
-async function updateScoreBoard(scrabble, partieID) {
+async function updateScoreBoard(scrabbleInstance, partieID) {
     const scoreBoard = document.getElementById("score-board");
-    const joueurs = scrabble.joueurs;
+    const joueurs = scrabbleInstance.joueurs;
     
     // Récupérer les pseudos et les scores
     let playersData = [];
     for (let i = 0; i < joueurs.length; i++) {
-        const pseudo = await fstore.getPseudoFromID(joueurs[i]); // Récupère le pseudo
-        const score = await fstore.getScoreFromID(joueurs[i], partieID); // Récupère le score
-        playersData.push({ pseudo, score });
+        const pseudo = await fstore.getPseudoFromId(joueurs[i].id); // Récupère le pseudo
+        //const score = await fstore.getScoreFromID(joueurs[i].id, partieID); // Récupère le score
+        //playersData.push({ pseudo, score });
     }
 
     // Trier les joueurs par score croissant
@@ -185,6 +214,36 @@ async function updateScoreBoard(scrabble, partieID) {
 }
 
 
+const playerLettersDiv = document.getElementById("player-letters");
+function ajouterLettre(nouvelleLettre) {
+    // Créer une nouvelle div pour la lettre
+    const lettreDiv = document.createElement("div");
+    lettreDiv.className = "letter"; 
+    lettreDiv.draggable = true;
+    lettreDiv.dataset.letter = nouvelleLettre; 
+    lettreDiv.textContent = nouvelleLettre;
+
+    // Ajouter un gestionnaire d'événements
+    lettreDiv.addEventListener("click", () => {
+        console.log("letter clicked");
+
+        if (activeLetter === lettreDiv) {
+            activeLetter = null;
+            lettreDiv.classList.remove("selected");
+        } else {
+            activeLetter = lettreDiv;
+            const allLetters = document.querySelectorAll("#player-letters .letter");
+            allLetters.forEach(l => l.classList.remove("selected"));
+            lettreDiv.classList.add("selected");
+        }
+    });
+
+    // Ajouter la nouvelle lettre à la div principale
+    playerLettersDiv.appendChild(lettreDiv);
+}
+
+
+
 // Réinitialise toutes les data-removable à False, à appeler à chaque début de tour
 function removableOffAll() {
     const squares = document.querySelectorAll('.square'); // Sélectionner toutes les cases
@@ -198,15 +257,15 @@ document.getElementById('validate-word').addEventListener('click', async () => {
 
     // prendre les informations du tour : 
     console.log("test in valider le mot");
-    console.log(scrabble);
-    const infos = scrabble.validator.getPlacementInfo();
+    console.log(scrabbleInstance);
+    const infos = scrabbleInstance.validator.getPlacementInfo();
 
     const mot = infos.mot // récupérer le mot formé
     const position = infos.position // récupérer la position [x, y]
     const direction = infos.direction // récupérer la direction
     const lettresJoueur = infos.lettresJoueur // récupérer les lettres du joueur
 
-    const resultat = await scrabble.validator.validerPlacement(mot, position, direction, lettresJoueur);
+    const resultat = await scrabbleInstance.validator.validerPlacement(mot, position, direction, lettresJoueur);
     
     if (resultat.valide) {
         // Placer le mot et mettre à jour le score
@@ -216,7 +275,7 @@ document.getElementById('validate-word').addEventListener('click', async () => {
         // Redonner des lettres au joueur : 
         const playerInventory = document.querySelector("#player-letters");
         while (playerInventory.children.length <= 7) { // 7 lettres + une barre 
-            const lettre = scrabble.pioche.piocherLettre();
+            const lettre = scrabbleInstance.pioche.piocherLettre();
             const newLetter = document.createElement("div");
             newLetter.className = "letter";
             newLetter.draggable = "true";
@@ -232,9 +291,9 @@ document.getElementById('validate-word').addEventListener('click', async () => {
     } else {
         // Redonner les lettres aux joueurs : 
 
-        for (let lettre in scrabble.validator.getNewlyPlacedLetters()){ // toutes les cases du plateau : si removable : 
+        for (let lettre in scrabbleInstance.validator.getNewlyPlacedLetters()){ // toutes les cases du plateau : si removable : 
             const playerInventory = document.querySelector("#player-letters");
-            const square = scrabble.getSquare(lettre.x, lettre.y);
+            const square = scrabbleInstance.getSquare(lettre.x, lettre.y);
             const newLetter = document.createElement("div");
             newLetter.className = "letter";
             newLetter.draggable = "true";
@@ -256,7 +315,7 @@ document.getElementById('validate-word').addEventListener('click', async () => {
 document.getElementById("draw-letter").addEventListener("click", function() {
     const playerInventory = document.querySelector("#player-letters");
     if (playerInventory.children.length <= 7) { // 7 lettres + une barre 
-        const lettre = scrabble.pioche.piocherLettre();
+        const lettre = scrabbleInstance.pioche.piocherLettre();
         const newLetter = document.createElement("div");
         newLetter.className = "letter";
         newLetter.draggable = "true";
