@@ -63,7 +63,7 @@ export class Scrabble {
                 const { code, id } = await lobby.addPartie({ joueurs: [UID] },UID);
                 this.id = id;
                 // Afficher le code dans le paragraphe prévu
-                document.querySelector('.header p:nth-child(3)').textContent = code;
+                document.querySelector('.header p:nth-child(2)').textContent = code;
                 console.log("Partie créée avec le code:", code);
             } catch (error) {
                 console.error("Erreur lors de la création de la partie:", error);
