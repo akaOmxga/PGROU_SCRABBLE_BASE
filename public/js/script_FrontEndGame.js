@@ -1,5 +1,8 @@
 let scrabbleInstance;
 
+
+import { ScrabbleValidator } from './objet/ScrabbleValidator.js';
+
 import * as fstore from './firestoreFunction.js';
 
 let activeLetter = null;
@@ -226,6 +229,9 @@ function ajouterLettre(nouvelleLettre) {
     // Ajouter un gestionnaire d'événements
     lettreDiv.addEventListener("click", () => {
         console.log("letter clicked");
+        console.log(this.getNewlyPlacedLetters)
+        console.log("Validator object:", scrabbleInstance.validator);
+
         if (activeLetter === lettreDiv) {
             activeLetter = null;
             lettreDiv.classList.remove("selected");
@@ -250,6 +256,28 @@ function removableOffAll() {
         square.dataset.removable = "false";
     });
 }
+
+
+// Fonction pour obtenir les lettres placées pendant ce tour
+function  getNewlyPlacedLetters() {
+        return ["a","b"]
+        const squares = document.querySelectorAll('.square');
+        const placedLetters = [];
+        
+        squares.forEach((square, index) => {
+            if (square.dataset.removable === "true") {
+                const [x, y] = this.getCoordinates(index);
+                placedLetters.push({
+                    letter: square.textContent,
+                    x: x,
+                    y: y
+                });
+            }
+        });
+        
+        return placedLetters;
+    }
+
 
 // Valider le mot
 document.getElementById('validate-word').addEventListener('click', async () => {

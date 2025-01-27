@@ -54,7 +54,6 @@ async function getCurrentPseudo() {
     }  
 }
 
-
 async function getPseudoFromId(joueurId) {
     try {
         // Référence à la collection 'Users'
@@ -262,5 +261,6 @@ async function updatePioche(id, data) {
         console.error("Error updating Pioche: ", e);
     }
 }
+
 
 export { getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };

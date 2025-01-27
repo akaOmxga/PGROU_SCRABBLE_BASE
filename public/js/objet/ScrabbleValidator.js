@@ -20,6 +20,7 @@ export class ScrabbleValidator {
             };
         }
 
+
         // 2. Vérifier le placement au premier tour
         if (this.estPremierTour) {
             if (!this.verifierPremierTour(mot, x, y, direction)) {

@@ -1,36 +1,42 @@
+
 import { getCurrentUID, getCurrentPseudo } from './firestoreFunction.js';
 import { Scrabble } from './objet/Scrabble.js';
+
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////    Authentification Check     //////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 
-import { auth, checkAuth } from './firebaseConfig.js';
+
+import { auth, checkAuth } from "./firebaseConfig.js";
 
 // Fonction pour rediriger si non authentifié
 async function checkAuthAndRedirect() {
-    const user = await checkAuth();
-    if (!user) {
-        alert("Vous devez être connecté pour accéder à cette page.");
-        window.location.href = "index.html";
-        return null;
-    }
-    return user;
+  const user = await checkAuth();
+  if (!user) {
+    alert("Vous devez être connecté pour accéder à cette page.");
+    window.location.href = "index.html";
+    return null;
+  }
+  return user;
 }
 
 // Vérifier l'authentification au chargement de la page
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        const user = await checkAuthAndRedirect();
-        if (user) {
-            // Initialiser la page avec les données de l'utilisateur
-            console.log("Page chargée pour l'utilisateur:", user.email);
-            // Ajoutez ici le code spécifique à votre page
-        }
-    } catch (error) {
-        console.error("Erreur lors de la vérification de l'authentification:", error);
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const user = await checkAuthAndRedirect();
+    if (user) {
+      // Initialiser la page avec les données de l'utilisateur
+      console.log("Page chargée pour l'utilisateur:", user.email);
+      // Ajoutez ici le code spécifique à votre page
     }
+  } catch (error) {
+    console.error(
+      "Erreur lors de la vérification de l'authentification:",
+      error
+    );
+  }
 });
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -38,7 +44,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 /////////////////////////    Authentification End     ////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
-
 
 let scrabbleInstance; // Déclaration de scrabble à l'échelle du module
 
@@ -86,4 +91,5 @@ function ajouterJoueurFrontEnd(nomJoueur) {
 // Bouton Lancer la Partie : 
 document.getElementById("startBtn").addEventListener("click", () => {
     window.location.href = "game.html";
+
 });

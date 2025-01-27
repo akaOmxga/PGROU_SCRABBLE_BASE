@@ -4,16 +4,20 @@
 // méthode : il peut jouer le tour (poser un mot), le valider, ou passer son tour
 
 export class Joueur {
+
     constructor(id,playerPseudo) {
         this.id = id;
         this.lettres = [];  // Inventaire limité à 7 lettres
         this.pseudo = playerPseudo;
         this.score = 0;
+
     }
 
     // Ajoute une lettre à l'inventaire si possible
     ajouterLettre(lettre) {
+
         this.lettres.push(lettre);
+
     }
 
     // Retire une lettre spécifique de l'inventaire
@@ -77,12 +81,77 @@ export class Joueur {
                 this.ajouterLettre(lettre);
             }
         }
+
     }
 
     passerTour() {
         // Logique pour passer son tour
         // Firebase: Notifier que le joueur passe son tour
         return true;
+    }
+}
+
+
+class Plateau {
+    constructor() {
+        this.grille = Array(15).fill().map(() => Array(15).fill(''));
+    }
+
+    placerMot(mot, position, direction) {
+        // Vérifier si le placement est possible
+        if (!this.placementPossible(mot, position, direction)) {
+            return false;
+        }
+
+        // Placer le mot sur la grille
+        const [x, y] = position;
+        for (let i = 0; i < mot.length; i++) {
+            if (direction === 'horizontal') {
+                this.grille[y][x + i] = mot[i].toUpperCase();
+            } else {
+                this.grille[y + i][x] = mot[i].toUpperCase();
+            }
+        }
+        
+        // Firebase: Mettre à jour l'état du plateau
+        return true;
+    }
+
+    placementPossible(mot, position, direction) {
+        const [x, y] = position;
+        const longueur = mot.length;
+
+        // Vérifier les limites du plateau
+        if (direction === 'horizontal') {
+            if (x + longueur > 15) return false;
+        } else {
+            if (y + longueur > 15) return false;
+        }
+
+        // Vérifier si le placement chevauche d'autres lettres de manière invalide
+        for (let i = 0; i < longueur; i++) {
+            let celluleActuelle;
+            if (direction === 'horizontal') {
+                celluleActuelle = this.grille[y][x + i];
+            } else {
+                celluleActuelle = this.grille[y + i][x];
+            }
+
+            if (celluleActuelle !== '' && celluleActuelle !== mot[i].toUpperCase()) {
+                return false;
+            }
+        }
+
+        // TODO: Ajouter la vérification des mots croisés formés
+        return true;
+    }
+
+    verifierMot(mot) {
+        // TODO: Implémenter la vérification avec la base de données externe
+        /* 
+        return checkWordInDictionary(mot);
+        */
+        return true;  // Temporaire
     }
 }
 
