@@ -4,19 +4,20 @@
 // méthode : il peut jouer le tour (poser un mot), le valider, ou passer son tour
 
 export class Joueur {
-    constructor(id) {
+
+    constructor(id,playerPseudo) {
         this.id = id;
         this.lettres = [];  // Inventaire limité à 7 lettres
+        this.pseudo = playerPseudo;
+        this.score = 0;
+
     }
 
     // Ajoute une lettre à l'inventaire si possible
     ajouterLettre(lettre) {
-        if (this.lettres.length < 7) {
-            this.lettres.push(lettre);
-            return true;
-            // Firebase: Mettre à jour l'inventaire du joueur
-        }
-        return false;
+
+        this.lettres.push(lettre);
+
     }
 
     // Retire une lettre spécifique de l'inventaire
@@ -80,7 +81,7 @@ export class Joueur {
                 this.ajouterLettre(lettre);
             }
         }
-        // Firebase: Mettre à jour l'inventaire du joueur
+
     }
 
     passerTour() {
@@ -89,6 +90,7 @@ export class Joueur {
         return true;
     }
 }
+
 
 class Plateau {
     constructor() {
@@ -152,3 +154,4 @@ class Plateau {
         return true;  // Temporaire
     }
 }
+

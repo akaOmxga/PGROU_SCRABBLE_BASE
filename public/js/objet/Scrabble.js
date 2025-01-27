@@ -1,10 +1,12 @@
 // Imports des classes précédemment définies
-import { ScrabbleValidator } from "./ScrabbleValidator.js";
-import { Plateau } from "./Plateau.js";
-import { Pioche } from "./Pioche.js";
-import { Joueur } from "./Joueur.js";
-import * as fstore from "../firestoreFunction.js";
-import * as lobby from "../lobby.js";
+
+import { ScrabbleValidator } from './ScrabbleValidator.js';
+import { Plateau } from './Plateau.js';
+import { Pioche } from './Pioche.js';
+import { Joueur } from './Joueur.js';
+import * as fstore from '../firestoreFunction.js';
+import * as lobby from '../lobby.js';
+
 
 ////////////////////////////////////////////////////////////////
 /////////////////////// Fonction In Game ///////////////////////
