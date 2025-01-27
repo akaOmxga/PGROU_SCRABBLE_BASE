@@ -61,12 +61,13 @@ export async function generateNewUniqueCode() {
 }
 
 // Fonction modifiée pour créer une nouvelle partie avec un code
-export async function addPartie(data) {
+export async function addPartie(data,UID) {
     console.log("addPartie de Lobby called");
     try {
         const code = await generateNewUniqueCode();
         const partieData = {
             ...data,
+            creatorUID:UID,
             code: code,
             dateCreation: new Date(),
             status: 'waiting' // waiting, playing, finished
@@ -120,4 +121,25 @@ export async function joinPartieWithCode(code, userId) {
         throw error;
     }
 }
+//fonction pour recuperer les parties crees par l'utilisateur 
+export async function getPartiesByCreator(UID) {
+    try {
+        const partiesRef = db.firestore.collection('parties');
+        const snapshot = await partiesRef.where('creatorUID', '==', UID).get();
+
+        // Si le snapshot contient des documents, les retourner sous forme de tableau
+        if (!snapshot.empty) {
+            return snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.error("Erreur lors de la récupération des parties:", error);
+        throw new Error("Impossible de récupérer les parties.");
+    }
+}
+
 

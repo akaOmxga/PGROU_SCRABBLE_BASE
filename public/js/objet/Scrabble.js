@@ -60,7 +60,7 @@ export class Scrabble {
         let UID = await fstore.getCurrentUID();
         if (UID) {
             try {
-                const { code, id } = await lobby.addPartie({ joueurs: [UID] });
+                const { code, id } = await lobby.addPartie({ joueurs: [UID] },UID);
                 this.id = id;
                 // Afficher le code dans le paragraphe prévu
                 document.querySelector('.header p:nth-child(3)').textContent = code;
@@ -263,6 +263,41 @@ export class Scrabble {
             console.log(`${index + 1}. ${score.nom}: ${score.score} points`);
         });
     }
+    /**
+     * méthode pour récuperer les parties crées par l'utilisateur 
+     */
+    async recupererPartiesCrees() {
+        // Vérifier si l'utilisateur est connecté
+        let UID = await fstore.getCurrentUID();
+        if (UID) {
+            try {
+                // Récupérer les parties créées par l'utilisateur
+                const parties = await lobby.getPartiesByCreator(UID);
+    
+                // Vérifier si des parties ont été récupérées
+                if (parties.length > 0) {
+                    console.log("Parties créées par l'utilisateur:", parties);
+    
+                    // Afficher les codes des parties récupérées dans l'interface
+                    const partiesElement = document.querySelector('.parties-list');
+                    partiesElement.innerHTML = '';  // Vider la liste avant de l'afficher
+                    parties.forEach(partie => {
+                        const partieElement = document.createElement('div');
+                        partieElement.classList.add('partie');
+                        partieElement.textContent = `Code: ${partie.code}, ID: ${partie.id}`;
+                        partiesElement.appendChild(partieElement);
+                    });
+                } else {
+                    console.log("Aucune partie trouvée pour cet utilisateur.");
+                }
+            } catch (error) {
+                console.error("Erreur lors de la récupération des parties:", error);
+            }
+        } else {
+            console.log("Aucun utilisateur connecté, impossible de récupérer les parties.");
+        }
+    }
+    
 }
 
 const scrabbleInstance = new Scrabble();
