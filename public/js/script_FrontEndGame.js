@@ -1,6 +1,8 @@
 let scrabbleInstance;
 
+
 import { ScrabbleValidator } from './objet/ScrabbleValidator.js';
+
 import * as fstore from './firestoreFunction.js';
 
 let activeLetter = null;
@@ -229,6 +231,7 @@ function ajouterLettre(nouvelleLettre) {
         console.log("letter clicked");
         console.log(this.getNewlyPlacedLetters)
         console.log("Validator object:", scrabbleInstance.validator);
+
         if (activeLetter === lettreDiv) {
             activeLetter = null;
             lettreDiv.classList.remove("selected");
@@ -254,6 +257,7 @@ function removableOffAll() {
     });
 }
 
+
 // Fonction pour obtenir les lettres placées pendant ce tour
 function  getNewlyPlacedLetters() {
         return ["a","b"]
@@ -273,6 +277,7 @@ function  getNewlyPlacedLetters() {
         
         return placedLetters;
     }
+
 
 // Valider le mot
 document.getElementById('validate-word').addEventListener('click', async () => {

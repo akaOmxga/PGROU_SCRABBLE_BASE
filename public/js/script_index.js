@@ -37,7 +37,6 @@ async function updateUI(isAuthenticated, user = null) {
     }
 }
 
-
 // Vérifier l'authentification au chargement de la page
 document.addEventListener('DOMContentLoaded', async () => {
     try {
