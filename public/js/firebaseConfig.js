@@ -10,7 +10,7 @@ const firebaseConfig = {
     storageBucket: "scrabblewepapp.appspot.com",
     messagingSenderId: "938111306455",
     appId: "1:938111306455:web:57ccc3429a49f663563e92"
-};
+  };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -30,5 +30,10 @@ export function checkAuth() {
         });
     });
 }
+
+console.log("Firebase app:", app);
+console.log("Firestore:", db);
+console.log("Auth:", auth);
+
 
 export { app, auth, db};
