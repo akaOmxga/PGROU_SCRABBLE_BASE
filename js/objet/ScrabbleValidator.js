@@ -19,6 +19,7 @@ export class ScrabbleValidator {
                 message: "Le mot dépasse les limites du plateau" 
             };
         }
+        
 
         // 2. Vérifier le placement au premier tour
         if (this.estPremierTour) {
