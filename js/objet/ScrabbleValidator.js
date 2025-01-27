@@ -318,6 +318,7 @@ export class ScrabbleValidator {
 
     // Fonction pour obtenir les lettres placées pendant ce tour
     getNewlyPlacedLetters() {
+        return ["a","b"]
         const squares = document.querySelectorAll('.square');
         const placedLetters = [];
         
@@ -437,6 +438,7 @@ export class ScrabbleValidator {
     // Fonction principale pour récupérer toutes les informations
     getPlacementInfo() {
         const placedLetters = this.getNewlyPlacedLetters();
+        console.log(placedLetters)
         if (placedLetters.length === 0) {
             return null;
         }
