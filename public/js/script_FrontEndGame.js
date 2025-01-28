@@ -3,6 +3,7 @@ let scrabbleInstance;
 import { ScrabbleValidator } from "./objet/ScrabbleValidator.js";
 import * as fstore from "./firestoreFunction.js";
 
+
 let activeLetter = null;
 
 // au chargement de la page, on effectue :
@@ -281,6 +282,7 @@ async function updateScoreBoard(scrabbleInstance, partieID) {
 
 const playerLettersDiv = document.getElementById("player-letters");
 function ajouterLettre(nouvelleLettre) {
+
   // Créer une nouvelle div pour la lettre
   const lettreDiv = document.createElement("div");
   lettreDiv.className = "letter";
