@@ -11,7 +11,7 @@ import * as lobby from '../lobby.js';
 ////////////////////////////////////////////////////////////////
 
 
-export class Scrabble {
+class Scrabble {
     constructor(PID) {
         this.partyId = PID;
         this.joueurs = [];   
@@ -73,8 +73,11 @@ export class Scrabble {
         }
 
         // Initialisation des joueurs
-        listeJoueurs.forEach(joueurInfo => {
-            const joueur = new Joueur(joueurInfo.id);
+        listeJoueurs.forEach(joueurID => {
+            const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
+            // tirer des lettres dans la pioche :
+            joueur.completerLettres(this.pioche);
+            // ajouter le joueur à la partie de scrabble : 
             this.joueurs.push(joueur);
         });
 
@@ -266,4 +269,4 @@ export class Scrabble {
 }
 
 const scrabbleInstance = new Scrabble();
-export { scrabbleInstance }
+export { Scrabble }
