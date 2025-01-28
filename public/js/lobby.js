@@ -60,16 +60,19 @@ export async function generateNewUniqueCode() {
     return code;
 }
 
-// Fonction pour créer une nouvelle partie avec un code
-export async function addPartie(listeJoueurs) {
+// Fonction modifiée pour créer une nouvelle partie avec un code
+export async function addPartie(data) {
+
     console.log("addPartie de Lobby called");
     try {
         const code = await generateNewUniqueCode();
         const partieData = {
+
+            ...data,
             code: code,
             dateCreation: new Date(),
-            status: 'waiting', // waiting, playing, finished 
-            score : [0]*listeJoueurs.length
+            status: 'waiting' // waiting, playing, finished
+
         };
         
         const docRef = await addDoc(collection(db, 'parties'), partieData);

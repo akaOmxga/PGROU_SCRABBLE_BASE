@@ -227,8 +227,6 @@ function ajouterLettre(nouvelleLettre) {
     // Ajouter un gestionnaire d'événements
     lettreDiv.addEventListener("click", () => {
         console.log("letter clicked");
-        console.log(getNewlyPlacedLetters())
-        console.log("Validator object:", scrabbleInstance.validator);
         if (activeLetter === lettreDiv) {
             activeLetter = null;
             lettreDiv.classList.remove("selected");
