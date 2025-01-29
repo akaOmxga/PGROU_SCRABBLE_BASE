@@ -2,6 +2,9 @@ let scrabbleInstance;
 
 import { ScrabbleValidator } from "./objet/ScrabbleValidator.js";
 import * as fstore from "./firestoreFunction.js";
+import { Scrabble } from "./objet/Scrabble.js";
+import { Plateau } from "./objet/Plateau.js";
+import { Pioche } from "./objet/Pioche.js";
 
 let activeLetter = null;
 
@@ -14,11 +17,29 @@ document.addEventListener("DOMContentLoaded", async () => {
   const scrabbleData = localStorage.getItem("scrabbleInstance");
 
   if (scrabbleData) {
-    scrabbleInstance = JSON.parse(scrabbleData); // Convertir de JSON en objet
+    const parsedData = JSON.parse(scrabbleData);
+    // Créer une nouvelle instance de Scrabble avec l'ID
+    scrabbleInstance = new Scrabble(parsedData.partyId);
+
+    // Copier les données du localStorage vers la nouvelle instance
+    Object.assign(scrabbleInstance, parsedData);
+
+    // Réinitialiser les instances des classes importantes
+    scrabbleInstance.plateau = new Plateau();
+    Object.assign(scrabbleInstance.plateau, parsedData.plateau);
+
+    scrabbleInstance.pioche = new Pioche();
+    Object.assign(scrabbleInstance.pioche, parsedData.pioche);
+
+    scrabbleInstance.validator = new ScrabbleValidator(
+      scrabbleInstance.plateau,
+      scrabbleInstance.pioche
+    );
   } else {
     console.log("Aucune partie en cours.");
     return;
   }
+
   if (scrabbleInstance) {
     // Fonction pour déterminer le type de la case en fonction de son indice de création (i allant de 0 à 224)
     function getSquareType(i) {
@@ -214,6 +235,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     // Initialiser les joueurs + leur score dans le tableau et leurs lettres :
     for (let i = 0; i < scrabbleInstance.joueurs.length; i++) {
+      console.log("joueur actuel : ", scrabbleInstance.joueurs[i]);
+      console.log("Structure complète du joueur :", {
+        joueur: scrabbleInstance.joueurs[i],
+        id: scrabbleInstance.joueurs[i]?.id,
+        score: scrabbleInstance.joueurs[i]?.score,
+        lettres: scrabbleInstance.joueurs[i]?.lettres,
+      });
+
       // tableau
       let pseudo = await fstore.getPseudoFromId(scrabbleInstance.joueurs[i].id);
       ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
@@ -318,7 +347,7 @@ function removableOffAll() {
 
 // Fonction pour obtenir les lettres placées pendant ce tour
 function getNewlyPlacedLetters() {
-  return ["a", "b"];
+  //return ["a", "b"];
   const squares = document.querySelectorAll(".square");
   const placedLetters = [];
 
@@ -342,6 +371,7 @@ document.getElementById("validate-word").addEventListener("click", async () => {
   console.log("test in valider le mot");
   console.log(scrabbleInstance);
   const infos = scrabbleInstance.validator.getPlacementInfo();
+  console.log("info : ", infos);
 
   const mot = infos.mot; // récupérer le mot formé
   const position = infos.position; // récupérer la position [x, y]
@@ -379,15 +409,16 @@ document.getElementById("validate-word").addEventListener("click", async () => {
   } else {
     // Redonner les lettres aux joueurs :
 
-    for (let lettre in scrabbleInstance.validator.getNewlyPlacedLetters()) {
+    const placedLetters = scrabbleInstance.validator.getNewlyPlacedLetters();
+    for (const lettre of placedLetters) {
       // toutes les cases du plateau : si removable :
       const playerInventory = document.querySelector("#player-letters");
       const square = scrabbleInstance.getSquare(lettre.x, lettre.y);
       const newLetter = document.createElement("div");
       newLetter.className = "letter";
       newLetter.draggable = "true";
-      newLetter.textContent = lettre.textContent;
-      newLetter.dataset.letter = square.textContent;
+      newLetter.textContent = lettre.letter;
+      newLetter.dataset.letter = square.letter;
       playerInventory.appendChild(newLetter);
 
       // Reset the square
