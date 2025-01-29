@@ -303,6 +303,31 @@ async function updateScoreBoard(scrabbleInstance, partieID) {
 const playerLettersDiv = document.getElementById("player-letters");
 function ajouterLettre(nouvelleLettre) {
 
+    // Créer une nouvelle div pour la lettre
+    const lettreDiv = document.createElement("div");
+    lettreDiv.className = "letter"; 
+    lettreDiv.draggable = true;
+    lettreDiv.dataset.letter = nouvelleLettre; 
+    lettreDiv.textContent = nouvelleLettre;
+
+    // Ajouter un gestionnaire d'événements
+    lettreDiv.addEventListener("click", () => {
+        console.log("letter clicked");
+        if (activeLetter === lettreDiv) {
+            activeLetter = null;
+            lettreDiv.classList.remove("selected");
+        } else {
+            activeLetter = lettreDiv;
+            const allLetters = document.querySelectorAll("#player-letters .letter");
+            allLetters.forEach(l => l.classList.remove("selected"));
+            lettreDiv.classList.add("selected");
+        }
+    });
+
+    // Ajouter la nouvelle lettre à la div principale
+    playerLettersDiv.appendChild(lettreDiv);
+}
+
   // Créer une nouvelle div pour la lettre
   const lettreDiv = document.createElement("div");
   lettreDiv.className = "letter";
@@ -334,6 +359,32 @@ function removableOffAll() {
     square.dataset.removable = "false";
   });
 }
+
+// Fonction pour obtenir les coordonnées x,y à partir de l'index
+function getCoordinates(index) {
+    const x = index % 15;
+    const y = Math.floor(index / 15);
+    return [x, y];
+}
+
+// Fonction pour obtenir les lettres placées pendant ce tour
+function  getNewlyPlacedLetters() {
+        const squares = document.querySelectorAll('.square');
+        const placedLetters = [];
+        
+        squares.forEach((square, index) => {
+            if (square.dataset.removable === "true") {
+                const [x, y] = getCoordinates(index);
+                placedLetters.push({
+                    letter: square.textContent,
+                    x: x,
+                    y: y
+                });
+            }
+        });
+        
+        return placedLetters;
+    }
 
 // Valider le mot
 document.getElementById("validate-word").addEventListener("click", async () => {
