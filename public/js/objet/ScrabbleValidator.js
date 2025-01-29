@@ -18,6 +18,7 @@ export class ScrabbleValidator {
                 message: "Cela ne constitue pas un mot" 
             }; 
         }
+
         // 1. Vérifier les limites du plateau 
         if (!this.verifierLimitesPlateau(mot, x, y, direction)) {
             return { 
@@ -25,7 +26,6 @@ export class ScrabbleValidator {
                 message: "Le mot dépasse les limites du plateau" 
             };
         }
-
 
         // 2. Vérifier le placement au premier tour
         if (this.estPremierTour) {
@@ -58,9 +58,12 @@ export class ScrabbleValidator {
         const motsFormes = this.collecterMots(mot, x, y, direction);
         
         // 6. Vérifier la validité de chaque mot avec Firebase
-        // TODO: Implémenter la vérification avec Firebase
         for (const motForme of motsFormes) {
-            const estValide = await this.verifierMotDansDict(motForme);
+            // TODO : implémenter check mot avec firebase
+            // const estValide = await this.verifierMotDansDict(motForme);
+            // pour l'instant :
+            console.log("implémenter la vérification des mots via firebase ici");
+            const estValide = true;
             if (!estValide) {
                 return {
                     valide: false,

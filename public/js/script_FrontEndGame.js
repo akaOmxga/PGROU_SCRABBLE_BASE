@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log(resultat);
     if (resultat.valide) {
       // Placer le mot et mettre à jour le score
-      plateau.placerMot(mot, position, direction);
+      scrabbleInstance.plateau.placerMot(mot, position, direction);
       // Réinitialiser toutes les valeurs removable à Off
       removableOffAll();
       // Redonner des lettres au joueur :
@@ -283,7 +283,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       // TODO : Mettre à jour le score du joueur
 
-      // TODO : Retirer les lettres utilisées
+      // TODO : Retirer les lettres utilisées dans la pioche
+
+      // TODO : passer au joueur suivant dans le tour 
     } else {
       // Redonner les lettres aux joueurs :
       console.log("redonner les lettres aux joueurs");
