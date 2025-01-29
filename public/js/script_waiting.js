@@ -125,8 +125,9 @@ function syncPlayers() {
             updatePlayersTable(players);
 
             // Mettre à jour l'indicateur de chargement
-            if (players.length >= 4) {
+            if (players.length <=1) {
                 loadingIndicator.textContent = "Tous les joueurs sont prêts !";
+                window.location.href = "game.html";
             } else {
                 loadingIndicator.textContent = `En attente de ${4 - players.length} joueurs...`;
             }
