@@ -311,25 +311,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         squareLetter.dataset.removable = "false";
         activeLetter = null;
       }
-
-    });
-    // Initialiser les joueurs + leur score dans le tableau et leurs lettres :
-    for (let i = 0; i < scrabbleInstance.joueurs.length; i++) {
-      console.log("joueur actuel : ", scrabbleInstance.joueurs[i]);
-      console.log("Structure complète du joueur :", {
-        joueur: scrabbleInstance.joueurs[i],
-        id: scrabbleInstance.joueurs[i]?.id,
-        score: scrabbleInstance.joueurs[i]?.score,
-        lettres: scrabbleInstance.joueurs[i]?.lettres,
-      });
-
-      // tableau
-      let pseudo = await fstore.getPseudoFromId(scrabbleInstance.joueurs[i].id);
-      ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
-      // lettres :
-      for (let j = 0; j < 7; j++) {
-        ajouterLettre(scrabbleInstance.joueurs[i].lettres[j]);
-      }
     }
   });
 });
