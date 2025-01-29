@@ -76,7 +76,7 @@ async function getUserByLUID(luid) {
     try {
         // Créer une référence à la collection 'users' et filtrer par le champ 'luid'
         const usersRef = collection(db, 'Users');
-        const q = query(usersRef, where('luid', '==', luid));  // Filtrer par 'luid'
+        const q = query(usersRef, where('uid', '==', luid));  // Filtrer par 'luid'
         const querySnapshot = await getDocs(q);
 
         // Si l'utilisateur est trouvé, retourner les données
@@ -98,6 +98,7 @@ async function fetchPlayerDetails(playerLUIDs) {
 
     for (const luid of playerLUIDs) {
         const playerData = await getUserByLUID(luid);
+        console.log("la liste des joueurs waiting",playerData)
         if (playerData) {
             players.push(playerData);  
         } else {
@@ -129,7 +130,7 @@ function syncPlayers() {
             updatePlayersTable(players);
 
             // Mettre à jour l'indicateur de chargement
-            if (players.length <=1) {
+            if (players.length ==4) {
                 loadingIndicator.textContent = "Tous les joueurs sont prêts !";
                 window.location.href = "game.html";
             } else {
