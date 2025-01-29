@@ -169,11 +169,11 @@ document.querySelectorAll('.close-btn').forEach(btn => {
 
 // Gestionnaires des changements de page
 document.getElementById("newGameBtn").addEventListener("click", () => {
-    window.location.href = "newGame.html";
+    window.location.href = "templates/newGame.html";
 });
 
 document.getElementById("joinGameBtn").addEventListener("click", () => {
-    window.location.href = "joinGame.html";
+    window.location.href = "templates/joinGame.html";
 });
 
 document.getElementById("rulesBtn").addEventListener("click", () => {
@@ -181,5 +181,5 @@ document.getElementById("rulesBtn").addEventListener("click", () => {
 });
 
 document.getElementById("profileBtn").addEventListener("click", () => {
-    window.location.href = "profilePage.html";
+    window.location.href = "templates/profilePage.html";
 });

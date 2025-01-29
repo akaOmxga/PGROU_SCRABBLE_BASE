@@ -1,0 +1,47 @@
+[debug] [2025-01-27T09:33:47.622Z] ----------------------------------------------------------------------
+[debug] [2025-01-27T09:33:47.624Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\victo\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js serve
+[debug] [2025-01-27T09:33:47.624Z] CLI Version:   13.29.1
+[debug] [2025-01-27T09:33:47.624Z] Platform:      win32
+[debug] [2025-01-27T09:33:47.624Z] Node Version:  v22.12.0
+[debug] [2025-01-27T09:33:47.624Z] Time:          Mon Jan 27 2025 10:33:47 GMT+0100 (heure normale d’Europe centrale)
+[debug] [2025-01-27T09:33:47.625Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-01-27T09:33:47.685Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-01-27T09:33:47.686Z] > authorizing via signed-in user (victor.simon760@gmail.com)
+[debug] [2025-01-27T09:33:47.686Z] [iam] checking project scrabblewepapp for permissions ["firebase.projects.get"]
+[debug] [2025-01-27T09:33:47.686Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:47.686Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:47.687Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/scrabblewepapp:testIamPermissions [none]
+[debug] [2025-01-27T09:33:47.687Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/scrabblewepapp:testIamPermissions x-goog-quota-user=projects/scrabblewepapp
+[debug] [2025-01-27T09:33:47.687Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/scrabblewepapp:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-01-27T09:33:48.345Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/scrabblewepapp:testIamPermissions 200
+[debug] [2025-01-27T09:33:48.345Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/scrabblewepapp:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2025-01-27T09:33:48.345Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:48.345Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:48.345Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/scrabblewepapp [none]
+[debug] [2025-01-27T09:33:48.525Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/scrabblewepapp 200
+[debug] [2025-01-27T09:33:48.525Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/scrabblewepapp {"projectNumber":"938111306455","projectId":"scrabblewepapp","lifecycleState":"ACTIVE","name":"ScrabbleWebApp","labels":{"firebase":"enabled"},"createTime":"2024-10-22T12:18:59.340628Z"}
+[info] 
+[info] === Serving from 'C:\Users\victo\OneDrive\Documents\git\CENTRALE\PRGROUP\PGROU_SCRABBLE_BASE'...
+[info] 
+[debug] [2025-01-27T09:33:48.528Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:48.528Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:48.529Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/scrabblewepapp/sites 
+[debug] [2025-01-27T09:33:49.396Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/scrabblewepapp/sites 200
+[debug] [2025-01-27T09:33:49.396Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/scrabblewepapp/sites {"sites":[{"name":"projects/scrabblewepapp/sites/scrabblewepapp","defaultUrl":"https://scrabblewepapp.web.app","appId":"1:938111306455:web:57ccc3429a49f663563e92","type":"DEFAULT_SITE"}]}
+[debug] [2025-01-27T09:33:49.396Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:49.396Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:49.396Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/scrabblewepapp/webApps/1:938111306455:web:57ccc3429a49f663563e92/config [none]
+[debug] [2025-01-27T09:33:50.034Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/scrabblewepapp/webApps/1:938111306455:web:57ccc3429a49f663563e92/config 200
+[debug] [2025-01-27T09:33:50.034Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/scrabblewepapp/webApps/1:938111306455:web:57ccc3429a49f663563e92/config {"projectId":"scrabblewepapp","appId":"1:938111306455:web:57ccc3429a49f663563e92","storageBucket":"scrabblewepapp.firebasestorage.app","apiKey":"AIzaSyDLNJV8PraPrQMZUo2ee7CS9gVpJGnp1sc","authDomain":"scrabblewepapp.firebaseapp.com","messagingSenderId":"938111306455"}
+[debug] [2025-01-27T09:33:50.047Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:50.047Z] Checked if tokens are valid: true, expires at: 1737973241893
+[debug] [2025-01-27T09:33:50.047Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/scrabblewepapp [none]
+[debug] [2025-01-27T09:33:50.239Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/scrabblewepapp 200
+[debug] [2025-01-27T09:33:50.240Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/scrabblewepapp {"projectId":"scrabblewepapp","projectNumber":"938111306455","displayName":"ScrabbleWebApp","name":"projects/scrabblewepapp","resources":{"hostingSite":"scrabblewepapp"},"state":"ACTIVE","etag":"1_9f9ea4a9-e2b2-45a0-9e44-6436d0ea2a54"}
+[info] i  hosting[scrabblewepapp]: Serving hosting files from: public {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: \u001b[1mpublic\u001b[22m"}}
+[info] +  hosting[scrabblewepapp]: Local server: http://localhost:5000 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: \u001b[4m\u001b[1mhttp://localhost:5000\u001b[22m\u001b[24m"}}
+[info] i  hosting: ::1 - - [27/Jan/2025:09:33:52 +0000] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [27/Jan/2025:09:33:52 +0000] \"GET / HTTP/1.1\" 200 - \"-\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [27/Jan/2025:09:33:52 +0000] "GET /style_index.css HTTP/1.1" 200 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [27/Jan/2025:09:33:52 +0000] \"GET /style_index.css HTTP/1.1\" 200 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [27/Jan/2025:09:33:52 +0000] "GET /function/js/firebaseConfig.js HTTP/1.1" 404 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [27/Jan/2025:09:33:52 +0000] \"GET /function/js/firebaseConfig.js HTTP/1.1\" 404 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36\""}}
+[info] i  hosting: ::1 - - [27/Jan/2025:09:33:52 +0000] "GET /function/js/script_index.js HTTP/1.1" 404 - "http://localhost:5000/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" {"metadata":{"emulator":{"name":"hosting"},"message":"::1 - - [27/Jan/2025:09:33:52 +0000] \"GET /function/js/script_index.js HTTP/1.1\" 404 - \"http://localhost:5000/\" \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36\""}}

@@ -34,10 +34,5 @@ export function checkAuth() {
     });
 }
 
-console.log("Firebase app:", app);
-console.log("Firestore:", db);
-console.log("Auth:", auth);
-
-
 export { app, auth, db};
 
