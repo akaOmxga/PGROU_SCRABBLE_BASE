@@ -46,8 +46,8 @@ class Scrabble {
     }
 
     getSquare(x, y) {
-        return document.querySelector(`#board .square[data-x="${x}"][data-y="${y}"]`);
-    }
+        return document.querySelector(`#board .square[data-x='${x}'][data-y='${y}']`);
+    }    
 
     // Procédure de début de partie : 
     // Initialisation des variables : Joueurs, Plateau, Pioche - par défaut, on rajoutera ensuite les différents aspects
