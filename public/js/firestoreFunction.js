@@ -1,5 +1,5 @@
 import { db , checkAuth} from "./firebaseConfig.js";
-import { getFirestore, collection, addDoc, query, where, getDoc, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, query, where, getDoc, updateDoc, doc,getDocs } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
 // Function to get User ID (from firebase authentification) 
 async function getCurrentUID() {

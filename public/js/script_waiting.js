@@ -1,5 +1,5 @@
 import { Scrabble } from './objet/Scrabble.js';
-import { getCurrentUID } from './firestoreFunction.js';
+import { getCurrentUID, getCurrentPseudo } from './firestoreFunction.js';
 import { doc,getFirestore ,onSnapshot, getDoc,collection, query, where, getDocs} from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
@@ -41,25 +41,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 //////////////////////////////////////////////////////////////////////////////////
 
 
-let scrabble; // Déclaration de scrabble à l'échelle du module
+let scrabbleInstance; // Déclaration de scrabble à l'échelle du module
 
-// Fonction modifiée pour créer une nouvelle partie et afficher le code
+// Fonction pour créer une nouvelle partie et afficher le code
 async function CreateNewGame(listeJoueurs) {
-    scrabble = new Scrabble(""); 
-    await scrabble.initializeGame(listeJoueurs); 
-    return scrabble; // Retourne l'objet scrabble après l'initialisation grâce à await
+    scrabbleInstance = new Scrabble(""); 
+    await scrabbleInstance.initializeGame(listeJoueurs); 
+    return scrabbleInstance; // Retourne l'objet scrabble après l'initialisation grâce à await
 }
 
 // Attendre que le DOM soit complètement chargé
 document.addEventListener("DOMContentLoaded", async function() {
-    console.log("domContentCharged de scriptnewGame",getCurrentUID());
-    const listeJoueurs = [getCurrentUID()];
-    scrabble = await CreateNewGame(listeJoueurs); // Créer et attendre l'objet scrabble
-    console.log("La partie a été créée", scrabble);
-    //console.log("l'id de scrabble", scrabble.id);
+    console.log("domContentCharged de scriptnewGame");
+    const listeJoueurs = [await getCurrentUID()];
+    scrabbleInstance = await CreateNewGame(listeJoueurs); // Créer et attendre l'objet scrabble
+    console.log("La partie a été créée", scrabbleInstance);
+
+    // Afficher le joueur créateur de la partie : 
+    const pseudo = await getCurrentPseudo(); // Récupère le pseudo depuis Firestore
+    //ajouterJoueurFrontEnd(pseudo);
+
     // Enregistrer l'objet scrabble dans localStorage (en le convertissant en JSON)
-    localStorage.setItem('scrabble', JSON.stringify(scrabble));
-    console.log("Objet scrabble sauvegardé dans localStorage:", localStorage.getItem('scrabble'));
+    localStorage.setItem('scrabbleInstance', JSON.stringify(scrabbleInstance));
+    console.log("Objet scrabble sauvegardé dans localStorage:", localStorage.getItem('scrabbleInstance'));
     syncPlayers();
 });
 
@@ -110,9 +114,9 @@ const playersTableBody = document.querySelector('#playersTable tbody');
 const emptyRow = document.querySelector('.empty-row');
 
 function syncPlayers() {
-    console.log("scrablle dans sync",scrabble.id)
+    //console.log("scrablle dans sync",scrabble.id)
     //const gameRef = getPartieById(scrabble.id);
-    const gameRef = doc(db, 'parties', scrabble.id);
+    const gameRef = doc(db, 'parties', scrabbleInstance.id);
     onSnapshot(gameRef, async (doc) => {
         if (doc.exists) {
             const gameData = doc.data();
