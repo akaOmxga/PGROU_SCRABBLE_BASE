@@ -6,7 +6,6 @@ import { Scrabble } from "./objet/Scrabble.js";
 import { Plateau } from "./objet/Plateau.js";
 import { Pioche } from "./objet/Pioche.js";
 
-
 let activeLetter = null;
 
 // au chargement de la page, on effectue :
@@ -311,7 +310,6 @@ async function updateScoreBoard(scrabbleInstance, partieID) {
 
 const playerLettersDiv = document.getElementById("player-letters");
 function ajouterLettre(nouvelleLettre) {
-
   // Créer une nouvelle div pour la lettre
   const lettreDiv = document.createElement("div");
   lettreDiv.className = "letter";
