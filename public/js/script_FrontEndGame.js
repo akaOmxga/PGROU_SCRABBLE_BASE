@@ -1,5 +1,3 @@
-let scrabbleInstance;
-
 import * as fstore from "./firestoreFunction.js";
 import { Scrabble } from "./objet/Scrabble.js";
 import { Plateau } from "./objet/Plateau.js";
@@ -8,6 +6,7 @@ import { Joueur } from "./objet/Joueur.js";
 import { ScrabbleValidator } from "./objet/ScrabbleValidator.js";
 
 let activeLetter = null;
+let scrabbleInstance;
 
 // au chargement de la page, on effectue :
 document.addEventListener("DOMContentLoaded", async () => {
@@ -16,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const board = document.getElementById("board");
 
   const scrabbleData = localStorage.getItem("scrabbleInstance");
-  const scrabbleInstance = new Scrabble();
+  scrabbleInstance = new Scrabble();
 
   if (scrabbleData) {
     const parsedDataScrabbleInstance = JSON.parse(scrabbleData); // parsé les datas des objets
@@ -30,8 +29,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Ré-instancier la pioche
     scrabbleInstance.pioche = new Pioche();
     Object.assign(scrabbleInstance.pioche, parsedDataScrabbleInstance.pioche);
-    console.log("test validator");
-    console.log(parsedDataScrabbleInstance.validator);
+
     // Ré-instancier le validator
     scrabbleInstance.validator = new ScrabbleValidator();
     Object.assign(scrabbleInstance.validator, parsedDataScrabbleInstance.validator);
@@ -249,8 +247,70 @@ document.addEventListener("DOMContentLoaded", async () => {
       ajouterLettre(scrabbleInstance.joueurs[i].lettres[j]);
     }
   }
-  console.log("done");
-  return scrabbleInstance;
+  
+  // Valider le mot
+  document.getElementById("validate-word").addEventListener("click", async () => {
+    // prendre les informations du tour :
+    const infos = scrabbleInstance.validator.getPlacementInfo();
+    const mot = infos.mot; // récupérer le mot formé
+    const position = infos.position; // récupérer la position [x, y]
+    const direction = infos.direction; // récupérer la direction : null => une seule lettre / sinon direction vaut soit horizontale/verticale/invalide (invalide = les lettres placées ne sont ni sur la même ligne ni sur la même colonne)
+    const lettresJoueur = infos.lettresJoueur; // récupérer les lettres du joueur
+    const resultat = await scrabbleInstance.validator.validerPlacement(
+      mot,
+      position,
+      direction,
+      lettresJoueur
+    );
+    console.log(resultat);
+    if (resultat.valide) {
+      // Placer le mot et mettre à jour le score
+      plateau.placerMot(mot, position, direction);
+      // Réinitialiser toutes les valeurs removable à Off
+      removableOffAll();
+      // Redonner des lettres au joueur :
+      const playerInventory = document.querySelector("#player-letters");
+      while (playerInventory.children.length <= 7) {
+        // 7 lettres + une barre
+        const lettre = scrabbleInstance.pioche.piocherLettre();
+        const newLetter = document.createElement("div");
+        newLetter.className = "letter";
+        newLetter.draggable = "true";
+        newLetter.textContent = lettre.valeur;
+        newLetter.dataset.letter = lettre.valeur;
+        playerInventory.appendChild(newLetter);
+        console.log("Letter Drew Successfully");
+      }
+      // TODO : Mettre à jour le score du joueur
+
+      // TODO : Retirer les lettres utilisées
+    } else {
+      // Redonner les lettres aux joueurs :
+      console.log("redonner les lettres aux joueurs");
+      const letters =  scrabbleInstance.validator.getNewlyPlacedLetters();
+      for (let i = 0; i<letters.length; i++) {
+        // obtenir la case HTML du plateau où on a posé la lettre : 
+        const lettre = letters[i];
+        const x = lettre.x;
+        const y = lettre.y;
+        const squareLetter = document.querySelector(`#board .square[data-x='${x}'][data-y='${y}']`);
+        const playerInventory = document.querySelector("#player-letters");
+        // redonner la lettre au joueur 
+        const newLetter = document.createElement("div");
+        newLetter.className = "letter";
+        newLetter.draggable = "true";
+        newLetter.textContent = squareLetter.textContent;
+        newLetter.dataset.letter = squareLetter.textContent;
+        playerInventory.appendChild(newLetter);
+
+        // Reset the square
+        squareLetter.textContent = "";
+        squareLetter.dataset.occupied = "false";
+        squareLetter.dataset.removable = "false";
+        activeLetter = null;
+      }
+    }
+  });
 });
 
 // Fonction pour ajouter une ligne au tableau
@@ -328,30 +388,6 @@ function ajouterLettre(nouvelleLettre) {
     playerLettersDiv.appendChild(lettreDiv);
 }
 
-  // Créer une nouvelle div pour la lettre
-  const lettreDiv = document.createElement("div");
-  lettreDiv.className = "letter";
-  lettreDiv.draggable = true;
-  lettreDiv.dataset.letter = nouvelleLettre;
-  lettreDiv.textContent = nouvelleLettre;
-
-  // Ajouter un gestionnaire d'événements
-  lettreDiv.addEventListener("click", () => {
-    if (activeLetter === lettreDiv) {
-      activeLetter = null;
-      lettreDiv.classList.remove("selected");
-    } else {
-      activeLetter = lettreDiv;
-      const allLetters = document.querySelectorAll("#player-letters .letter");
-      allLetters.forEach((l) => l.classList.remove("selected"));
-      lettreDiv.classList.add("selected");
-    }
-  });
-
-  // Ajouter la nouvelle lettre à la div principale
-  playerLettersDiv.appendChild(lettreDiv);
-}
-
 // Réinitialise toutes les data-removable à False, à appeler à chaque début de tour
 function removableOffAll() {
   const squares = document.querySelectorAll(".square"); // Sélectionner toutes les cases
@@ -359,92 +395,6 @@ function removableOffAll() {
     square.dataset.removable = "false";
   });
 }
-
-// Fonction pour obtenir les coordonnées x,y à partir de l'index
-function getCoordinates(index) {
-    const x = index % 15;
-    const y = Math.floor(index / 15);
-    return [x, y];
-}
-
-// Fonction pour obtenir les lettres placées pendant ce tour
-function  getNewlyPlacedLetters() {
-        const squares = document.querySelectorAll('.square');
-        const placedLetters = [];
-        
-        squares.forEach((square, index) => {
-            if (square.dataset.removable === "true") {
-                const [x, y] = getCoordinates(index);
-                placedLetters.push({
-                    letter: square.textContent,
-                    x: x,
-                    y: y
-                });
-            }
-        });
-        
-        return placedLetters;
-    }
-
-// Valider le mot
-document.getElementById("validate-word").addEventListener("click", async () => {
-  // prendre les informations du tour :
-  const infos = scrabbleInstance.validator.getPlacementInfo();
-
-  const mot = infos.mot; // récupérer le mot formé
-  const position = infos.position; // récupérer la position [x, y]
-  const direction = infos.direction; // récupérer la direction
-  const lettresJoueur = infos.lettresJoueur; // récupérer les lettres du joueur
-  const resultat = await scrabbleInstance.validator.validerPlacement(
-    mot,
-    position,
-    direction,
-    lettresJoueur
-  );
-
-  if (resultat.valide) {
-    // Placer le mot et mettre à jour le score
-    plateau.placerMot(mot, position, direction);
-    // Réinitialiser toutes les valeurs removable à Off
-    removableOffAll();
-    // Redonner des lettres au joueur :
-    const playerInventory = document.querySelector("#player-letters");
-    while (playerInventory.children.length <= 7) {
-      // 7 lettres + une barre
-      const lettre = scrabbleInstance.pioche.piocherLettre();
-      const newLetter = document.createElement("div");
-      newLetter.className = "letter";
-      newLetter.draggable = "true";
-      newLetter.textContent = lettre.valeur;
-      newLetter.dataset.letter = lettre.valeur;
-      playerInventory.appendChild(newLetter);
-      console.log("Letter Drew Successfully");
-    }
-    // TODO : Mettre à jour le score du joueur
-
-    // TODO : Retirer les lettres utilisées
-  } else {
-    // Redonner les lettres aux joueurs :
-
-    for (let lettre in scrabbleInstance.validator.getNewlyPlacedLetters()) {
-      // toutes les cases du plateau : si removable :
-      const playerInventory = document.querySelector("#player-letters");
-      const square = scrabbleInstance.getSquare(lettre.x, lettre.y);
-      const newLetter = document.createElement("div");
-      newLetter.className = "letter";
-      newLetter.draggable = "true";
-      newLetter.textContent = lettre.textContent;
-      newLetter.dataset.letter = square.textContent;
-      playerInventory.appendChild(newLetter);
-
-      // Reset the square
-      square.textContent = "";
-      square.dataset.occupied = "false";
-      square.dataset.removable = "false";
-      activeLetter = null;
-    }
-  }
-});
 
 // Piocher une lettre et la mettre dans l'inventaire du joueur
 /*
