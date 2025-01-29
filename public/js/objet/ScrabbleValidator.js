@@ -11,8 +11,15 @@ export class ScrabbleValidator {
 
     async validerPlacement(mot, position, direction, lettresJoueur) {
         const [x, y] = position;
-        
-        // 1. Vérifier les limites du plateau // TODO REMPLACER PAR UNE VERIFICATION DE MEME LIGNE OU MEME COLONNE (car les cases sont toujours contenu dans les limites du plateau)
+        // 0. la direction n'est pas valide <=> un mot n'a pas été posé (soit 0 lettre soit pas sur la même ligne/colonne)
+        if (direction == 'invalide'){
+            return { 
+                valide: false, 
+                message: "Cela ne constitue pas un mot" 
+            }; 
+        }
+
+        // 1. Vérifier les limites du plateau 
         if (!this.verifierLimitesPlateau(mot, x, y, direction)) {
             return { 
                 valide: false, 
@@ -51,9 +58,12 @@ export class ScrabbleValidator {
         const motsFormes = this.collecterMots(mot, x, y, direction);
         
         // 6. Vérifier la validité de chaque mot avec Firebase
-        // TODO: Implémenter la vérification avec Firebase
         for (const motForme of motsFormes) {
-            const estValide = await this.verifierMotDansDict(motForme);
+            // TODO : implémenter check mot avec firebase
+            // const estValide = await this.verifierMotDansDict(motForme);
+            // pour l'instant :
+            console.log("implémenter la vérification des mots via firebase ici");
+            const estValide = true;
             if (!estValide) {
                 return {
                     valide: false,
@@ -337,6 +347,9 @@ export class ScrabbleValidator {
 
     // Fonction pour déterminer la direction du mot
     determineDirection(placedLetters) {
+        if (placedLetters.length == 0) {
+            return 'invalide'; 
+        }
         if (placedLetters.length <= 1) {
             return null; // Impossible de déterminer la direction avec une seule lettre
         }
@@ -349,12 +362,15 @@ export class ScrabbleValidator {
         const allSameY = placedLetters.every(pos => pos.y === placedLetters[0].y);
         if (allSameY) return 'horizontal';
         
-        return null; // Les lettres ne sont pas alignées
+        return 'invalide'; // Les lettres ne sont pas alignées
     }
 
     // Fonction pour récupérer le mot complet formé
     getFormedWord(placedLetters, direction) {
-        if (!direction) return null;
+        if (!direction) return {
+            word: placedLetters[0].letter,
+            position: [placedLetters[0].x, placedLetters[0].y]
+        }; // le mot n'a qu'une seule lettre 
         
         const squares = document.querySelectorAll('.square');
         let word = '';
@@ -437,18 +453,16 @@ export class ScrabbleValidator {
     // Fonction principale pour récupérer toutes les informations
     getPlacementInfo() {
         const placedLetters = this.getNewlyPlacedLetters();
+        console.log(placedLetters)
         if (placedLetters.length === 0) {
+            console.log("pas de lettre posée");
             return null;
         }
-        
+        // par défaut, pour le cas où on pose 1 seule lettre, la direction = null
         const direction = this.determineDirection(placedLetters);
-        if (!direction) {
-            return null;
-        }
-        
         const { word, position } = this.getFormedWord(placedLetters, direction);
         const lettresJoueur = this.getLettresJoueur();
-        
+        // position est la position de la lettre qui commence le mot (de gauche à droite, de haut en bas)
         return {
             mot: word,
             position: position,
