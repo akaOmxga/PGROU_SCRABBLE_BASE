@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
     // lettres :
     for (let j = 0; j < 7; j++) {
-      ajouterLettre(scrabbleInstance.joueurs[i].lettres[j]);
+      ajouterLettre(scrabbleInstance.joueurs[i].lettres[j].valeur);
     }
   }
   
