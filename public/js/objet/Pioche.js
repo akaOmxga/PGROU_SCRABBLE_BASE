@@ -66,8 +66,8 @@ export class Pioche {
         // Décrémenter le nombre d'occurrences
         this.lettres[lettrePiochee].occurrences--;
 
-        // Firebase: Mettre à jour l'état de la pioche
-        return lettrePiochee;
+        // Firebase: Mettre à jour l'état de la pioche (retourner l'objet Lettre complet au lieu de juste la valeur)
+        return this.lettres[lettrePiochee];
     }
 
     estVide() {
