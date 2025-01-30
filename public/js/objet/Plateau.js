@@ -275,14 +275,20 @@ export class Plateau {
       return false;
     }
 
-    // Placer le mot sur la grille
-    const [x, y] = position;
-    for (let i = 0; i < mot.length; i++) {
-      if (direction === "horizontal") {
-        this.grille[y][x + i] = mot[i].toUpperCase();
-      } else {
-        this.grille[y + i][x] = mot[i].toUpperCase();
-      }
+    placerMot(mot, position, direction) {
+        // Placer le mot sur la grille
+        const [x, y] = position;
+        for (let i = 0; i < mot.length; i++) {
+            if (direction === 'horizontal') {
+                this.grille[y][x + i] = mot[i].toUpperCase();
+            } else {
+                this.grille[y + i][x] = mot[i].toUpperCase();
+            }
+        }
+        
+        // Firebase: Mettre à jour l'état du plateau
+        console.log("update le plateau sur firebase après placement du mot ici");
+
     }
 
     // TODO: Vérifier les mots adjacents créés par le placement

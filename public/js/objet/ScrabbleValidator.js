@@ -19,67 +19,62 @@ export class ScrabbleValidator {
       };
     }
 
-    // 1. Vérifier les limites du plateau
-    if (!this.verifierLimitesPlateau(mot, x, y, direction)) {
-      return {
-        valide: false,
-        message: "Le mot dépasse les limites du plateau",
-      };
-    }
+    async validerPlacement(mot, position, direction, lettresJoueur) {
+        const [x, y] = position;
+        // 0. la direction n'est pas valide <=> un mot n'a pas été posé (soit 0 lettre soit pas sur la même ligne/colonne)
+        if (direction == 'invalide'){
+            return { 
+                valide: false, 
+                message: "Cela ne constitue pas un mot" 
+            }; 
+        }
 
-    // 2. Vérifier le placement au premier tour
-    if (this.estPremierTour) {
-      if (!this.verifierPremierTour(mot, x, y, direction)) {
-        return {
-          valide: false,
-          message: "Le premier mot doit passer par la case centrale",
-        };
-      }
-    } else {
-      // 3. Vérifier la connexion aux mots existants
-      if (!this.verifierConnexion(mot, x, y, direction)) {
-        return {
-          valide: false,
-          message: "Le mot doit être connecté à au moins une lettre existante",
-        };
-      }
-    }
+        // 1. Vérifier les limites du plateau 
+        if (!this.verifierLimitesPlateau(mot, x, y, direction)) {
+            return { 
+                valide: false, 
+                message: "Le mot dépasse les limites du plateau" 
+            };
+        }
 
-    // 4. Vérifier la disponibilité des lettres
-    const verificationLettres = this.verifierLettresDisponibles(
-      mot,
-      x,
-      y,
-      direction,
-      lettresJoueur
-    );
-    if (!verificationLettres.valide) {
-      return {
-        valide: false,
-        message: verificationLettres.message,
-      };
-    }
+        // 2. Vérifier le placement au premier tour
+        if (this.estPremierTour) {
+            if (!this.verifierPremierTour(mot, x, y, direction)) {
+                return { 
+                    valide: false, 
+                    message: "Le premier mot doit passer par la case centrale" 
+                };
+            }
+        } else {
+            // 3. Vérifier la connexion aux mots existants
+            if (!this.verifierConnexion(mot, x, y, direction)) {
+                return { 
+                    valide: false, 
+                    message: "Le mot doit être connecté à au moins une lettre existante" 
+                };
+            }
+        }
 
-    // 5. Collecter tous les mots formés
-    const motsFormes = this.collecterMots(mot, x, y, direction);
+        // 4. Collecter tous les mots formés
+        const motsFormes = this.collecterMots(mot, x, y, direction);
+        
+        // 5. Vérifier la validité de chaque mot avec Firebase
+        for (const motForme of motsFormes) {
+            // TODO : implémenter check mot avec firebase
+            // const estValide = await this.verifierMotDansDict(motForme);
+            // pour l'instant :
+            console.log("implémenter la vérification des mots via firebase ici");
+            const estValide = true;
+            if (!estValide) {
+                return {
+                    valide: false,
+                    message: `Le mot "${motForme}" n'est pas dans le dictionnaire`
+                };
+            }
+        }
 
-    // 6. Vérifier la validité de chaque mot avec Firebase
-    for (const motForme of motsFormes) {
-      // TODO : implémenter check mot avec firebase
-      // const estValide = await this.verifierMotDansDict(motForme);
-      // pour l'instant :
-      console.log("implémenter la vérification des mots via firebase ici");
-      const estValide = true;
-      if (!estValide) {
-        return {
-          valide: false,
-          message: `Le mot "${motForme}" n'est pas dans le dictionnaire`,
-        };
-      }
-    }
-
-    // 7. Calculer le score total
-    const score = this.calculerScoreTotal(motsFormes, x, y, direction);
+        // 6. Calculer le score total
+        const score = this.calculerScoreTotal(motsFormes, x, y, direction, this.estPremierTour);
 
     // Mettre à jour estPremierTour si le placement est valide
     this.estPremierTour = false;
@@ -157,71 +152,29 @@ export class ScrabbleValidator {
         }
       }
     }
-    return connexionTrouvee;
-  }
 
-  verifierLettresDisponibles(mot, x, y, direction, lettresJoueur) {
-    const lettresNecessaires = [];
-    const lettresUtilisees = [];
-
-    for (let i = 0; i < mot.length; i++) {
-      const currentX = direction === "horizontal" ? x + i : x;
-      const currentY = direction === "horizontal" ? y : y + i;
-      const lettrePlateau = this.plateau.grille[currentY][currentX];
-      const lettreNecessaire = mot[i].toUpperCase();
-
-      if (lettrePlateau === "") {
-        // Si la lettre n'est pas sur le plateau, on doit l'avoir dans notre jeu
-        if (
-          !lettresJoueur.includes(lettreNecessaire) &&
-          !lettresJoueur.includes("*")
-        ) {
-          return {
-            valide: false,
-            message: `Lettre ${lettreNecessaire} non disponible`,
-          };
-        }
-
-        if (lettresJoueur.includes(lettreNecessaire)) {
-          lettresUtilisees.push(lettreNecessaire);
-        } else {
-          // Utilisation d'un joker
-          lettresUtilisees.push("*");
-        }
-      } else if (lettrePlateau !== lettreNecessaire) {
-        return {
-          valide: false,
-          message: `Conflit avec une lettre existante`,
-        };
-      }
-    }
-
-    return {
-      valide: true,
-      lettresUtilisees: lettresUtilisees,
-    };
-  }
-
-  collecterMots(motPrincipal, x, y, direction) {
-    const motsFormes = [motPrincipal];
-
-    // Parcourir chaque lettre du mot principal
-    for (let i = 0; i < motPrincipal.length; i++) {
-      const currentX = direction === "horizontal" ? x + i : x;
-      const currentY = direction === "horizontal" ? y : y + i;
-
-      // Si on place une nouvelle lettre (pas une lettre existante)
-      if (this.plateau.grille[currentY][currentX] === "") {
-        // Chercher un mot perpendiculaire
-        const motPerpendiculaire = this.trouverMotPerpendiculaire(
-          motPrincipal[i],
-          currentX,
-          currentY,
-          direction === "horizontal" ? "vertical" : "horizontal"
-        );
-
-        if (motPerpendiculaire) {
-          motsFormes.push(motPerpendiculaire);
+    collecterMots(motPrincipal, x, y, direction) {
+        const motsFormes = [motPrincipal];
+        
+        // Parcourir chaque lettre du mot principal
+        for (let i = 0; i < motPrincipal.length; i++) {
+            const currentX = direction === 'horizontal' ? x + i : x;
+            const currentY = direction === 'horizontal' ? y : y + i;
+            
+            // Si on place une nouvelle lettre (pas une lettre existante)
+            if (this.plateau.grille[currentY][currentX] === '') {
+                // Chercher un mot perpendiculaire
+                const motPerpendiculaire = this.trouverMotPerpendiculaire(
+                    motPrincipal[i],
+                    currentX,
+                    currentY,
+                    direction === 'horizontal' ? 'vertical' : 'horizontal'
+                );
+                
+                if (motPerpendiculaire) {
+                    motsFormes.push(motPerpendiculaire);
+                }
+            }
         }
       }
     }
@@ -252,7 +205,6 @@ export class ScrabbleValidator {
     ) {
       fin++;
     }
-
     // Si le mot fait plus d'une lettre
     if (
       fin - debut > 0 ||
@@ -281,81 +233,73 @@ export class ScrabbleValidator {
     return null;
   }
 
-  calculerScoreTotal(motsFormes, x, y, direction) {
-    let scoreTotal = 0;
-    const motPrincipal = motsFormes[0];
+  calculerScoreTotal(motsFormes, x, y, direction, estPremierTour) {
+          let scoreTotal = 0;
+          const motPrincipal = motsFormes[0];
 
-    // Calculer le score du mot principal
-    scoreTotal += this.calculerScoreMot(motPrincipal, x, y, direction);
+          // Calculer le score du mot principal
+          scoreTotal += this.calculerScoreMot(motPrincipal, x, y, direction, estPremierTour);
 
-    // Calculer les scores des mots perpendiculaires
-    for (let i = 1; i < motsFormes.length; i++) {
-      const motPerp = motsFormes[i];
-      // Pour chaque mot perpendiculaire, calculer sa position
-      const posPerp = this.trouverPositionMotPerpendiculaire(
-        motPerp,
-        x,
-        y,
-        direction
-      );
-      if (posPerp) {
-        scoreTotal += this.calculerScoreMot(
-          motPerp,
-          posPerp.x,
-          posPerp.y,
-          direction === "horizontal" ? "vertical" : "horizontal"
-        );
-      }
-    }
+          // Calculer les scores des mots perpendiculaires
+          for (let i = 1; i < motsFormes.length; i++) {
+              const motPerp = motsFormes[i];
+              // Pour chaque mot perpendiculaire, calculer sa position
+              const posPerp = this.trouverPositionMotPerpendiculaire(motPerp, x, y, direction);
+              if (posPerp) {
+                  console.log("2 :", this.estPremierTour);
+                  scoreTotal += this.calculerScoreMot(
+                      motPerp,
+                      posPerp.x,
+                      posPerp.y,
+                      direction === 'horizontal' ? 'vertical' : 'horizontal',
+                      estPremierTour
+                  );
+              }
+        return scoreTotal;
+    } 
 
-    // Bonus Scrabble (si toutes les lettres sont utilisées)
-    if (this.lettresUtilisees && this.lettresUtilisees.length === 7) {
-      scoreTotal += 50;
-    }
+    calculerScoreMot(mot, x, y, direction, estPremierTour) {
+        let score = 0;
+        let multiplicateurMot = 1;
 
-    return scoreTotal;
-  }
-
-  calculerScoreMot(mot, x, y, direction) {
-    let score = 0;
-    let multiplicateurMot = 1;
-
-    for (let i = 0; i < mot.length; i++) {
-      const currentX = direction === "horizontal" ? x + i : x;
-      const currentY = direction === "horizontal" ? y : y + i;
-      const lettre = mot[i];
-
-      // Si c'est une nouvelle lettre (pas déjà sur le plateau)
-      if (this.plateau.grille[currentY][currentX] === "") {
-        let pointsLettre = this.pioche.lettres[lettre].points;
-        const multiplicateur = this.plateau.multiplicateurs[currentY][currentX];
-
-        switch (multiplicateur) {
-          case "2L":
-            score += pointsLettre * 2;
-            break;
-          case "3L":
-            score += pointsLettre * 3;
-            break;
-          case "2M":
-            score += pointsLettre;
-            multiplicateurMot *= 2;
-            break;
-          case "3M":
-            score += pointsLettre;
-            multiplicateurMot *= 3;
-            break;
-          default:
-            score += pointsLettre;
+        for (let i = 0; i < mot.length; i++) {
+            const currentX = direction === 'horizontal' ? x + i : x;
+            const currentY = direction === 'horizontal' ? y : y + i;
+            const lettre = mot[i];
+            
+            // Si c'est une nouvelle lettre (pas déjà sur le plateau)
+            if (this.plateau.grille[currentY][currentX] === '') {
+                let pointsLettre = this.pioche.lettres[lettre].points;
+                const multiplicateur = this.plateau.multiplicateurs[currentY][currentX];
+                let isCDActive = true;
+                switch (multiplicateur) {
+                    case "2L":
+                        score += pointsLettre * 2;
+                        break;
+                    case "3L":
+                        score += pointsLettre * 3;
+                        break;
+                    case "2M":
+                        score += pointsLettre;
+                        multiplicateurMot *= 2;
+                        break;
+                    case "3M":
+                        score += pointsLettre;
+                        multiplicateurMot *= 3;
+                        break;
+                    default:
+                        score += pointsLettre;
+                }
+            } else {
+                // Lettre déjà sur le plateau
+                score += this.pioche.lettres[lettre].points;
+            }
         }
-      } else {
-        // Lettre déjà sur le plateau
-        score += this.pioche.lettres[lettre].points;
-      }
+        if (estPremierTour){
+            multiplicateurMot *= 2;
+        }
+        return score * multiplicateurMot;
     }
-
-    return score * multiplicateurMot;
-  }
 
   // Vérification avec Firebase
   async verifierMotDansDict(mot) {
