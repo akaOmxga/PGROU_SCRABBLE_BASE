@@ -46,29 +46,34 @@ export class Pioche {
     }
 
     piocherLettre() {
-        // Créer un tableau des lettres disponibles
         const lettresDisponibles = [];
         for (let [lettre, objLettre] of Object.entries(this.lettres)) {
             if (objLettre.occurrences > 0) {
                 lettresDisponibles.push(lettre);
             }
         }
-
-        // Si aucune lettre n'est disponible, retourner null
+    
         if (lettresDisponibles.length === 0) {
             return null;
         }
-
-        // Choisir une lettre au hasard
+    
         const index = Math.floor(Math.random() * lettresDisponibles.length);
         const lettrePiochee = lettresDisponibles[index];
-
-        // Décrémenter le nombre d'occurrences
+    
+        // Décrémenter les occurrences
         this.lettres[lettrePiochee].occurrences--;
 
-        // Firebase: Mettre à jour l'état de la pioche
-        return lettrePiochee;
+        // Update la Pioche sur Firebase : 
+        console.log("update la pioche sur firebase ici");
+    
+        // Retourner un objet Lettre au lieu d'une simple lettre
+        return new Lettre(
+            lettrePiochee, 
+            this.lettres[lettrePiochee].points, 
+            this.lettres[lettrePiochee].occurrences
+        );
     }
+    
 
     estVide() {
         return Object.values(this.lettres).every(lettre => lettre.occurrences === 0);

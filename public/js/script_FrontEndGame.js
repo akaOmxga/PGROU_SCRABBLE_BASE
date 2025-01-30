@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
     // lettres :
     for (let j = 0; j < 7; j++) {
-      ajouterLettre(scrabbleInstance.joueurs[i].lettres[j]);
+      ajouterLettre(scrabbleInstance.joueurs[i].lettres[j].valeur);
     }
   }
   
@@ -263,6 +263,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       lettresJoueur
     );
     console.log(resultat);
+    // Afficher le résultat au joueur : 
+    function afficherMessage(message) {
+      const titleDiv = document.getElementById("title");
+      // Vérifier si un message existe déjà 
+      let existingMessage = document.getElementById("message-affiche");
+      if (existingMessage) {
+          // Remplacer le texte de l'ancien message
+          existingMessage.textContent = message;
+      } else {
+          const h2 = document.createElement("h2");
+          h2.id = "message-affiche";
+          h2.textContent = message;
+          titleDiv.insertAdjacentElement("afterend", h2);
+        }
+    }
+    afficherMessage(resultat.message);
+
     if (resultat.valide) {
       // Placer le mot et mettre à jour le score
       scrabbleInstance.plateau.placerMot(mot, position, direction);
@@ -271,21 +288,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Redonner des lettres au joueur :
       const playerInventory = document.querySelector("#player-letters");
       while (playerInventory.children.length <= 7) {
+
         // 7 lettres + une barre
-        const lettre = scrabbleInstance.pioche.piocherLettre();
+        const lettre = scrabbleInstance.pioche.piocherLettre(); // de type lettre cf Plateau.js
         const newLetter = document.createElement("div");
         newLetter.className = "letter";
         newLetter.draggable = "true";
         newLetter.textContent = lettre.valeur;
         newLetter.dataset.letter = lettre.valeur;
         playerInventory.appendChild(newLetter);
-        console.log("Letter Drew Successfully");
       }
       // TODO : Mettre à jour le score du joueur
-
-      // TODO : Retirer les lettres utilisées dans la pioche
+      
+      console.log("update score du joueur sur firebase ici");
 
       // TODO : passer au joueur suivant dans le tour 
+      console.log("passer au joueur suivant ici");
     } else {
       // Redonner les lettres aux joueurs :
       console.log("redonner les lettres aux joueurs");
