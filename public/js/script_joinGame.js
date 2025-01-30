@@ -28,7 +28,7 @@ document.getElementById('validerBtn').addEventListener('click', async () => {
     try {
         const partieId = await joinPartieWithCode(code, user.uid);
         // Redirection vers la page du lobby avec l'ID de la partie
-        window.location.href = `newGame.html?partieId=${partieId}`;
+        window.location.href = `game.html?partieId=${partieId}`;
     } catch (error) {
         alert(error.message);
     }

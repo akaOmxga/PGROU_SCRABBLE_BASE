@@ -52,24 +52,26 @@ async function CreateNewGame(listeJoueurs) {
 
 // Attendre que le DOM soit complètement chargé
 document.addEventListener("DOMContentLoaded", async function() {
-    console.log("domContentCharged de scriptnewGame");
+    //console.log("domContentCharged de scriptnewGame");
     const listeJoueurs = [await getCurrentUID()];
+    console.log("la liste de listeJoueurs",listeJoueurs)
+    //console.log("id du user getCurrentUID",getCurrentUID())
     scrabbleInstance = await CreateNewGame(listeJoueurs); // Créer et attendre l'objet scrabble
-    console.log("La partie a été créée", scrabbleInstance);
-
+    //console.log("La partie a été créée", scrabbleInstance);
+    console.log("les joueurs debut: ",scrabbleInstance.joueurs)
     // Afficher le joueur créateur de la partie : 
     const pseudo = await getCurrentPseudo(); // Récupère le pseudo depuis Firestore
     //ajouterJoueurFrontEnd(pseudo);
 
     // Enregistrer l'objet scrabble dans localStorage (en le convertissant en JSON)
-    localStorage.setItem('scrabbleInstance', JSON.stringify(scrabbleInstance));
-    console.log("Objet scrabble sauvegardé dans localStorage:", localStorage.getItem('scrabbleInstance'));
+    //console.log("Objet scrabble sauvegardé dans localStorage:", localStorage.getItem('scrabbleInstance'));
     syncPlayers();
 });
 
-window.onbeforeunload = function () {
+
+/*window.onbeforeunload = function () {
     return "Recharger la page peut entraîner une perte de la partie. Voulez-vous continuer ?";
-};
+};*/
 
 //recuperation des pseudo des joueurs 
 async function getUserByLUID(luid) {
@@ -98,7 +100,7 @@ async function fetchPlayerDetails(playerLUIDs) {
 
     for (const luid of playerLUIDs) {
         const playerData = await getUserByLUID(luid);
-        console.log("la liste des joueurs waiting",playerData)
+        //console.log("la liste des joueurs waiting",playerData)
         if (playerData) {
             players.push(playerData);  
         } else {
@@ -122,17 +124,25 @@ function syncPlayers() {
         if (doc.exists) {
             const gameData = doc.data();
             const playerIds = gameData.joueurs || [];
-            console.log("les utilisateurs: ",playerIds)
+            
             // Récupérer les détails des joueurs
             const players = await fetchPlayerDetails(playerIds);
 
             // Mettre à jour le tableau des joueurs
             updatePlayersTable(players);
+            
+            //console.log("la liste de playerIds avant",scrabbleInstance)
 
+            scrabbleInstance.updateGame(playerIds); 
+
+            localStorage.setItem('scrabbleInstance', JSON.stringify(scrabbleInstance));
+           // console.log("la liste de playerIds apres",scrabbleInstance)
             // Mettre à jour l'indicateur de chargement
-            if (players.length ==4) {
+            if (players.length ==2) {
                 loadingIndicator.textContent = "Tous les joueurs sont prêts !";
-                window.location.href = "game.html";
+                setTimeout(() => {
+                    window.location.href = "game.html";
+                }, 2000);
             } else {
                 loadingIndicator.textContent = `En attente de ${4 - players.length} joueurs...`;
             }

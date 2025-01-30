@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const scrabbleData = localStorage.getItem("scrabbleInstance");
   scrabbleInstance = new Scrabble();
-
+  console.log("test de rejoindre",scrabbleData)
   if (scrabbleData) {
     const parsedData = JSON.parse(scrabbleData);
     // Créer une nouvelle instance de Scrabble avec l'ID
@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       scrabbleInstance.plateau,
       scrabbleInstance.pioche
     );
-
   } else {
     console.log("Aucune partie en cours.");
     return;

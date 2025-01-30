@@ -71,7 +71,7 @@ class Scrabble {
         } else {
             console.log("Aucun utilisateur connecté, impossible de créer une partie.");
         }
-
+        /**  les joueurs ne se stockent pas dans l'objet scrabble quand il le rejoind 
         // Initialisation des joueurs
         listeJoueurs.forEach(joueurID => {
             const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
@@ -88,10 +88,32 @@ class Scrabble {
         // Distribution des 7 lettres initiales à chaque joueur
         for (let joueur of this.joueurs) {
             this.distribuerLettresInitiales(joueur);
-        }
+        }*/
 
         // TODO Firebase: Sauvegarder l'état initial de la partie
         // await this.sauvegarderEtat();
+    }
+    //modification des joueurs 
+    updateGame(listeJoueur) {
+        this.joueurs=[];//je le reinetialise pour modifier la liste des utilisateurs
+        console.log("la liste des joueurs apres update",listeJoueur);
+        listeJoueur.forEach(joueurID => {
+            const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
+            // tirer des lettres dans la pioche :
+            joueur.completerLettres(this.pioche);
+            // ajouter le joueur à la partie de scrabble : 
+            this.joueurs.push(joueur);
+        });
+
+        // Initialisation du plateau et de la pioche
+        this.plateau = new Plateau();
+        this.pioche = new Pioche();
+
+        // Distribution des 7 lettres initiales à chaque joueur
+        for (let joueur of this.joueurs) {
+            this.distribuerLettresInitiales(joueur);
+        }
+
     }
 
     distribuerLettresInitiales(joueur) {

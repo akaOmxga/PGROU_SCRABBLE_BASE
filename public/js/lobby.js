@@ -5,7 +5,7 @@ import { db } from './firebaseConfig.js';
 import { collection, addDoc, query, where, getDocs, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 import { getJoueurNomById } from './firestoreFunction.js';
 
-const players = []; // tableau pour stocker les noms des joueurs
+/*const players = []; // tableau pour stocker les noms des joueurs
 
 function addPlayer(name) {
     players.push(name); // ajoute un joueur
@@ -27,7 +27,7 @@ function updatePlayersTable() {
             tbody.appendChild(row); // ajoute la ligne au tableau
         });
     }
-}
+}*/
 
 // Fonction pour générer un code unique de 4 lettres
 export function generateUniqueCode() {
@@ -99,6 +99,7 @@ export async function joinPartieWithCode(code, userId) {
         const partieData = partieDoc.data();
         
         // Vérifier si l'utilisateur n'est pas déjà dans la partie
+        //TODO : verification aussi que cette partie a maximum 4 joueurss
         if (partieData.joueurs.includes(userId)) {
             throw new Error('Vous êtes déjà dans cette partie');
         }
@@ -115,7 +116,7 @@ export async function joinPartieWithCode(code, userId) {
         });
 
         // Ajouter visuellement le joueur au lobby
-        addPlayer(firestoreFunction.getJoueurNomById(userId));
+        //addPlayer(firestoreFunction.getJoueurNomById(userId));
         
         return partieDoc.id;
     } catch (error) {
