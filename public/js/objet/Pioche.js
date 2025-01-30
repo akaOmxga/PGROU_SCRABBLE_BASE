@@ -63,15 +63,10 @@ export class Pioche {
         // Décrémenter les occurrences
         this.lettres[lettrePiochee].occurrences--;
 
-        // Update la Pioche sur Firebase : 
+        // TODO : Update la Pioche sur Firebase : 
         console.log("update la pioche sur firebase ici");
-    
-        // Retourner un objet Lettre au lieu d'une simple lettre
-        return new Lettre(
-            lettrePiochee, 
-            this.lettres[lettrePiochee].points, 
-            this.lettres[lettrePiochee].occurrences
-        );
+        return this.lettres[lettrePiochee];
+
     }
     
 

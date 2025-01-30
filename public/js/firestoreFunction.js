@@ -55,6 +55,12 @@ async function getCurrentPseudo() {
 }
 
 async function getPseudoFromId(joueurId) {
+    // on vérifie si joueurId est défini
+    if (!joueurId) {
+        console.error("joueurId n'est pas défini ou null");
+        return null;
+    }
+
     try {
         // Référence à la collection 'Users'
         const usersCollection = collection(db, "Users");
@@ -69,7 +75,7 @@ async function getPseudoFromId(joueurId) {
             const userData = userDoc.data(); // Récupère les données du document
             return userData.pseudo; // Retourne le pseudo
         } else {
-            console.error("Aucun joueur trouvé avec cet UID.");
+            console.error("Aucun joueur trouvé avec cet UID : ", joueurId);
             return null;
         }
     } catch (error) {
