@@ -29,11 +29,6 @@ export class Plateau {
     }
 
     placerMot(mot, position, direction) {
-        // Vérifier si le placement est possible
-        if (!this.placementPossible(mot, position, direction)) {
-            return false;
-        }
-
         // Placer le mot sur la grille
         const [x, y] = position;
         for (let i = 0; i < mot.length; i++) {
@@ -43,11 +38,9 @@ export class Plateau {
                 this.grille[y + i][x] = mot[i].toUpperCase();
             }
         }
-
-        // TODO: Vérifier les mots adjacents créés par le placement
         
         // Firebase: Mettre à jour l'état du plateau
-        return true;
+        console.log("update le plateau sur firebase après placement du mot ici");
     }
 
     calculerScore(mot, position, direction) { // TODO : si le mot est un scrabble => +50 points // TODO : check les mots secondaires (perpendiculaire au notre)
