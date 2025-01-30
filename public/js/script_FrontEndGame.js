@@ -263,6 +263,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       lettresJoueur
     );
     console.log(resultat);
+    // Afficher le résultat au joueur : 
+    function afficherMessage(message) {
+      const titleDiv = document.getElementById("title");
+      // Vérifier si un message existe déjà 
+      let existingMessage = document.getElementById("message-affiche");
+      if (existingMessage) {
+          // Remplacer le texte de l'ancien message
+          existingMessage.textContent = message;
+      } else {
+          const h2 = document.createElement("h2");
+          h2.id = "message-affiche";
+          h2.textContent = message;
+          titleDiv.insertAdjacentElement("afterend", h2);
+        }
+    }
+    afficherMessage(resultat.message);
+
     if (resultat.valide) {
       // Placer le mot et mettre à jour le score
       scrabbleInstance.plateau.placerMot(mot, position, direction);

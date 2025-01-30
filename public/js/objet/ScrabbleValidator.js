@@ -78,6 +78,7 @@ export class ScrabbleValidator {
         return {
             valide: true,
             score: score,
+            message: `Le mot "${motsFormes[0]}" est valide !`,
             motsFormes: motsFormes,
             lettresUtilisees: verificationLettres.lettresUtilisees
         };
