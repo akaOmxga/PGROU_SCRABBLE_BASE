@@ -45,19 +45,10 @@ export class ScrabbleValidator {
             }
         }
 
-        // 4. Vérifier la disponibilité des lettres
-        const verificationLettres = this.verifierLettresDisponibles(mot, x, y, direction, lettresJoueur);
-        if (!verificationLettres.valide) {
-            return {
-                valide: false,
-                message: verificationLettres.message
-            };
-        }
-
-        // 5. Collecter tous les mots formés
+        // 4. Collecter tous les mots formés
         const motsFormes = this.collecterMots(mot, x, y, direction);
         
-        // 6. Vérifier la validité de chaque mot avec Firebase
+        // 5. Vérifier la validité de chaque mot avec Firebase
         for (const motForme of motsFormes) {
             // TODO : implémenter check mot avec firebase
             // const estValide = await this.verifierMotDansDict(motForme);
@@ -72,15 +63,14 @@ export class ScrabbleValidator {
             }
         }
 
-        // 7. Calculer le score total
-        const score = this.calculerScoreTotal(motsFormes, x, y, direction);
+        // 6. Calculer le score total
+        const score = this.calculerScoreTotal(motsFormes, x, y, direction, this.estPremierTour);
 
         return {
             valide: true,
             score: score,
             message: `Le mot "${motsFormes[0]}" est valide !`,
-            motsFormes: motsFormes,
-            lettresUtilisees: verificationLettres.lettresUtilisees
+            motsFormes: motsFormes
         };
     }
 
@@ -132,45 +122,6 @@ export class ScrabbleValidator {
             }
         }
         return connexionTrouvee;
-    }
-
-    verifierLettresDisponibles(mot, x, y, direction, lettresJoueur) {
-        const lettresNecessaires = [];
-        const lettresUtilisees = [];
-
-        for (let i = 0; i < mot.length; i++) {
-            const currentX = direction === 'horizontal' ? x + i : x;
-            const currentY = direction === 'horizontal' ? y : y + i;
-            const lettrePlateau = this.plateau.grille[currentY][currentX];
-            const lettreNecessaire = mot[i].toUpperCase();
-
-            if (lettrePlateau === '') {
-                // Si la lettre n'est pas sur le plateau, on doit l'avoir dans notre jeu
-                if (!lettresJoueur.includes(lettreNecessaire) && !lettresJoueur.includes('*')) {
-                    return {
-                        valide: false,
-                        message: `Lettre ${lettreNecessaire} non disponible`
-                    };
-                }
-                
-                if (lettresJoueur.includes(lettreNecessaire)) {
-                    lettresUtilisees.push(lettreNecessaire);
-                } else {
-                    // Utilisation d'un joker
-                    lettresUtilisees.push('*');
-                }
-            } else if (lettrePlateau !== lettreNecessaire) {
-                return {
-                    valide: false,
-                    message: `Conflit avec une lettre existante`
-                };
-            }
-        }
-
-        return {
-            valide: true,
-            lettresUtilisees: lettresUtilisees
-        };
     }
 
     collecterMots(motPrincipal, x, y, direction) {
@@ -230,12 +181,12 @@ export class ScrabbleValidator {
         return null;
     }
 
-    calculerScoreTotal(motsFormes, x, y, direction) {
+    calculerScoreTotal(motsFormes, x, y, direction, estPremierTour) {
         let scoreTotal = 0;
         const motPrincipal = motsFormes[0];
         
         // Calculer le score du mot principal
-        scoreTotal += this.calculerScoreMot(motPrincipal, x, y, direction);
+        scoreTotal += this.calculerScoreMot(motPrincipal, x, y, direction, estPremierTour);
         
         // Calculer les scores des mots perpendiculaires
         for (let i = 1; i < motsFormes.length; i++) {
@@ -243,11 +194,13 @@ export class ScrabbleValidator {
             // Pour chaque mot perpendiculaire, calculer sa position
             const posPerp = this.trouverPositionMotPerpendiculaire(motPerp, x, y, direction);
             if (posPerp) {
+                console.log("2 :", this.estPremierTour);
                 scoreTotal += this.calculerScoreMot(
                     motPerp,
                     posPerp.x,
                     posPerp.y,
-                    direction === 'horizontal' ? 'vertical' : 'horizontal'
+                    direction === 'horizontal' ? 'vertical' : 'horizontal',
+                    estPremierTour
                 );
             }
         }
@@ -258,9 +211,9 @@ export class ScrabbleValidator {
         }
 
         return scoreTotal;
-    }
+    } 
 
-    calculerScoreMot(mot, x, y, direction) {
+    calculerScoreMot(mot, x, y, direction, estPremierTour) {
         let score = 0;
         let multiplicateurMot = 1;
 
@@ -273,7 +226,7 @@ export class ScrabbleValidator {
             if (this.plateau.grille[currentY][currentX] === '') {
                 let pointsLettre = this.pioche.lettres[lettre].points;
                 const multiplicateur = this.plateau.multiplicateurs[currentY][currentX];
-
+                let isCDActive = true;
                 switch (multiplicateur) {
                     case "2L":
                         score += pointsLettre * 2;
@@ -297,7 +250,9 @@ export class ScrabbleValidator {
                 score += this.pioche.lettres[lettre].points;
             }
         }
-
+        if (estPremierTour){
+            multiplicateurMot *= 2;
+        }
         return score * multiplicateurMot;
     }
 
