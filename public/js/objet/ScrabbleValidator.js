@@ -453,9 +453,7 @@ export class ScrabbleValidator {
     // Fonction principale pour récupérer toutes les informations
     getPlacementInfo() {
         const placedLetters = this.getNewlyPlacedLetters();
-        console.log(placedLetters)
         if (placedLetters.length === 0) {
-            console.log("pas de lettre posée");
             return null;
         }
         // par défaut, pour le cas où on pose 1 seule lettre, la direction = null

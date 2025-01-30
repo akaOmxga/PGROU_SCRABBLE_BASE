@@ -398,32 +398,9 @@ function removableOffAll() {
   });
 }
 
-
-// Fonction pour obtenir les lettres placées pendant ce tour
-function getNewlyPlacedLetters() {
-  //return ["a", "b"];
-  const squares = document.querySelectorAll(".square");
-  const placedLetters = [];
-
-  squares.forEach((square, index) => {
-    if (square.dataset.removable === "true") {
-      const [x, y] = this.getCoordinates(index);
-      placedLetters.push({
-        letter: square.textContent,
-        x: x,
-        y: y,
-      });
-    }
-  });
-
-  return placedLetters;
-}
-
 // Valider le mot
 document.getElementById("validate-word").addEventListener("click", async () => {
   // prendre les informations du tour :
-  console.log("test in valider le mot");
-  console.log(scrabbleInstance);
   const infos = scrabbleInstance.validator.getPlacementInfo();
   console.log("info : ", infos);
 
@@ -438,10 +415,10 @@ document.getElementById("validate-word").addEventListener("click", async () => {
     direction,
     lettresJoueur
   );
-
+  console.log("resultat :", resultat);
   if (resultat.valide) {
     // Placer le mot et mettre à jour le score
-    plateau.placerMot(mot, position, direction);
+    scrabbleInstance.plateau.placerMot(mot, position, direction);
     // Réinitialiser toutes les valeurs removable à Off
     removableOffAll();
     // Redonner des lettres au joueur :
@@ -462,7 +439,6 @@ document.getElementById("validate-word").addEventListener("click", async () => {
     // TODO : Retirer les lettres utilisées
   } else {
     // Redonner les lettres aux joueurs :
-
     const placedLetters = scrabbleInstance.validator.getNewlyPlacedLetters();
     for (const lettre of placedLetters) {
       // toutes les cases du plateau : si removable :
@@ -480,7 +456,7 @@ document.getElementById("validate-word").addEventListener("click", async () => {
       square.dataset.occupied = "false";
       square.dataset.removable = "false";
       activeLetter = null;
-    }
+    };
   }
 });
 
