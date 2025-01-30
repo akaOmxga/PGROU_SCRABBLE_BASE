@@ -288,21 +288,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Redonner des lettres au joueur :
       const playerInventory = document.querySelector("#player-letters");
       while (playerInventory.children.length <= 7) {
+
         // 7 lettres + une barre
-        const lettre = scrabbleInstance.pioche.piocherLettre();
+        const lettre = scrabbleInstance.pioche.piocherLettre(); // de type lettre cf Plateau.js
         const newLetter = document.createElement("div");
         newLetter.className = "letter";
         newLetter.draggable = "true";
         newLetter.textContent = lettre.valeur;
         newLetter.dataset.letter = lettre.valeur;
         playerInventory.appendChild(newLetter);
-        console.log("Letter Drew Successfully");
       }
       // TODO : Mettre à jour le score du joueur
-
-      // TODO : Retirer les lettres utilisées dans la pioche
+      
+      console.log("update score du joueur sur firebase ici");
 
       // TODO : passer au joueur suivant dans le tour 
+      console.log("passer au joueur suivant ici");
     } else {
       // Redonner les lettres aux joueurs :
       console.log("redonner les lettres aux joueurs");
