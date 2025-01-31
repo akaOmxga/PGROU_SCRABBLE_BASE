@@ -107,6 +107,7 @@ export class ScrabbleValidator {
         x === this.CENTRE && y <= this.CENTRE && y + longueur > this.CENTRE
       );
     }
+  }
 
     async validerPlacement(mot, position, direction, lettresJoueur) {
         const [x, y] = position;
@@ -207,7 +208,7 @@ export class ScrabbleValidator {
           }
         }
       }
-    }
+    };
 
   collecterMots(motPrincipal, x, y, direction) {
     const motsFormes = [motPrincipal];
@@ -260,30 +261,6 @@ export class ScrabbleValidator {
     }
   }
 
-  
-
-  calculerScoreTotal(motsFormes, x, y, direction, estPremierTour) {
-          let scoreTotal = 0;
-          const motPrincipal = motsFormes[0];
-
-          // Calculer le score du mot principal
-          scoreTotal += this.calculerScoreMot(motPrincipal, x, y, direction, estPremierTour);
-          // Calculer les scores des mots perpendiculaires
-          for (let i = 1; i < motsFormes.length; i++) {
-              const motPerp = motsFormes[i];
-              // Pour chaque mot perpendiculaire, calculer sa position
-              const posPerp = this.trouverPositionMotPerpendiculaire(motPerp, x, y, direction);
-              if (posPerp) {
-                  console.log("2 :", this.estPremierTour);
-                  scoreTotal += this.calculerScoreMot(
-                      motPerp,
-                      posPerp.x,
-                      posPerp.y,
-                      direction === 'horizontal' ? 'vertical' : 'horizontal',
-                      estPremierTour
-                  );
-              }
-=======
     calculerScoreTotal(motsFormes, x, y, direction, estPremierTour) {
         let scoreTotal = 0;
         const motPrincipal = motsFormes[0];
@@ -297,7 +274,6 @@ export class ScrabbleValidator {
             // Pour chaque mot perpendiculaire, calculer sa position
             const posPerp = this.trouverPositionMotPerpendiculaire(motPerp, x, y, direction);
             if (posPerp) {
-                console.log("2 :", this.estPremierTour);
                 scoreTotal += this.calculerScoreMot(
                     motPerp,
                     posPerp.x,
