@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const scrabbleData = localStorage.getItem("scrabbleInstance");
   scrabbleInstance = new Scrabble();
 
-
   if (scrabbleData) {
     const parsedData = JSON.parse(scrabbleData);
     // Créer une nouvelle instance de Scrabble avec l'ID
@@ -283,8 +282,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (resultat.valide) {
         // Placer le mot et mettre à jour le score
         scrabbleInstance.plateau.placerMot(mot, position, direction);
-        // Mettre à jour la pioche dans le localStorage
-        scrabbleInstance.pioche.updatePiocheInLocalStorage();
         // Réinitialiser toutes les valeurs removable à Off
         removableOffAll();
         // Redonner des lettres au joueur :
