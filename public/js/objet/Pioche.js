@@ -66,7 +66,6 @@ export class Pioche {
         // TODO : Update la Pioche sur Firebase : 
         console.log("update la pioche sur firebase ici");
         return this.lettres[lettrePiochee];
-
     }
     
 

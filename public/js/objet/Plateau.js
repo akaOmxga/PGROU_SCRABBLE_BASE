@@ -270,31 +270,18 @@ export class Plateau {
   }
 
   placerMot(mot, position, direction) {
-    // Vérifier si le placement est possible
-    if (!this.placementPossible(mot, position, direction)) {
-      return false;
-    }
-
-    placerMot(mot, position, direction) {
-        // Placer le mot sur la grille
-        const [x, y] = position;
-        for (let i = 0; i < mot.length; i++) {
-            if (direction === 'horizontal') {
-                this.grille[y][x + i] = mot[i].toUpperCase();
-            } else {
-                this.grille[y + i][x] = mot[i].toUpperCase();
-            }
+    // Placer le mot sur la grille
+    const [x, y] = position;
+    for (let i = 0; i < mot.length; i++) {
+        if (direction === 'horizontal') {
+            this.grille[y][x + i] = mot[i].toUpperCase();
+        } else {
+            this.grille[y + i][x] = mot[i].toUpperCase();
         }
-        
-        // Firebase: Mettre à jour l'état du plateau
-        console.log("update le plateau sur firebase après placement du mot ici");
-
     }
-
-    // TODO: Vérifier les mots adjacents créés par le placement
-
+    
     // Firebase: Mettre à jour l'état du plateau
-    return true;
+    console.log("update le plateau sur firebase après placement du mot ici"); 
   }
 
   calculerScore(mot, position, direction) {

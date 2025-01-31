@@ -295,8 +295,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         newLetter.dataset.letter = lettre.valeur;
         playerInventory.appendChild(newLetter);
       }
-      // TODO : Mettre à jour le score du joueur
-      
+      // TODO : Mettre à jour le score du joueur : scoreboard et firebase
+      console.log("update le score du joueur ici");
+      if (scrabbleInstance.joueurs.length === 1) {
+        scrabbleInstance.joueurs[0].score += resultat.score;
+        // Mettre à jour l'affichage du score
+        const scoreCell = document.querySelector(
+          "#score-board tr td:last-child"
+        );
+        if (scoreCell) {
+          scoreCell.textContent = scrabbleInstance.joueurs[0].score;
+        }
+      }
       console.log("update score du joueur sur firebase ici");
 
       // TODO : passer au joueur suivant dans le tour 
@@ -311,97 +321,38 @@ document.addEventListener("DOMContentLoaded", async () => {
         const x = lettre.x;
         const y = lettre.y;
         const squareLetter = document.querySelector(`#board .square[data-x='${x}'][data-y='${y}']`);
-          const newLetter = document.createElement("div");
-          newLetter.className = "letter";
-          newLetter.draggable = "true";
-          newLetter.textContent = lettre.valeur;
-          newLetter.dataset.letter = lettre.valeur;
+        const newLetter = document.createElement("div");
+        newLetter.className = "letter";
+        newLetter.draggable = "true";
+        newLetter.textContent = lettre.letter;
+        newLetter.dataset.letter = lettre.letter;
+        playerInventory.appendChild(newLetter);
 
-          // Ajouter l'écouteur d'événements pour la nouvelle lettre
-          newLetter.addEventListener("click", () => {
-            console.log("letter clicked");
-            if (activeLetter === newLetter) {
-              activeLetter = null;
-              newLetter.classList.remove("selected");
-            } else {
-              activeLetter = newLetter;
-              const allLetters = document.querySelectorAll(
-                "#player-letters .letter"
-              );
-              allLetters.forEach((l) => l.classList.remove("selected"));
-              newLetter.classList.add("selected");
-            }
-          });
-
-          playerInventory.appendChild(newLetter);
-          console.log("Letter Drew Successfully");
+        // Reset the square
+        squareLetter.textContent = "";
+        squareLetter.dataset.occupied = "false";
+        squareLetter.dataset.removable = "false";
+        
+          // // Ajouter l'écouteur d'événements pour la nouvelle lettre
+          // newLetter.addEventListener("click", () => {
+          //   console.log("letter clicked");
+          //   if (activeLetter === newLetter) {
+          //     activeLetter = null;
+          //     newLetter.classList.remove("selected");
+          //   } else {
+          //     activeLetter = newLetter;
+          //     const allLetters = document.querySelectorAll(
+          //       "#player-letters .letter"
+          //     );
+          //     allLetters.forEach((l) => l.classList.remove("selected"));
+          //     newLetter.classList.add("selected");
+          //   }
+          // });
         }
-        // TODO : Mettre à jour le score du joueur
-        if (scrabbleInstance.joueurs.length === 1) {
-          scrabbleInstance.joueurs[0].score += resultat.score;
-          // Mettre à jour l'affichage du score
-          const scoreCell = document.querySelector(
-            "#score-board tr td:last-child"
-          );
-          if (scoreCell) {
-            scoreCell.textContent = scrabbleInstance.joueurs[0].score;
-          }
-        }
-
-        // TODO : Retirer les lettres utilisées dans la pioche
-
-        // TODO : passer au joueur suivant dans le tour
-      } else {
-        // Redonner les lettres aux joueurs :
-        console.log("redonner les lettres aux joueurs");
-        const letters = scrabbleInstance.validator.getNewlyPlacedLetters();
-        for (let i = 0; i < letters.length; i++) {
-          // obtenir la case HTML du plateau où on a posé la lettre :
-          const lettre = letters[i];
-          const x = lettre.x;
-          const y = lettre.y;
-          const squareLetter = document.querySelector(
-            `#board .square[data-x='${x}'][data-y='${y}']`
-          );
-          const playerInventory = document.querySelector("#player-letters");
-          // redonner la lettre au joueur
-          const newLetter = document.createElement("div");
-          newLetter.className = "letter";
-          newLetter.draggable = "true";
-          newLetter.textContent = squareLetter.textContent;
-          newLetter.dataset.letter = squareLetter.textContent;
-          playerInventory.appendChild(newLetter);
-
-          // Reset the square
-          squareLetter.textContent = "";
-          squareLetter.dataset.occupied = "false";
-          squareLetter.dataset.removable = "false";
-          activeLetter = null;
-        }
-      }
-      // Initialiser les joueurs + leur score dans le tableau et leurs lettres :
-      /*for (let i = 0; i < scrabbleInstance.joueurs.length; i++) {
-        console.log("joueur actuel : ", scrabbleInstance.joueurs[i]);
-        console.log("Structure complète du joueur :", {
-          joueur: scrabbleInstance.joueurs[i],
-          id: scrabbleInstance.joueurs[i]?.id,
-          score: scrabbleInstance.joueurs[i]?.score,
-          lettres: scrabbleInstance.joueurs[i]?.lettres,
-        });
-
-        // tableau
-        let pseudo = await fstore.getPseudoFromId(
-          scrabbleInstance.joueurs[i].id
-        );
-        ajouterLigneTableauScore(pseudo, scrabbleInstance.joueurs[i].score);
-        // lettres :
-        for (let j = 0; j < 7; j++) {
-          ajouterLettre(scrabbleInstance.joueurs[i].lettres[j]);
-        }
-      }*/
+      };
     });
-});
-
+  });
+  
 // Fonction pour ajouter une ligne au tableau
 function ajouterLigneTableauScore(nomJoueur, score) {
   const tableau = document.getElementById("score-board");
