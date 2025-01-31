@@ -1,60 +1,60 @@
 // Imports des classes précédemment définies
-import { ScrabbleValidator } from './ScrabbleValidator.js';
-import { Plateau } from './Plateau.js';
-import { Pioche } from './Pioche.js';
-import { Joueur } from './Joueur.js';
-import * as fstore from '../firestoreFunction.js';
-import * as lobby from '../lobby.js';
+import { ScrabbleValidator } from "./ScrabbleValidator.js";
+import { Plateau } from "./Plateau.js";
+import { Pioche } from "./Pioche.js";
+import { Joueur } from "./Joueur.js";
+import * as fstore from "../firestoreFunction.js";
+import * as lobby from "../lobby.js";
 
 ////////////////////////////////////////////////////////////////
 /////////////////////// Fonction In Game ///////////////////////
 ////////////////////////////////////////////////////////////////
 
-
 class Scrabble {
-    constructor(PID) {
-        this.partyId = PID;
-        this.joueurs = [];   
-        this.scores = [];          
-        this.plateau = new Plateau();
-        this.pioche = new Pioche();
-        this.tourActuel = 0;      
-        this.partieEnCours = true;
-        this.validator = new ScrabbleValidator(this.plateau, this.pioche);
+  constructor(PID) {
+    this.partyId = PID;
+    this.joueurs = [];
+    this.scores = [];
+    this.plateau = new Plateau();
+    this.pioche = new Pioche();
+    this.tourActuel = 0;
+    this.partieEnCours = true;
+    this.validator = new ScrabbleValidator(this.plateau, this.pioche);
+  }
 
+  passerAuJoueurSuivant() {
+    this.tourActuel = (this.tourActuel + 1) % this.joueurs.length;
+    // TODO Firebase: Mettre à jour le joueur actif
+  }
+
+  updateScore(points, joueurIndex) {
+    // Vérification que l'index est valide
+    if (joueurIndex >= 0 && joueurIndex < this.scores.length) {
+      this.scores[joueurIndex] += points;
+      // TODO Firebase: Mettre à jour le score du joueur
     }
+  }
 
-    passerAuJoueurSuivant() {
-        this.tourActuel = (this.tourActuel + 1) % this.joueurs.length;
-        // TODO Firebase: Mettre à jour le joueur actif
+  getJoueurActuel() {
+    return this.joueurs[this.tourActuel];
+  }
+
+  getScoreJoueur(joueurIndex) {
+    return this.scores[joueurIndex];
+  }
+
+  getSquare(x, y) {
+    return document.querySelector(
+      `#board .square[data-x='${x}'][data-y='${y}']`
+    );
+  }
+
+  // Procédure de début de partie :
+  // Initialisation des variables : Joueurs, Plateau, Pioche - par défaut, on rajoutera ensuite les différents aspects
+  async initializeGame(listeJoueurs) {
+    if (listeJoueurs.length < 1 || listeJoueurs.length > 4) {
+      throw new Error("Le nombre de joueurs doit être entre 1 et 4");
     }
-
-    updateScore(points, joueurIndex) {
-        // Vérification que l'index est valide
-        if (joueurIndex >= 0 && joueurIndex < this.scores.length) {
-            this.scores[joueurIndex] += points;
-            // TODO Firebase: Mettre à jour le score du joueur
-        }
-    }
-
-    getJoueurActuel() {
-        return this.joueurs[this.tourActuel];
-    }
-
-    getScoreJoueur(joueurIndex) {
-        return this.scores[joueurIndex];
-    }
-
-    getSquare(x, y) {
-        return document.querySelector(`#board .square[data-x='${x}'][data-y='${y}']`);
-    }    
-
-    // Procédure de début de partie : 
-    // Initialisation des variables : Joueurs, Plateau, Pioche - par défaut, on rajoutera ensuite les différents aspects
-    async initializeGame(listeJoueurs) {
-        if (listeJoueurs.length < 1 || listeJoueurs.length > 4) {
-            throw new Error("Le nombre de joueurs doit être entre 1 et 4");
-        }
 
         // Création d'une nouvelle partie aspect firebase
         let UID = await fstore.getCurrentUID();
@@ -81,9 +81,9 @@ class Scrabble {
             this.joueurs.push(joueur);
         });
 
-        // Initialisation du plateau et de la pioche
-        this.plateau = new Plateau();
-        this.pioche = new Pioche();
+    // Initialisation du plateau et de la pioche
+    this.plateau = new Plateau();
+    this.pioche = new Pioche();
 
         // Distribution des 7 lettres initiales à chaque joueur
         for (let joueur of this.joueurs) {
@@ -116,170 +116,186 @@ class Scrabble {
 
     }
 
-    distribuerLettresInitiales(joueur) {
-        for (let i = 0; i < 7; i++) {
-            const lettre = this.pioche.piocherLettre();
-            if (lettre) {
-                joueur.ajouterLettre(lettre);
-            }
-        }
+  distribuerLettresInitiales(joueur) {
+    for (let i = 0; i < 7; i++) {
+      const lettre = this.pioche.piocherLettre();
+      if (lettre) {
+        joueur.ajouterLettre(lettre);
+      }
     }
-    
-    // Gestion d'un tour : 
-    // prendre les données du jeu : quel joueur doit jouer -> ces lettres -> le plateau -> la pioche
-    // le joueur pose un mot -> vérification du mot 
-    // si invalide : on lui redonne toutes ses lettres et il recommence
-    // si valide : on compte les points et il les gagne puis pioche des lettres jusqu'à en avoir 7
-    // le joueur qui doit jouer est le suivant. fin du tour 
+  }
 
-    async executerTour() {
-        // Récupération de l'état actuel depuis Firebase au début du tour
-        // await this.chargerEtat();
+  // Gestion d'un tour :
+  // prendre les données du jeu : quel joueur doit jouer -> ces lettres -> le plateau -> la pioche
+  // le joueur pose un mot -> vérification du mot
+  // si invalide : on lui redonne toutes ses lettres et il recommence
+  // si valide : on compte les points et il les gagne puis pioche des lettres jusqu'à en avoir 7
+  // le joueur qui doit jouer est le suivant. fin du tour
 
-        const joueurActuel = this.jeu.getJoueurActuel();
-        
-        // Le joueur joue son tour (cette partie sera gérée par l'interface)
-        // Retourne : { action: 'placer'/'passer', mot: string, position: [x,y], direction: 'horizontal'/'vertical' }
-        const coup = await this.attendreCoupJoueur(joueurActuel);
+  async executerTour() {
+    // Récupération de l'état actuel depuis Firebase au début du tour
+    // await this.chargerEtat();
 
-        if (coup.action === 'passer') {
-            // Le joueur passe son tour
-            this.jeu.passerAuJoueurSuivant();
-        } else {
-            // Vérification et placement du mot
-            const resultat = this.verifierEtPlacerMot(coup, joueurActuel);
-            
-            if (resultat.valide) {
-                // Mise à jour du score
-                this.jeu.updateScore(resultat.points, this.jeu.tourActuel);
-                
-                // Piocher de nouvelles lettres
-                this.completerLettresJoueur(joueurActuel);
-                
-                // Passer au joueur suivant
-                this.jeu.passerAuJoueurSuivant();
-            } else {
-                // Retourner les lettres au joueur
-                this.retournerLettres(joueurActuel, coup.mot);
-            }
-        }
+    const joueurActuel = this.jeu.getJoueurActuel();
 
-        // Sauvegarder l'état à la fin du tour
-        // await this.sauvegarderEtat();
+    // Le joueur joue son tour (cette partie sera gérée par l'interface)
+    // Retourne : { action: 'placer'/'passer', mot: string, position: [x,y], direction: 'horizontal'/'vertical' }
+    const coup = await this.attendreCoupJoueur(joueurActuel);
 
-        return this.verifierFinPartie();
+    if (coup.action === "passer") {
+      // Le joueur passe son tour
+      this.jeu.passerAuJoueurSuivant();
+    } else {
+      // Vérification et placement du mot
+      const resultat = this.verifierEtPlacerMot(coup, joueurActuel);
+
+      if (resultat.valide) {
+        // Mise à jour du score
+        this.jeu.updateScore(resultat.points, this.jeu.tourActuel);
+
+        // Piocher de nouvelles lettres
+        this.completerLettresJoueur(joueurActuel);
+
+        // Passer au joueur suivant
+        this.jeu.passerAuJoueurSuivant();
+      } else {
+        // Retourner les lettres au joueur
+        this.retournerLettres(joueurActuel, coup.mot);
+      }
     }
 
-    verifierEtPlacerMot(coup, joueur) {
-        // Vérification spéciale pour le premier mot
-        if (this.estPremierMot()) {
-            const passeCentre = this.verifiePassageCentre(coup.mot, coup.position, coup.direction);
-            if (!passeCentre) {
-                return { valide: false, message: "Le premier mot doit passer par la case centrale" };
-            }
-        }
+    // Sauvegarder l'état à la fin du tour
+    // await this.sauvegarderEtat();
 
-        // Vérification de la validité du mot
-        // TODO: Vérification avec la base de données des mots valides
-        
-        // Placement du mot sur le plateau
-        const placementReussi = this.jeu.plateau.placerMot(coup.mot, coup.position, coup.direction);
-        if (!placementReussi) {
-            return { valide: false, message: "Placement impossible" };
-        }
+    return this.verifierFinPartie();
+  }
 
-        // Calcul des points
-        const points = this.jeu.plateau.calculerScore(coup.mot, coup.position, coup.direction);
-        
-        return { valide: true, points };
+  verifierEtPlacerMot(coup, joueur) {
+    // Vérification spéciale pour le premier mot
+    if (this.estPremierMot()) {
+      const passeCentre = this.verifiePassageCentre(
+        coup.mot,
+        coup.position,
+        coup.direction
+      );
+      if (!passeCentre) {
+        return {
+          valide: false,
+          message: "Le premier mot doit passer par la case centrale",
+        };
+      }
     }
 
-    verifiePassageCentre(mot, position, direction) {
-        const [x, y] = position;
-        const longueur = mot.length;
-        
-        if (direction === 'horizontal') {
-            return y === 7 && x <= 7 && x + longueur > 7;
-        } else {
-            return x === 7 && y <= 7 && y + longueur > 7;
-        }
+    // Vérification de la validité du mot
+    // TODO: Vérification avec la base de données des mots valides
+
+    // Placement du mot sur le plateau
+    const placementReussi = this.jeu.plateau.placerMot(
+      coup.mot,
+      coup.position,
+      coup.direction
+    );
+    if (!placementReussi) {
+      return { valide: false, message: "Placement impossible" };
     }
 
-    completerLettresJoueur(joueur) {
-        while (joueur.lettres.length < 7) {
-            const lettre = this.jeu.pioche.piocherLettre();
-            if (!lettre) break; // Plus de lettres disponibles
-            joueur.ajouterLettre(lettre);
-        }
+    // Calcul des points
+    const points = this.jeu.plateau.calculerScore(
+      coup.mot,
+      coup.position,
+      coup.direction
+    );
+
+    return { valide: true, points };
+  }
+
+  verifiePassageCentre(mot, position, direction) {
+    const [x, y] = position;
+    const longueur = mot.length;
+
+    if (direction === "horizontal") {
+      return y === 7 && x <= 7 && x + longueur > 7;
+    } else {
+      return x === 7 && y <= 7 && y + longueur > 7;
+    }
+  }
+
+  completerLettresJoueur(joueur) {
+    while (joueur.lettres.length < 7) {
+      const lettre = this.jeu.pioche.piocherLettre();
+      if (!lettre) break; // Plus de lettres disponibles
+      joueur.ajouterLettre(lettre);
+    }
+  }
+
+  // Procédure de fin de partie :
+  // faire disparaitre l'interface du jeux (les lettres du joueur, le plateau, le petit tableau des scores et les différents boutons)
+  // afficher les scores dans l'ordre décroissant (le vainqueur puis les perdants ...)
+  // proposer de relancer une partie / retourner au Menu principale / se déconnecter via des boutons
+  verifierFinPartie() {
+    // Vérification si le joueur principal a demandé l'arrêt
+    if (this.jeu.joueurs[0].aDemandeArret) {
+      return true;
     }
 
-    // Procédure de fin de partie : 
-    // faire disparaitre l'interface du jeux (les lettres du joueur, le plateau, le petit tableau des scores et les différents boutons)
-    // afficher les scores dans l'ordre décroissant (le vainqueur puis les perdants ...)
-    // proposer de relancer une partie / retourner au Menu principale / se déconnecter via des boutons 
-    verifierFinPartie() {
-        // Vérification si le joueur principal a demandé l'arrêt
-        if (this.jeu.joueurs[0].aDemandeArret) {
-            return true;
-        }
+    // Vérification des conditions normales de fin
+    const piocheVide = this.jeu.pioche.estVide();
+    const unJoueurSansLettres = this.jeu.joueurs.some(
+      (j) => j.lettres.length === 0
+    );
 
-        // Vérification des conditions normales de fin
-        const piocheVide = this.jeu.pioche.estVide();
-        const unJoueurSansLettres = this.jeu.joueurs.some(j => j.lettres.length === 0);
+    return piocheVide && unJoueurSansLettres;
+  }
 
-        return piocheVide && unJoueurSansLettres;
+  calculerScoresFinaux() {
+    const scoresFinaux = [];
+
+    for (let i = 0; i < this.jeu.joueurs.length; i++) {
+      const joueur = this.jeu.joueurs[i];
+      let scoreFinal = this.jeu.scores[i];
+
+      // Soustraire les points des lettres restantes
+      for (const lettre of joueur.lettres) {
+        scoreFinal -= this.jeu.pioche.lettres[lettre].points;
+      }
+
+      scoresFinaux.push({
+        nom: joueur.nom,
+        score: scoreFinal,
+      });
     }
 
-    calculerScoresFinaux() {
-        const scoresFinaux = [];
-        
-        for (let i = 0; i < this.jeu.joueurs.length; i++) {
-            const joueur = this.jeu.joueurs[i];
-            let scoreFinal = this.jeu.scores[i];
+    // Trier les scores par ordre décroissant
+    return scoresFinaux.sort((a, b) => b.score - a.score);
+  }
 
-            // Soustraire les points des lettres restantes
-            for (const lettre of joueur.lettres) {
-                scoreFinal -= this.jeu.pioche.lettres[lettre].points;
-            }
+  // mainGame:
+  // procédure de début de partie : initialisation du jeu puis
+  // boucle principale tour par tour :
+  // le jeu s'arrête si (plus de pioche et il existe un joueur sans lettre dans son jeu)
+  // => boucle while (pioche != vide ou (lettreJoueur1 != vide et lettreJoueur2 != vide et lettreJoueur3 != vide et lettreJoueur4 != vide))
+  // cette boucle effectue un tour :
+  // méthode de Jeu
+  // Puis une fois la partie terminé :
+  // procédure de fin de partie
+  async mainGame() {
+    try {
+      // Initialisation de la partie
+      // await this.initializeGame(listeJoueurs);
 
-            scoresFinaux.push({
-                nom: joueur.nom,
-                score: scoreFinal
-            });
-        }
+      // Boucle principale
+      while (!this.verifierFinPartie()) {
+        await this.executerTour();
+      }
 
-        // Trier les scores par ordre décroissant
-        return scoresFinaux.sort((a, b) => b.score - a.score);
+      // Fin de partie
+      const scoresFinaux = this.calculerScoresFinaux();
+      this.afficherResultats(scoresFinaux);
+    } catch (error) {
+      console.error("Erreur pendant la partie:", error);
+      // Gérer l'erreur de manière appropriée
     }
-
-    // mainGame:
-    // procédure de début de partie : initialisation du jeu puis 
-    // boucle principale tour par tour : 
-    // le jeu s'arrête si (plus de pioche et il existe un joueur sans lettre dans son jeu)
-    // => boucle while (pioche != vide ou (lettreJoueur1 != vide et lettreJoueur2 != vide et lettreJoueur3 != vide et lettreJoueur4 != vide))
-    // cette boucle effectue un tour :
-    // méthode de Jeu
-    // Puis une fois la partie terminé : 
-    // procédure de fin de partie
-    async mainGame() {
-        try {
-            // Initialisation de la partie
-            // await this.initializeGame(listeJoueurs);
-
-            // Boucle principale
-            while (!this.verifierFinPartie()) {
-                await this.executerTour();
-            }
-
-            // Fin de partie
-            const scoresFinaux = this.calculerScoresFinaux();
-            this.afficherResultats(scoresFinaux);
-
-        } catch (error) {
-            console.error("Erreur pendant la partie:", error);
-            // Gérer l'erreur de manière appropriée
-        }
-    }
+  }
 
     afficherResultats(scoresFinaux) {
         // Cette méthode sera implémentée selon vos besoins d'interface
@@ -326,4 +342,4 @@ class Scrabble {
 }
 
 const scrabbleInstance = new Scrabble();
-export { Scrabble }
+export { Scrabble };

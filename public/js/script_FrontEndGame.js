@@ -6,7 +6,6 @@ import { Pioche } from "./objet/Pioche.js";
 import { Joueur } from "./objet/Joueur.js";
 import { ScrabbleValidator } from "./objet/ScrabbleValidator.js";
 
-
 let activeLetter = null;
 let scrabbleInstance;
 
@@ -49,7 +48,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (i == 112) {
       return "center"; // Case centrale
     }
-
 
     // Cases de lettre double
     if (
@@ -246,7 +244,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       ajouterLettre(scrabbleInstance.joueurs[i].lettres[j].valeur);
     }
   }
-  
+
   // Valider le mot
   document.getElementById("validate-word").addEventListener("click", async () => {
     // prendre les informations du tour :
@@ -297,6 +295,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         newLetter.dataset.letter = lettre.valeur;
         playerInventory.appendChild(newLetter);
       }
+      // TODO : Mettre à jour le score du joueur : scoreboard et firebase
+      console.log("update le score du joueur ici");
+      if (scrabbleInstance.joueurs.length === 1) {
+        scrabbleInstance.joueurs[0].score += resultat.score;
+        // Mettre à jour l'affichage du score
+        const scoreCell = document.querySelector(
+          "#score-board tr td:last-child"
+        );
+        if (scoreCell) {
+          scoreCell.textContent = scrabbleInstance.joueurs[0].score;
+        }
+      }
+
       // TODO : Mettre à jour le score du joueur
       
       console.log("update score du joueur sur firebase ici");
@@ -313,25 +324,22 @@ document.addEventListener("DOMContentLoaded", async () => {
         const x = lettre.x;
         const y = lettre.y;
         const squareLetter = document.querySelector(`#board .square[data-x='${x}'][data-y='${y}']`);
-        const playerInventory = document.querySelector("#player-letters");
-        // redonner la lettre au joueur 
         const newLetter = document.createElement("div");
         newLetter.className = "letter";
         newLetter.draggable = "true";
-        newLetter.textContent = squareLetter.textContent;
-        newLetter.dataset.letter = squareLetter.textContent;
+        newLetter.textContent = lettre.letter;
+        newLetter.dataset.letter = lettre.letter;
         playerInventory.appendChild(newLetter);
 
         // Reset the square
         squareLetter.textContent = "";
         squareLetter.dataset.occupied = "false";
         squareLetter.dataset.removable = "false";
-        activeLetter = null;
-      }
-    }
+        }
+      };
+    });
   });
-});
-
+  
 // Fonction pour ajouter une ligne au tableau
 function ajouterLigneTableauScore(nomJoueur, score) {
   const tableau = document.getElementById("score-board");
@@ -381,30 +389,29 @@ async function updateScoreBoard(scrabbleInstance, partieID) {
 
 const playerLettersDiv = document.getElementById("player-letters");
 function ajouterLettre(nouvelleLettre) {
+  // Créer une nouvelle div pour la lettre
+  const lettreDiv = document.createElement("div");
+  lettreDiv.className = "letter";
+  lettreDiv.draggable = true;
+  lettreDiv.dataset.letter = nouvelleLettre;
+  lettreDiv.textContent = nouvelleLettre;
 
-    // Créer une nouvelle div pour la lettre
-    const lettreDiv = document.createElement("div");
-    lettreDiv.className = "letter"; 
-    lettreDiv.draggable = true;
-    lettreDiv.dataset.letter = nouvelleLettre; 
-    lettreDiv.textContent = nouvelleLettre;
+  // Ajouter un gestionnaire d'événements
+  lettreDiv.addEventListener("click", () => {
+    console.log("letter clicked");
+    if (activeLetter === lettreDiv) {
+      activeLetter = null;
+      lettreDiv.classList.remove("selected");
+    } else {
+      activeLetter = lettreDiv;
+      const allLetters = document.querySelectorAll("#player-letters .letter");
+      allLetters.forEach((l) => l.classList.remove("selected"));
+      lettreDiv.classList.add("selected");
+    }
+  });
 
-    // Ajouter un gestionnaire d'événements
-    lettreDiv.addEventListener("click", () => {
-        console.log("letter clicked");
-        if (activeLetter === lettreDiv) {
-            activeLetter = null;
-            lettreDiv.classList.remove("selected");
-        } else {
-            activeLetter = lettreDiv;
-            const allLetters = document.querySelectorAll("#player-letters .letter");
-            allLetters.forEach(l => l.classList.remove("selected"));
-            lettreDiv.classList.add("selected");
-        }
-    });
-
-    // Ajouter la nouvelle lettre à la div principale
-    playerLettersDiv.appendChild(lettreDiv);
+  // Ajouter la nouvelle lettre à la div principale
+  playerLettersDiv.appendChild(lettreDiv);
 }
 
 // Réinitialise toutes les data-removable à False, à appeler à chaque début de tour
