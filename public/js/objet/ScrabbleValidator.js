@@ -220,6 +220,7 @@ export class ScrabbleValidator {
 
     return null;
   }
+  // ceci est une modification test
 
   calculerScoreTotal(motsFormes, x, y, direction, estPremierTour) {
           let scoreTotal = 0;
