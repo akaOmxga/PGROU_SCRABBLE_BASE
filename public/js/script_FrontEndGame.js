@@ -208,7 +208,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       square.textContent = activeLetter.textContent;
       square.dataset.occupied = "true";
       square.dataset.removable = "true";
-      activeLetter.remove(); // Retirer du jeu
+      square.dataset.originalLetter = activeLetter.id; // Pour garder une référence à la lettre
+      activeLetter.style.visibility = "hidden"; // On cache juste la lettre
       activeLetter = null;
     }
     // supprimer la lettre du plateau et ajouter la lettre à l'inventaire du joueur
@@ -246,71 +247,63 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Valider le mot
-  document.getElementById("validate-word").addEventListener("click", async () => {
-    // prendre les informations du tour :
-    const infos = scrabbleInstance.validator.getPlacementInfo();
-    const mot = infos.mot; // récupérer le mot formé
-    const position = infos.position; // récupérer la position [x, y]
-    const direction = infos.direction; // récupérer la direction : null => une seule lettre / sinon direction vaut soit horizontale/verticale/invalide (invalide = les lettres placées ne sont ni sur la même ligne ni sur la même colonne)
-    const lettresJoueur = infos.lettresJoueur; // récupérer les lettres du joueur
-    const resultat = await scrabbleInstance.validator.validerPlacement(
-      mot,
-      position,
-      direction,
-      lettresJoueur
-    );
-    console.log(resultat);
-    // Afficher le résultat au joueur : 
-    function afficherMessage(message) {
-      const titleDiv = document.getElementById("title");
-      // Vérifier si un message existe déjà 
-      let existingMessage = document.getElementById("message-affiche");
-      if (existingMessage) {
+  document
+    .getElementById("validate-word")
+    .addEventListener("click", async () => {
+      // prendre les informations du tour :
+      const infos = scrabbleInstance.validator.getPlacementInfo();
+      const mot = infos.mot; // récupérer le mot formé
+      const position = infos.position; // récupérer la position [x, y]
+      const direction = infos.direction; // récupérer la direction : null => une seule lettre / sinon direction vaut soit horizontale/verticale/invalide (invalide = les lettres placées ne sont ni sur la même ligne ni sur la même colonne)
+      const lettresJoueur = infos.lettresJoueur; // récupérer les lettres du joueur
+      const resultat = await scrabbleInstance.validator.validerPlacement(
+        mot,
+        position,
+        direction,
+        lettresJoueur
+      );
+      console.log(resultat);
+
+      // Afficher le résultat au joueur :
+      function afficherMessage(message) {
+        const titleDiv = document.getElementById("title");
+        // Vérifier si un message existe déjà
+        let existingMessage = document.getElementById("message-affiche");
+        if (existingMessage) {
           // Remplacer le texte de l'ancien message
           existingMessage.textContent = message;
-      } else {
+        } else {
           const h2 = document.createElement("h2");
           h2.id = "message-affiche";
           h2.textContent = message;
           titleDiv.insertAdjacentElement("afterend", h2);
         }
-    }
-    afficherMessage(resultat.message);
-
-    if (resultat.valide) {
-      // Placer le mot et mettre à jour le score
-      scrabbleInstance.plateau.placerMot(mot, position, direction);
-      // Réinitialiser toutes les valeurs removable à Off
-      removableOffAll();
-      // Redonner des lettres au joueur :
-      const playerInventory = document.querySelector("#player-letters");
-      while (playerInventory.children.length <= 7) {
-
-        // 7 lettres + une barre
-        const lettre = scrabbleInstance.pioche.piocherLettre(); // de type lettre cf Plateau.js
-        const newLetter = document.createElement("div");
-        newLetter.className = "letter";
-        newLetter.draggable = "true";
-        newLetter.textContent = lettre.valeur;
-        newLetter.dataset.letter = lettre.valeur;
-        playerInventory.appendChild(newLetter);
       }
-      // TODO : Mettre à jour le score du joueur
-      
-      console.log("update score du joueur sur firebase ici");
+      afficherMessage(resultat.message);
 
-      // TODO : passer au joueur suivant dans le tour 
-      console.log("passer au joueur suivant ici");
-    } else {
-      // Redonner les lettres aux joueurs :
-      console.log("redonner les lettres aux joueurs");
-      const letters =  scrabbleInstance.validator.getNewlyPlacedLetters();
-      for (let i = 0; i<letters.length; i++) {
-        // obtenir la case HTML du plateau où on a posé la lettre : 
-        const lettre = letters[i];
-        const x = lettre.x;
-        const y = lettre.y;
-        const squareLetter = document.querySelector(`#board .square[data-x='${x}'][data-y='${y}']`);
+      if (resultat.valide) {
+        // Le mot est valide, on peut maintenant retirer définitivement les lettres
+        const placedLetters = document.querySelectorAll(
+          ".square[data-removable='true']"
+        );
+        placedLetters.forEach((square) => {
+          const correspondingLetter = document.querySelector(
+            `#player-letters .letter[style*="visibility: hidden"]`
+          );
+          if (correspondingLetter) {
+            correspondingLetter.remove();
+          }
+        });
+
+        // Placer le mot et mettre à jour le score
+        scrabbleInstance.plateau.placerMot(mot, position, direction);
+        // Réinitialiser toutes les valeurs removable à Off
+        removableOffAll();
+        // Redonner des lettres au joueur :
+        const playerInventory = document.querySelector("#player-letters");
+        while (playerInventory.children.length < 7) {
+          // 7 lettres + une barre
+          const lettre = scrabbleInstance.pioche.piocherLettre(); // de type lettre cf Plateau.js
           const newLetter = document.createElement("div");
           newLetter.className = "letter";
           newLetter.draggable = "true";
@@ -336,21 +329,13 @@ document.addEventListener("DOMContentLoaded", async () => {
           playerInventory.appendChild(newLetter);
           console.log("Letter Drew Successfully");
         }
-        // TODO : Mettre à jour le score du joueur
-        if (scrabbleInstance.joueurs.length === 1) {
-          scrabbleInstance.joueurs[0].score += resultat.score;
-          // Mettre à jour l'affichage du score
-          const scoreCell = document.querySelector(
-            "#score-board tr td:last-child"
-          );
-          if (scoreCell) {
-            scoreCell.textContent = scrabbleInstance.joueurs[0].score;
-          }
-        }
 
-        // TODO : Retirer les lettres utilisées dans la pioche
+        // TODO : Mettre à jour le score du joueur
+
+        console.log("update score du joueur sur firebase ici");
 
         // TODO : passer au joueur suivant dans le tour
+        console.log("passer au joueur suivant ici");
       } else {
         // Redonner les lettres aux joueurs :
         console.log("redonner les lettres aux joueurs");
