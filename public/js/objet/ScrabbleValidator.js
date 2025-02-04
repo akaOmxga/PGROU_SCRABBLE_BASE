@@ -87,14 +87,26 @@ export class ScrabbleValidator {
       this.estPremierTour
     );
 
+    // 6. Calculer le score total
+    const score = this.calculerScoreTotal(
+      motsFormes,
+      x,
+      y,
+      direction,
+      this.estPremierTour
+    );
+    console.log("le score :", score);
     // Mettre à jour estPremierTour si le placement est valide
     this.estPremierTour = false;
+
+    // Mettre à jour la pioche sur Firestore
+    //await this.pioche.updatePiocheOnFirebase();
 
     return {
       valide: true,
       score: score,
+      message: `Le mot "${motsFormes[0]}" est valide !`,
       motsFormes: motsFormes,
-      lettresUtilisees: verificationLettres.lettresUtilisees,
     };
   }
 
@@ -163,12 +175,15 @@ export class ScrabbleValidator {
         }
       }
     }
-    return connexionTrouvee;
   }
 
   collecterMots(motPrincipal, x, y, direction) {
     const motsFormes = [motPrincipal];
 
+    return connexionTrouvee;
+  }
+
+ 
     // Parcourir chaque lettre du mot principal
     for (let i = 0; i < motPrincipal.length; i++) {
       const currentX = direction === "horizontal" ? x + i : x;
@@ -189,7 +204,6 @@ export class ScrabbleValidator {
         }
       }
     }
-
     return motsFormes;
   }
 
@@ -243,6 +257,7 @@ export class ScrabbleValidator {
 
     return null;
   }
+  // ceci est une modification test
 
   calculerScoreTotal(motsFormes, x, y, direction, estPremierTour) {
     let scoreTotal = 0;
