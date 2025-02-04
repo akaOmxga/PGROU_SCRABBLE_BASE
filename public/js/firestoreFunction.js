@@ -237,7 +237,6 @@ async function updatePlateau(id, data) {
         const formattedData = { plateau: data.map(row => row.join(",")) };
         const docRef = doc(db, "parties", id);
         await updateDoc(docRef, formattedData);
-        console.log("Plateau updated successfully");
     } catch (e) {
         console.error("Error updating Plateau: ", e);
     }
