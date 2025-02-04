@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  console.log(scrabbleInstance.partyId,scrabbleInstance.plateau)
+  fstore.listenToPlateau(scrabbleInstance.partyId,scrabbleInstance.plateau)
+
   // Fonction pour déterminer le type de la case en fonction de son indice de création (i allant de 0 à 224)
   function getSquareType(i) {
     // Cas spécifiques pour les cases spéciales du plateau de Scrabble
@@ -209,7 +212,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       square.dataset.occupied = "true";
       square.dataset.removable = "true";
       activeLetter.remove(); // Retirer du jeu
-      activeLetter = null;
+      activeLetter = null; square.textContent
+      scrabbleInstance.plateau.placerLettre(square.textContent,square.dataset.x,square.dataset.y)
+      fstore.updatePlateau(scrabbleInstance.partyId,scrabbleInstance.getPlateau())
     }
     // supprimer la lettre du plateau et ajouter la lettre à l'inventaire du joueur
     else if (

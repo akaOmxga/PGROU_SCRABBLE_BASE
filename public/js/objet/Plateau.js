@@ -8,7 +8,7 @@ export class Plateau {
     this.grille = Array(15)
       .fill()
       .map(() => Array(15).fill(""));
-
+    // this.firebase = {"Plateaux": this.grille}
     // Grille des multiplicateurs
     this.multiplicateurs = [
       [
@@ -267,6 +267,10 @@ export class Plateau {
         "3M",
       ],
     ];
+  }
+
+  placerLettre(lettre, x, y) {
+      this.grille[y][x] = lettre
   }
 
   placerMot(mot, position, direction) {
