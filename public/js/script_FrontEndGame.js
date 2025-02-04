@@ -213,8 +213,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       square.dataset.removable = "true";
       activeLetter.remove(); // Retirer du jeu
       activeLetter = null; square.textContent
+      
+
+      square.dataset.originalLetter = activeLetter.id; // Pour garder une référence à la lettre
+      activeLetter.style.visibility = "hidden"; // On cache juste la lettre
+      activeLetter = null;
       scrabbleInstance.plateau.placerLettre(square.textContent,square.dataset.x,square.dataset.y)
       fstore.updatePlateau(scrabbleInstance.partyId,scrabbleInstance.getPlateau())
+
     }
     // supprimer la lettre du plateau et ajouter la lettre à l'inventaire du joueur
     else if (
@@ -267,6 +273,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         lettresJoueur
       );
       console.log(resultat);
+
       // Afficher le résultat au joueur :
       function afficherMessage(message) {
         const titleDiv = document.getElementById("title");
@@ -285,6 +292,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       afficherMessage(resultat.message);
 
       if (resultat.valide) {
+
+        // Le mot est valide, on peut maintenant retirer définitivement les lettres
+        const placedLetters = document.querySelectorAll(
+          ".square[data-removable='true']"
+        );
+        placedLetters.forEach((square) => {
+          const correspondingLetter = document.querySelector(
+            `#player-letters .letter[style*="visibility: hidden"]`
+          );
+          if (correspondingLetter) {
+            correspondingLetter.remove();
+          }
+        });
+
         // Placer le mot et mettre à jour le score
         scrabbleInstance.plateau.placerMot(mot, position, direction);
         // Réinitialiser toutes les valeurs removable à Off
@@ -328,6 +349,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             scoreCell.textContent = scrabbleInstance.joueurs[0].score;
           }
         }
+
         console.log("update score du joueur sur firebase ici");
 
         // TODO : passer au joueur suivant dans le tour
