@@ -88,6 +88,8 @@ class Scrabble {
         console.log(this.partyId);
         fstore.addPlateau(this.plateau.grille,this.partyId)
         console.log("le plateau a bien été ajouté");
+        fstore.addPioche(this.pioche,this.partyId)
+        console.log("la pioche a bien été ajouté");
       } catch (error) {
         console.error("Erreur lors de la création de la partie:", error);
       }
