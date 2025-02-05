@@ -356,21 +356,21 @@ document.addEventListener("DOMContentLoaded", async () => {
           squareLetter.dataset.occupied = "false";
           squareLetter.dataset.removable = "false";
 
-          // // Ajouter l'écouteur d'événements pour la nouvelle lettre
-          // newLetter.addEventListener("click", () => {
-          //   console.log("letter clicked");
-          //   if (activeLetter === newLetter) {
-          //     activeLetter = null;
-          //     newLetter.classList.remove("selected");
-          //   } else {
-          //     activeLetter = newLetter;
-          //     const allLetters = document.querySelectorAll(
-          //       "#player-letters .letter"
-          //     );
-          //     allLetters.forEach((l) => l.classList.remove("selected"));
-          //     newLetter.classList.add("selected");
-          //   }
-          // });
+          // Ajouter l'écouteur d'événements pour la nouvelle lettre
+          newLetter.addEventListener("click", () => {
+            console.log("letter clicked");
+            if (activeLetter === newLetter) {
+              activeLetter = null;
+              newLetter.classList.remove("selected");
+            } else {
+              activeLetter = newLetter;
+              const allLetters = document.querySelectorAll(
+                "#player-letters .letter"
+              );
+              allLetters.forEach((l) => l.classList.remove("selected"));
+              newLetter.classList.add("selected");
+            }
+          });
         }
       }
     });
