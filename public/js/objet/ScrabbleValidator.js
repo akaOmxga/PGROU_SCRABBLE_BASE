@@ -78,15 +78,6 @@ export class ScrabbleValidator {
       }
     }
 
-    // 7. Calculer le score total
-    const score = this.calculerScoreTotal(
-      motsFormes,
-      x,
-      y,
-      direction,
-      this.estPremierTour
-    );
-
     // 6. Calculer le score total
     const score = this.calculerScoreTotal(
       motsFormes,
@@ -181,30 +172,6 @@ export class ScrabbleValidator {
     const motsFormes = [motPrincipal];
 
     return connexionTrouvee;
-  }
-
- 
-    // Parcourir chaque lettre du mot principal
-    for (let i = 0; i < motPrincipal.length; i++) {
-      const currentX = direction === "horizontal" ? x + i : x;
-      const currentY = direction === "horizontal" ? y : y + i;
-
-      // Si on place une nouvelle lettre (pas une lettre existante)
-      if (this.plateau.grille[currentY][currentX] === "") {
-        // Chercher un mot perpendiculaire
-        const motPerpendiculaire = this.trouverMotPerpendiculaire(
-          motPrincipal[i],
-          currentX,
-          currentY,
-          direction === "horizontal" ? "vertical" : "horizontal"
-        );
-
-        if (motPerpendiculaire) {
-          motsFormes.push(motPerpendiculaire);
-        }
-      }
-    }
-    return motsFormes;
   }
 
   trouverMotPerpendiculaire(lettre, x, y, direction) {

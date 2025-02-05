@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  console.log(scrabbleInstance.partyId,scrabbleInstance.plateau)
-  fstore.listenToPlateau(scrabbleInstance.partyId,scrabbleInstance.plateau)
+  // console.log(scrabbleInstance.partyId,scrabbleInstance.plateau)
+  // fstore.listenToPlateau(scrabbleInstance.partyId,scrabbleInstance.plateau)
 
   // Fonction pour déterminer le type de la case en fonction de son indice de création (i allant de 0 à 224)
   function getSquareType(i) {
@@ -397,6 +397,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 });
+
+// Fonction pour update les lettres provenant du plateau firebase sur le plateau visuel (aspect Frontend):
+export function updateLettrePlateau(plateau){
+  console.log("bonjour je suis lu");
+  const board = document.getElementById("board");
+  const grille = plateau.grille;
+  for (let i=0; i<15; i++){
+    for (let j=0; j<15; j++){
+      const squareLetter = document.querySelector(`#board .square[data-x='${i}'][data-y='${j}']`);
+      console.log(squareLetter);
+      if (!(squareLetter.textContent == grille[i][j])){
+        squareLetter.textContent = grille[i][j];
+      }
+    }
+  }
+}
 
 // Fonction pour ajouter une ligne au tableau
 function ajouterLigneTableauScore(nomJoueur, score) {
