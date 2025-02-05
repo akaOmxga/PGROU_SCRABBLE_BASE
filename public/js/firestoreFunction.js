@@ -282,11 +282,27 @@ function listenToPlateau(partieId, plateauxxxx) {
             plateauxxxx.grille = plateau
             console.log("Plateau mis à jour : ", plateau);
             // Mets à jour ton interface ou ta logique locale ici
+            updateLettrePlateau(plateauxxxx)
         } else {
             console.log("Document non trouvé !");
         }
     });
 }
+ // Fonction pour update les lettres provenant du plateau firebase sur le plateau visuel (aspect Frontend):
+function updateLettrePlateau(plateau){
+    // console.log("bonjour je suis lu");
+    const board = document.getElementById("board");
+    const grille = plateau.grille;
+    for (let i=0; i<15; i++){
+      for (let j=0; j<15; j++){
+        const squareLetter = document.querySelector(`#board .square[data-x='${j}'][data-y='${i}']`);
+        // console.log(squareLetter);
+        if (!(squareLetter.textContent == grille[i][j])){
+          squareLetter.textContent = grille[i][j];
+        }
+      }
+    }
+  }
 
 
 export { listenToPlateau , getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
