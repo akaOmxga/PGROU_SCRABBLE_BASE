@@ -1,6 +1,7 @@
 // Classe Pioche :
 // possède en attribut les différentes lettres restantes (sous forme d'un dictionnaire dont les clés sont les lettres et les valeurs leurs occurences restantes)
 // méthode : elle peut donner une lettre aléatoire (tout en updatant son nombre d'occurence dans le dictionnaire)
+import * as fstore from '../firestoreFunction.js';
 
 class Lettre {
   constructor(valeur, points, occurrences) {
@@ -64,8 +65,8 @@ export class Pioche {
     // Décrémenter les occurrences
     this.lettres[lettrePiochee].occurrences--;
 
-    // TODO : Update la Pioche sur Firebase :
-    console.log("update la pioche sur firebase ici");
+    // Update la Pioche sur Firebase :
+    fstore.updatePioche(this.lettres, this.gameId);
 
     return this.lettres[lettrePiochee];
   }

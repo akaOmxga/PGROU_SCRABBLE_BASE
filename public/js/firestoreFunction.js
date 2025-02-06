@@ -235,10 +235,10 @@ async function updatePlateau(id, data) {
     }
 }
 
-function formatPioche(pioche){
+function formatPioche(lettres){
     let formattedPioche = [];
-    Object.keys(pioche.lettres).forEach(key => {
-        const newLetter = [pioche.lettres[key].valeur,pioche.lettres[key].points.toString(),pioche.lettres[key].occurrences.toString()];
+    Object.keys(lettres).forEach(key => {
+        const newLetter = [lettres[key].valeur,lettres[key].points.toString(),lettres[key].occurrences.toString()];
         formattedPioche = formattedPioche.concat(newLetter);
     });
     return formattedPioche;
@@ -249,10 +249,8 @@ function formatPioche(pioche){
 async function addPioche(data,partieId) {
     try {
         const formattedData = { pioche : formatPioche(data)};
-        console.log("bonjour");
-        console.log(formattedData);
         const docRef = doc(db, "parties", partieId);
-        await setDoc(docRef, formattedData);
+        await setDoc(docRef, formattedData, { merge: true });
         console.log("Pioche created with ID");
         return docRef.id;
     } catch (e) {
@@ -262,7 +260,7 @@ async function addPioche(data,partieId) {
 }
 
 // Function to update an existing Pioche document
-async function updatePioche(id, data) {
+async function updatePioche(data, id) {
     try {
         const formattedData = { pioche : formatPioche(data)};
         const docRef = doc(db, "parties", id);
