@@ -8,7 +8,7 @@ export class Plateau {
     this.grille = Array(15)
       .fill()
       .map(() => Array(15).fill(""));
-
+    // this.firebase = {"Plateaux": this.grille}
     // Grille des multiplicateurs
     this.multiplicateurs = [
       [
@@ -269,6 +269,10 @@ export class Plateau {
     ];
   }
 
+  placerLettre(lettre, x, y) {
+      this.grille[y][x] = lettre
+  }
+
   placerMot(mot, position, direction) {
     // Placer le mot sur la grille
     const [x, y] = position;
@@ -282,6 +286,9 @@ export class Plateau {
     
     // Firebase: Mettre à jour l'état du plateau
     console.log("update le plateau sur firebase après placement du mot ici"); 
+
+    return true;
+
   }
 
   calculerScore(mot, position, direction) {

@@ -1,6 +1,8 @@
 import { db , checkAuth} from "./firebaseConfig.js";
-import { getFirestore, collection, addDoc, query, where, getDoc, updateDoc, doc,getDocs } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, doc , setDoc , onSnapshot} from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+import { updateLettrePlateau } from './script_FrontEndGame.js';
+
 // Function to get User ID (from firebase authentification) 
 async function getCurrentUID() {
     const auth = getAuth(); 
@@ -220,10 +222,14 @@ async function updateJoueur(id, data) {
 }
 
 // Function to create a new Plateau document
-async function addPlateau(data) {
+async function addPlateau(data,partieId) {
     try {
-        const docRef = await addDoc(collection(db, "Plateaux"), data);
-        console.log("Plateau created with ID: ", docRef.id);
+        // Convertir chaque sous-tableau en chaîne de caractères
+        const formattedData = { plateau: data.map(row => row.join(",")) };
+        const docRef = doc(db, "parties", partieId);
+        // const docRef = await addDoc(collection(db, "Plateaux"), formattedData);
+        await setDoc(docRef, formattedData, { merge: true });
+        console.log("Plateau created with ID");
         return docRef.id;
     } catch (e) {
         console.error("Error adding Plateau: ", e);
@@ -241,9 +247,9 @@ async function getPlateau(id) {
 // Function to update an existing Plateau document
 async function updatePlateau(id, data) {
     try {
-        const docRef = doc(db, "Plateaux", id);
-        await updateDoc(docRef, data);
-        console.log("Plateau updated successfully");
+        const formattedData = { plateau: data.map(row => row.join(",")) };
+        const docRef = doc(db, "parties", id);
+        await updateDoc(docRef, formattedData);
     } catch (e) {
         console.error("Error updating Plateau: ", e);
     }
@@ -279,5 +285,26 @@ async function updatePioche(id, data) {
     }
 }
 
+function listenToPlateau(partieId, plateauxxxx) {
+    const docRef = doc(db, "parties", partieId);
+    console.log("étape 1");
+    // Écoute en temps réel
+    onSnapshot(docRef, (doc) => {
+        console.log("étape 2");
+        if (doc.exists()) {
+            console.log("étape 3");
+            const data = doc.data();
+            const plateau = data.plateau.map(row => row.split(",").slice(0, 15)); // Recrée le plateau
+            plateauxxxx.grille = plateau
+            console.log("Plateau mis à jour : ", plateau);
+            // Mets à jour ton interface ou ta logique locale ici
+            console.log("étape 4");
+            // updateLettrePlateau(plateauxxxx);
+        } else {
+            console.log("Document non trouvé !");
+        }
+    });
+}
 
-export { getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
+
+export { listenToPlateau , getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };

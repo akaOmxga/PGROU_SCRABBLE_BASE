@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
+  // console.log(scrabbleInstance.partyId,scrabbleInstance.plateau)
+  // fstore.listenToPlateau(scrabbleInstance.partyId,scrabbleInstance.plateau)
+
   // Fonction pour déterminer le type de la case en fonction de son indice de création (i allant de 0 à 224)
   function getSquareType(i) {
     // Cas spécifiques pour les cases spéciales du plateau de Scrabble
@@ -209,7 +212,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       square.dataset.occupied = "true";
       square.dataset.removable = "true";
       activeLetter.remove(); // Retirer du jeu
+      activeLetter = null; square.textContent
+      
+
+      square.dataset.originalLetter = activeLetter.id; // Pour garder une référence à la lettre
+      activeLetter.style.visibility = "hidden"; // On cache juste la lettre
       activeLetter = null;
+      scrabbleInstance.plateau.placerLettre(square.textContent,square.dataset.x,square.dataset.y)
+      fstore.updatePlateau(scrabbleInstance.partyId,scrabbleInstance.getPlateau())
+
     }
     // supprimer la lettre du plateau et ajouter la lettre à l'inventaire du joueur
     else if (
@@ -262,6 +273,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         lettresJoueur
       );
       console.log(resultat);
+
       // Afficher le résultat au joueur :
       function afficherMessage(message) {
         const titleDiv = document.getElementById("title");
@@ -280,6 +292,20 @@ document.addEventListener("DOMContentLoaded", async () => {
       afficherMessage(resultat.message);
 
       if (resultat.valide) {
+
+        // Le mot est valide, on peut maintenant retirer définitivement les lettres
+        const placedLetters = document.querySelectorAll(
+          ".square[data-removable='true']"
+        );
+        placedLetters.forEach((square) => {
+          const correspondingLetter = document.querySelector(
+            `#player-letters .letter[style*="visibility: hidden"]`
+          );
+          if (correspondingLetter) {
+            correspondingLetter.remove();
+          }
+        });
+
         // Placer le mot et mettre à jour le score
         scrabbleInstance.plateau.placerMot(mot, position, direction);
         // Réinitialiser toutes les valeurs removable à Off
@@ -323,6 +349,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             scoreCell.textContent = scrabbleInstance.joueurs[0].score;
           }
         }
+
         console.log("update score du joueur sur firebase ici");
 
         // TODO : passer au joueur suivant dans le tour
@@ -370,6 +397,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 });
+
+// Fonction pour update les lettres provenant du plateau firebase sur le plateau visuel (aspect Frontend):
+export function updateLettrePlateau(plateau){
+  console.log("bonjour je suis lu");
+  const board = document.getElementById("board");
+  const grille = plateau.grille;
+  for (let i=0; i<15; i++){
+    for (let j=0; j<15; j++){
+      const squareLetter = document.querySelector(`#board .square[data-x='${i}'][data-y='${j}']`);
+      console.log(squareLetter);
+      if (!(squareLetter.textContent == grille[i][j])){
+        squareLetter.textContent = grille[i][j];
+      }
+    }
+  }
+}
 
 // Fonction pour ajouter une ligne au tableau
 function ajouterLigneTableauScore(nomJoueur, score) {
