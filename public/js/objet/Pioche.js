@@ -2,6 +2,13 @@
 // possède en attribut les différentes lettres restantes (sous forme d'un dictionnaire dont les clés sont les lettres et les valeurs leurs occurences restantes)
 // méthode : elle peut donner une lettre aléatoire (tout en updatant son nombre d'occurence dans le dictionnaire)
 
+import { db } from "../firebaseConfig.js";
+import {
+  updateDoc,
+  doc,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
+
 class Lettre {
   constructor(valeur, points, occurrences) {
     this.valeur = valeur;
@@ -14,7 +21,7 @@ export class Pioche {
   constructor(gameId) {
     // Initialisation du dictionnaire des lettres
     this.gameId = gameId;
-
+    this.partieId = gameId;
     this.lettres = {
       A: new Lettre("A", 1, 9),
       B: new Lettre("B", 3, 2),
@@ -46,7 +53,60 @@ export class Pioche {
     };
   }
 
-  piocherLettre() {
+  // Garde async car updateDoc est asynchrone
+  async initializePiocheOnFirestore() {
+    if (!this.partieId) return;
+
+    try {
+      const piocheData = {};
+      for (const [lettre, data] of Object.entries(this.lettres)) {
+        console.log(`${lettre}: ${data.occurrences}`);
+        piocheData[lettre] = data.occurrences;
+      }
+
+      const docRef = doc(db, "parties", this.partieId);
+      await updateDoc(docRef, {
+        pioche: piocheData,
+      });
+
+      console.log("Pioche initialisée sur Firestore");
+    } catch (error) {
+      console.error("Erreur lors de l'initialisation de la pioche:", error);
+    }
+  }
+
+  listenToPiocheChanges() {
+    if (!this.partieId) return;
+
+    const docRef = doc(db, "parties", this.partieId);
+    onSnapshot(docRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const data = docSnapshot.data();
+
+        if (data.pioche) {
+          Object.entries(data.pioche).forEach(([lettre, occurrences]) => {
+            if (this.lettres[lettre]) {
+              console.log(
+                `Mise à jour de ${lettre}: ${occurrences} (ancienne valeur: ${this.lettres[lettre].occurrences})`
+              );
+              this.lettres[lettre].occurrences = occurrences;
+            } else {
+              console.warn(`Lettre ${lettre} non trouvée dans this.lettres`);
+            }
+          });
+        }
+      }
+    });
+  }
+
+  async piocherLettre() {
+    console.log("Début de piocherLettre");
+    console.log("this.partieId:", this.partieId);
+    if (!this.gameId) {
+      console.error("partieId n'est pas défini dans piocherLettre");
+      return null;
+    }
+
     const lettresDisponibles = [];
     for (let [lettre, objLettre] of Object.entries(this.lettres)) {
       if (objLettre.occurrences > 0) {
@@ -55,6 +115,8 @@ export class Pioche {
     }
 
     if (lettresDisponibles.length === 0) {
+      console.warn("Aucune lettre disponible");
+
       return null;
     }
 
@@ -66,6 +128,22 @@ export class Pioche {
 
     // TODO : Update la Pioche sur Firebase :
     console.log("update la pioche sur firebase ici");
+    try {
+      const docRef = doc(db, "parties", this.partieId);
+      const updateData = {};
+      const cleanLettre = lettrePiochee === "*" ? "joker" : lettrePiochee;
+      updateData[`pioche.${cleanLettre}`] =
+        this.lettres[lettrePiochee].occurrences;
+
+      await updateDoc(docRef, updateData);
+      console.log(
+        `Lettre ${lettrePiochee} piochée. Occurrences restantes : ${this.lettres[lettrePiochee].occurrences}`
+      );
+
+      console.log("Pioche initialisée sur Firestore");
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour de la pioche:", error);
+    }
 
     return this.lettres[lettrePiochee];
   }

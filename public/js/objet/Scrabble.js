@@ -65,8 +65,8 @@ class Scrabble {
     );
   }
 
-  getPlateau(){
-    return this.plateau.grille
+  getPlateau() {
+    return this.plateau.grille;
   }
   // Procédure de début de partie :
   // Initialisation des variables : Joueurs, Plateau, Pioche - par défaut, on rajoutera ensuite les différents aspects
@@ -81,12 +81,12 @@ class Scrabble {
       try {
         const { code, id } = await lobby.addPartie({ joueurs: [UID] });
         this.id = id;
-        this.partyId = id
+        this.partyId = id;
         // Afficher le code dans le paragraphe prévu
         document.querySelector(".header p:nth-child(3)").textContent = code;
         console.log("Partie créée avec le code:", code);
         console.log(this.partyId);
-        fstore.addPlateau(this.plateau.grille,this.partyId)
+        fstore.addPlateau(this.plateau.grille, this.partyId);
         console.log("le plateau a bien été ajouté");
       } catch (error) {
         console.error("Erreur lors de la création de la partie:", error);
@@ -97,6 +97,11 @@ class Scrabble {
       );
     }
 
+    // Initialisation du plateau et de la pioche
+    this.plateau = new Plateau();
+    this.pioche = new Pioche(this.partyId);
+    this.validator = new ScrabbleValidator(this.plateau, this.pioche);
+
     // Initialisation des joueurs
     listeJoueurs.forEach((joueurID) => {
       const joueur = new Joueur(joueurID, fstore.getPseudoFromId(joueurID));
@@ -106,9 +111,8 @@ class Scrabble {
       this.joueurs.push(joueur);
     });
 
-    // Initialisation du plateau et de la pioche
-    this.plateau = new Plateau();
-    this.pioche = new Pioche();
+    await this.pioche.initializePiocheOnFirestore();
+    this.pioche.listenToPiocheChanges();
 
     // Distribution des 7 lettres initiales à chaque joueur
     for (let joueur of this.joueurs) {

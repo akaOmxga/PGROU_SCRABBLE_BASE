@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const board = document.getElementById("board");
 
   const scrabbleData = localStorage.getItem("scrabbleInstance");
-  scrabbleInstance = new Scrabble();
 
   if (scrabbleData) {
     const parsedData = JSON.parse(scrabbleData);
