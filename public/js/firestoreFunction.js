@@ -1,5 +1,5 @@
 import { db , checkAuth} from "./firebaseConfig.js";
-import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, doc , setDoc , onSnapshot} from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
 
 // Function to get User ID (from firebase authentification) 
@@ -209,10 +209,14 @@ async function updateJoueur(id, data) {
 }
 
 // Function to create a new Plateau document
-async function addPlateau(data) {
+async function addPlateau(data,partieId) {
     try {
-        const docRef = await addDoc(collection(db, "Plateaux"), data);
-        console.log("Plateau created with ID: ", docRef.id);
+        // Convertir chaque sous-tableau en chaîne de caractères
+        const formattedData = { plateau: data.map(row => row.join(",")) };
+        const docRef = doc(db, "parties", partieId);
+        // const docRef = await addDoc(collection(db, "Plateaux"), formattedData);
+        await setDoc(docRef, formattedData, { merge: true });
+        console.log("Plateau created with ID");
         return docRef.id;
     } catch (e) {
         console.error("Error adding Plateau: ", e);
@@ -220,29 +224,34 @@ async function addPlateau(data) {
     }
 }
 
-// Function to get a Plateau document by ID
-async function getPlateau(id) {
-    const docRef = doc(db, "Plateaux", id);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
-}
-
 // Function to update an existing Plateau document
 async function updatePlateau(id, data) {
     try {
-        const docRef = doc(db, "Plateaux", id);
-        await updateDoc(docRef, data);
-        console.log("Plateau updated successfully");
+        const formattedData = { plateau: data.map(row => row.join(",")) };
+        const docRef = doc(db, "parties", id);
+        await updateDoc(docRef, formattedData);
     } catch (e) {
         console.error("Error updating Plateau: ", e);
     }
 }
 
+function formatPioche(lettres){
+    let formattedPioche = [];
+    Object.keys(lettres).forEach(key => {
+        const newLetter = [lettres[key].valeur,lettres[key].points.toString(),lettres[key].occurrences.toString()];
+        formattedPioche = formattedPioche.concat(newLetter);
+    });
+    return formattedPioche;
+}
+
 // Function to create a new Pioche document
-async function addPioche(data) {
+// La pioche est implémentée dans firestore via un tableau où les éléments respectent le patterne suivant : [lettre n°1-score n°1-occurence n°1-lettre n°2-...]
+async function addPioche(data,partieId) {
     try {
-        const docRef = await addDoc(collection(db, "Pioches"), data);
-        console.log("Pioche created with ID: ", docRef.id);
+        const formattedData = { pioche : formatPioche(data)};
+        const docRef = doc(db, "parties", partieId);
+        await setDoc(docRef, formattedData, { merge: true });
+        console.log("Pioche created with ID");
         return docRef.id;
     } catch (e) {
         console.error("Error adding Pioche: ", e);
@@ -250,23 +259,48 @@ async function addPioche(data) {
     }
 }
 
-// Function to get a Pioche document by ID
-async function getPioche(id) {
-    const docRef = doc(db, "Pioches", id);
-    const docSnap = await getDoc(docRef);
-    return docSnap.exists() ? docSnap.data() : null;
-}
-
 // Function to update an existing Pioche document
-async function updatePioche(id, data) {
+async function updatePioche(data, id) {
     try {
-        const docRef = doc(db, "Pioches", id);
-        await updateDoc(docRef, data);
-        console.log("Pioche updated successfully");
+        const formattedData = { pioche : formatPioche(data)};
+        const docRef = doc(db, "parties", id);
+        await updateDoc(docRef, formattedData);
     } catch (e) {
         console.error("Error updating Pioche: ", e);
     }
 }
 
+function listenToPlateau(partieId, plateauxxxx) {
+    const docRef = doc(db, "parties", partieId);
+    // Écoute en temps réel
+    onSnapshot(docRef, (doc) => {
+        if (doc.exists()) {
+            const data = doc.data();
+            const plateau = data.plateau.map(row => row.split(",").slice(0, 15)); // Recrée le plateau
+            plateauxxxx.grille = plateau
+            console.log("Plateau mis à jour : ", plateau);
+            // Mets à jour ton interface ou ta logique locale ici
+            updateLettrePlateau(plateauxxxx)
+        } else {
+            console.log("Document non trouvé !");
+        }
+    });
+}
+ // Fonction pour update les lettres provenant du plateau firebase sur le plateau visuel (aspect Frontend):
+function updateLettrePlateau(plateau){
+    // console.log("bonjour je suis lu");
+    const board = document.getElementById("board");
+    const grille = plateau.grille;
+    for (let i=0; i<15; i++){
+      for (let j=0; j<15; j++){
+        const squareLetter = document.querySelector(`#board .square[data-x='${j}'][data-y='${i}']`);
+        // console.log(squareLetter);
+        if (!(squareLetter.textContent == grille[i][j])){
+          squareLetter.textContent = grille[i][j];
+        }
+      }
+    }
+  }
 
-export { getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
+
+export { listenToPlateau , getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , updatePlateau , addPioche , updatePioche };

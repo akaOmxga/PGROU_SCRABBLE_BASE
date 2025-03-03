@@ -3,6 +3,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-database.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyDLNJV8PraPrQMZUo2ee7CS9gVpJGnp1sc",
@@ -34,5 +35,5 @@ export function checkAuth() {
     });
 }
 
-export { app, auth, db};
+export { app, auth, db, ref, onValue};
 
