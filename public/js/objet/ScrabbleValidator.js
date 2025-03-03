@@ -118,6 +118,72 @@ export class ScrabbleValidator {
     }
   }
 
+    async validerPlacement(mot, position, direction, lettresJoueur) {
+        const [x, y] = position;
+        // 0. la direction n'est pas valide <=> un mot n'a pas été posé (soit 0 lettre soit pas sur la même ligne/colonne)
+        if (direction == 'invalide'){
+            return { 
+                valide: false, 
+                message: "Cela ne constitue pas un mot" 
+            }; 
+        }
+
+        // 1. Vérifier les limites du plateau 
+        if (!this.verifierLimitesPlateau(mot, x, y, direction)) {
+            return { 
+                valide: false, 
+                message: "Le mot dépasse les limites du plateau" 
+            };
+        }
+
+        // 2. Vérifier le placement au premier tour
+        if (this.estPremierTour) {
+            if (!this.verifierPremierTour(mot, x, y, direction)) {
+                return { 
+                    valide: false, 
+                    message: "Le premier mot doit passer par la case centrale" 
+                };
+            }
+        } else {
+            // 3. Vérifier la connexion aux mots existants
+            if (!this.verifierConnexion(mot, x, y, direction)) {
+                return { 
+                    valide: false, 
+                    message: "Le mot doit être connecté à au moins une lettre existante" 
+                };
+            }
+        }
+
+        // 4. Collecter tous les mots formés
+        const motsFormes = this.collecterMots(mot, x, y, direction);
+        
+        // 5. Vérifier la validité de chaque mot avec Firebase
+        for (const motForme of motsFormes) {
+            // TODO : implémenter check mot avec firebase
+            // const estValide = await this.verifierMotDansDict(motForme);
+            // pour l'instant :
+            console.log("implémenter la vérification des mots via firebase ici");
+            const estValide = true;
+            if (!estValide) {
+                return {
+                    valide: false,
+                    message: `Le mot "${motForme}" n'est pas dans le dictionnaire`
+                };
+            }
+        }
+
+        // 6. Calculer le score total
+        const score = this.calculerScoreTotal(motsFormes, x, y, direction, this.estPremierTour);
+
+        return {
+            valide: true,
+            score: score,
+            message: `Le mot "${motsFormes[0]}" est valide !`,
+            motsFormes: motsFormes
+        };
+    }
+  }
+
   verifierConnexion(mot, x, y, direction) {
     let connexionTrouvee = false;
     for (let i = 0; i < mot.length; i++) {
@@ -202,32 +268,6 @@ export class ScrabbleValidator {
     ) {
       fin++;
     }
-    // Si le mot fait plus d'une lettre
-    if (
-      fin - debut > 0 ||
-      (fin === debut &&
-        this.plateau.grille[direction === "vertical" ? debut - 1 : y][
-          direction === "vertical" ? x : debut - 1
-        ] !== "")
-    ) {
-      let mot = "";
-      for (let i = debut; i <= fin; i++) {
-        if (
-          (i === y && direction === "vertical") ||
-          (i === x && direction === "horizontal")
-        ) {
-          mot += lettre;
-        } else {
-          mot +=
-            this.plateau.grille[direction === "vertical" ? i : y][
-              direction === "vertical" ? x : i
-            ];
-        }
-      }
-      return mot;
-    }
-
-    return null;
   }
   // ceci est une modification test
 
@@ -266,6 +306,7 @@ export class ScrabbleValidator {
     }
     return scoreTotal;
   }
+
 
   calculerScoreMot(mot, x, y, direction, estPremierTour) {
     let score = 0;
@@ -454,8 +495,6 @@ export class ScrabbleValidator {
           break;
         }
       }
-    }
-
     return {
       word: word,
       position: position,
@@ -468,13 +507,24 @@ export class ScrabbleValidator {
     return Array.from(playerLetters).map((letter) => letter.textContent);
   }
 
-  // Fonction principale pour récupérer toutes les informations
-  getPlacementInfo() {
-    const placedLetters = this.getNewlyPlacedLetters();
-    console.log("placedletters :", placedLetters);
-    if (placedLetters.length === 0) {
-      console.log("pas de lettre posée");
-      return null;
+    // Fonction principale pour récupérer toutes les informations
+    getPlacementInfo() {
+        const placedLetters = this.getNewlyPlacedLetters();
+        if (placedLetters.length === 0) {
+            return null;
+        }
+        // par défaut, pour le cas où on pose 1 seule lettre, la direction = null
+        const direction = this.determineDirection(placedLetters);
+        const { word, position } = this.getFormedWord(placedLetters, direction);
+        const lettresJoueur = this.getLettresJoueur();
+        // position est la position de la lettre qui commence le mot (de gauche à droite, de haut en bas)
+        return {
+            mot: word,
+            position: position,
+            direction: direction,
+            lettresJoueur: lettresJoueur
+        };
+
     }
     // par défaut, pour le cas où on pose 1 seule lettre, la direction = null
     const direction = this.determineDirection(placedLetters);
