@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrabble - Création d'une Partie</title>
+    <link rel="stylesheet" href="../css/default.css">
+    <style> 
+        .players-section {
+            margin-bottom: 30px;
+        }
+
+        #playersTable {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        #playersTable th, #playersTable td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .empty-row {
+            display: none;
+        }
+
+        .players-section .empty-row.active {
+            display: table-row;
+        }
+
+        #loadingIndicator {
+            text-align: center;
+            font-size: 16px;
+            color: #555;
+            margin-top: 20px;
+        }
+
+        #pnjBtn {
+            background-color: rgb(216, 165, 12);
+        }
+
+        #startBtn {
+            background-color: rgb(164, 38, 16);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <p>Invitez des joueurs via le code ci-dessous :</p>
+            <p id="gameCode">---</p>
+        </div>
+
+        <div class="players-section">
+            <table id="playersTable">
+                <thead>
+                    <tr>
+                        <th>Nom des Joueurs présents :</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="empty-row active">
+                        <td>Aucun joueur présent</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="loadingIndicator">En attente de 4 joueurs...</div>
+    </div>
+
+    <script type="module" src="../js/firebaseConfig.js"></script>
+    <script type="module" src="../js/script_waiting.js"></script>
+</body>
+</html>

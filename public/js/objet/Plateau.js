@@ -286,6 +286,9 @@ export class Plateau {
     
     // Firebase: Mettre à jour l'état du plateau
     console.log("update le plateau sur firebase après placement du mot ici"); 
+
+    return true;
+
   }
 
   calculerScore(mot, position, direction) {

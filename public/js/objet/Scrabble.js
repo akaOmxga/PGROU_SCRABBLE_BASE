@@ -75,49 +75,65 @@ class Scrabble {
       throw new Error("Le nombre de joueurs doit être entre 1 et 4");
     }
 
-    // Création d'une nouvelle partie aspect firebase
-    let UID = await fstore.getCurrentUID();
-    if (UID) {
-      try {
-        const { code, id } = await lobby.addPartie({ joueurs: [UID] });
-        this.id = id;
-        this.partyId = id
-        // Afficher le code dans le paragraphe prévu
-        document.querySelector(".header p:nth-child(3)").textContent = code;
-        console.log("Partie créée avec le code:", code);
-        console.log(this.partyId);
-        fstore.addPlateau(this.plateau.grille,this.partyId)
-        console.log("le plateau a bien été ajouté");
-      } catch (error) {
-        console.error("Erreur lors de la création de la partie:", error);
-      }
-    } else {
-      console.log(
-        "Aucun utilisateur connecté, impossible de créer une partie."
-      );
-    }
-
-    // Initialisation des joueurs
-    listeJoueurs.forEach((joueurID) => {
-      const joueur = new Joueur(joueurID, fstore.getPseudoFromId(joueurID));
-      // tirer des lettres dans la pioche :
-      joueur.completerLettres(this.pioche);
-      // ajouter le joueur à la partie de scrabble :
-      this.joueurs.push(joueur);
-    });
+        // Création d'une nouvelle partie aspect firebase
+        let UID = await fstore.getCurrentUID();
+        if (UID) {
+            try {
+                const { code, id } = await lobby.addPartie({ joueurs: [UID] });
+                this.id = id;
+                // Afficher le code dans le paragraphe prévu
+                document.querySelector('.header p:nth-child(2)').textContent = code;
+                console.log("Partie créée avec le code:", code);
+            } catch (error) {
+                console.error("Erreur lors de la création de la partie:", error);
+            }
+        } else {
+            console.log("Aucun utilisateur connecté, impossible de créer une partie.");
+        }
+        /**  les joueurs ne se stockent pas dans l'objet scrabble quand il le rejoind 
+        // Initialisation des joueurs
+        listeJoueurs.forEach(joueurID => {
+            const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
+            // tirer des lettres dans la pioche :
+            joueur.completerLettres(this.pioche);
+            // ajouter le joueur à la partie de scrabble : 
+            this.joueurs.push(joueur);
+        });
 
     // Initialisation du plateau et de la pioche
     this.plateau = new Plateau();
     this.pioche = new Pioche();
 
-    // Distribution des 7 lettres initiales à chaque joueur
-    for (let joueur of this.joueurs) {
-      this.distribuerLettresInitiales(joueur);
-    }
+        // Distribution des 7 lettres initiales à chaque joueur
+        for (let joueur of this.joueurs) {
+            this.distribuerLettresInitiales(joueur);
+        }*/
 
-    // TODO Firebase: Sauvegarder l'état initial de la partie
-    // await this.sauvegarderEtat();
-  }
+        // TODO Firebase: Sauvegarder l'état initial de la partie
+        // await this.sauvegarderEtat();
+    }
+    //modification des joueurs 
+    updateGame(listeJoueur) {
+        this.joueurs=[];//je le reinetialise pour modifier la liste des utilisateurs
+        console.log("la liste des joueurs apres update",listeJoueur);
+        listeJoueur.forEach(joueurID => {
+            const joueur = new Joueur(joueurID,fstore.getPseudoFromId(joueurID));
+            // tirer des lettres dans la pioche :
+            joueur.completerLettres(this.pioche);
+            // ajouter le joueur à la partie de scrabble : 
+            this.joueurs.push(joueur);
+        });
+
+        // Initialisation du plateau et de la pioche
+        this.plateau = new Plateau();
+        this.pioche = new Pioche();
+
+        // Distribution des 7 lettres initiales à chaque joueur
+        for (let joueur of this.joueurs) {
+            this.distribuerLettresInitiales(joueur);
+        }
+
+    }
 
   distribuerLettresInitiales(joueur) {
     for (let i = 0; i < 7; i++) {
@@ -300,13 +316,48 @@ class Scrabble {
     }
   }
 
-  afficherResultats(scoresFinaux) {
-    // Cette méthode sera implémentée selon vos besoins d'interface
-    console.log("Résultats finaux :");
-    scoresFinaux.forEach((score, index) => {
-      console.log(`${index + 1}. ${score.nom}: ${score.score} points`);
-    });
-  }
+    afficherResultats(scoresFinaux) {
+        // Cette méthode sera implémentée selon vos besoins d'interface
+        console.log("Résultats finaux :");
+        scoresFinaux.forEach((score, index) => {
+            console.log(`${index + 1}. ${score.nom}: ${score.score} points`);
+        });
+    }
+    /**
+     * méthode pour récuperer les parties crées par l'utilisateur 
+     */
+    async recupererPartiesCrees() {
+        // Vérifier si l'utilisateur est connecté
+        let UID = await fstore.getCurrentUID();
+        if (UID) {
+            try {
+                // Récupérer les parties créées par l'utilisateur
+                const parties = await lobby.getPartiesByCreator(UID);
+    
+                // Vérifier si des parties ont été récupérées
+                if (parties.length > 0) {
+                    console.log("Parties créées par l'utilisateur:", parties);
+    
+                    // Afficher les codes des parties récupérées dans l'interface
+                    const partiesElement = document.querySelector('.parties-list');
+                    partiesElement.innerHTML = '';  // Vider la liste avant de l'afficher
+                    parties.forEach(partie => {
+                        const partieElement = document.createElement('div');
+                        partieElement.classList.add('partie');
+                        partieElement.textContent = `Code: ${partie.code}, ID: ${partie.id}`;
+                        partiesElement.appendChild(partieElement);
+                    });
+                } else {
+                    console.log("Aucune partie trouvée pour cet utilisateur.");
+                }
+            } catch (error) {
+                console.error("Erreur lors de la récupération des parties:", error);
+            }
+        } else {
+            console.log("Aucun utilisateur connecté, impossible de récupérer les parties.");
+        }
+    }
+    
 }
 
 const scrabbleInstance = new Scrabble();

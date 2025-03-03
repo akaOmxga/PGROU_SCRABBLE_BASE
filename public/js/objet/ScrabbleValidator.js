@@ -40,15 +40,30 @@ export class ScrabbleValidator {
       if (!this.verifierConnexion(mot, x, y, direction)) {
         return {
           valide: false,
-          message: "Le mot doit être connecté à au moins une lettre du plateau",
+          message: "Le mot doit être connecté à au moins une lettre existante",
         };
       }
     }
 
-    // 4. Collecter tous les mots formés
+    // 4. Vérifier la disponibilité des lettres
+    const verificationLettres = this.verifierLettresDisponibles(
+      mot,
+      x,
+      y,
+      direction,
+      lettresJoueur
+    );
+    if (!verificationLettres.valide) {
+      return {
+        valide: false,
+        message: verificationLettres.message,
+      };
+    }
+
+    // 5. Collecter tous les mots formés
     const motsFormes = this.collecterMots(mot, x, y, direction);
 
-    // 5. Vérifier la validité de chaque mot avec Firebase
+    // 6. Vérifier la validité de chaque mot avec Firebase
     for (const motForme of motsFormes) {
       // TODO : implémenter check mot avec firebase
       // const estValide = await this.verifierMotDansDict(motForme);
@@ -156,27 +171,7 @@ export class ScrabbleValidator {
   collecterMots(motPrincipal, x, y, direction) {
     const motsFormes = [motPrincipal];
 
-    // Parcourir chaque lettre du mot principal
-    for (let i = 0; i < motPrincipal.length; i++) {
-      const currentX = direction === "horizontal" ? x + i : x;
-      const currentY = direction === "horizontal" ? y : y + i;
-
-      // Si on place une nouvelle lettre (pas une lettre existante)
-      if (this.plateau.grille[currentY][currentX] === "") {
-        // Chercher un mot perpendiculaire
-        const motPerpendiculaire = this.trouverMotPerpendiculaire(
-          motPrincipal[i],
-          currentX,
-          currentY,
-          direction === "horizontal" ? "vertical" : "horizontal"
-        );
-
-        if (motPerpendiculaire) {
-          motsFormes.push(motPerpendiculaire);
-        }
-      }
-    }
-    return motsFormes;
+    return connexionTrouvee;
   }
 
   trouverMotPerpendiculaire(lettre, x, y, direction) {
@@ -243,6 +238,7 @@ export class ScrabbleValidator {
       direction,
       estPremierTour
     );
+
     // Calculer les scores des mots perpendiculaires
     for (let i = 1; i < motsFormes.length; i++) {
       const motPerp = motsFormes[i];
@@ -379,6 +375,54 @@ export class ScrabbleValidator {
     if (allSameY) return "horizontal";
 
     return "invalide"; // Les lettres ne sont pas alignées
+  }
+
+  verifierLettresDisponibles(mot, x, y, direction, lettresJoueur) {
+    console.log("Lettres du joueur:", lettresJoueur);
+    console.log("Lettre nécessaire:", mot);
+
+    const lettresNecessaires = [];
+    const lettresUtilisees = [];
+    for (let i = 0; i < mot.length; i++) {
+      const currentX = direction === "horizontal" ? x + i : x;
+      const currentY = direction === "horizontal" ? y : y + i;
+      const lettrePlateau = this.plateau.grille[currentY][currentX];
+      const lettreNecessaire = mot[i].toUpperCase();
+
+      console.log("Vérification pour la lettre:", lettreNecessaire);
+      console.log("Lettre sur le plateau:", lettrePlateau);
+
+      if (lettrePlateau === "") {
+        // Si la lettre n'est pas sur le plateau, on doit l'avoir dans notre jeu
+        if (
+          !lettresJoueur.includes(lettreNecessaire) &&
+          !lettresJoueur.includes("*")
+        ) {
+          return {
+            valide: false,
+            message: `Lettre ${lettreNecessaire} non disponible`,
+          };
+        }
+
+        if (lettresJoueur.includes(lettreNecessaire)) {
+          lettresUtilisees.push(lettreNecessaire);
+        } else {
+          // Utilisation d'un joker
+          lettresUtilisees.push("*");
+        }
+      } else if (lettrePlateau !== lettreNecessaire) {
+        return {
+          valide: true,
+          lettresUtilisees: lettresUtilisees,
+          valide: false,
+          message: `Conflit avec une lettre existante`,
+        };
+      }
+    }
+    return {
+      valide: true,
+      lettresUtilisees: lettresUtilisees,
+    };
   }
 
   // Fonction pour récupérer le mot complet formé
