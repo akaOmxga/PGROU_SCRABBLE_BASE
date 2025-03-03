@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  console.log(scrabbleInstance.partyId,scrabbleInstance.plateau)
-  fstore.listenToPlateau(scrabbleInstance.partyId,scrabbleInstance.plateau)
+  console.log(scrabbleInstance.partyId, scrabbleInstance.plateau);
+  fstore.listenToPlateau(scrabbleInstance.partyId, scrabbleInstance.plateau);
 
   // Fonction pour déterminer le type de la case en fonction de son indice de création (i allant de 0 à 224)
   function getSquareType(i) {
@@ -212,15 +212,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       square.dataset.occupied = "true";
       square.dataset.removable = "true";
       activeLetter.remove(); // Retirer du jeu
-      activeLetter = null; square.textContent
-      
 
       square.dataset.originalLetter = activeLetter.id; // Pour garder une référence à la lettre
       activeLetter.style.visibility = "hidden"; // On cache juste la lettre
-      activeLetter = null;
-      scrabbleInstance.plateau.placerLettre(square.textContent,square.dataset.x,square.dataset.y)
-      fstore.updatePlateau(scrabbleInstance.partyId,scrabbleInstance.getPlateau())
 
+      scrabbleInstance.plateau.placerLettre(
+        square.textContent,
+        square.dataset.x,
+        square.dataset.y
+      );
+      fstore.updatePlateau(
+        scrabbleInstance.partyId,
+        scrabbleInstance.getPlateau()
+      );
+
+      activeLetter = null;
     }
     // supprimer la lettre du plateau et ajouter la lettre à l'inventaire du joueur
     else if (
@@ -292,7 +298,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       afficherMessage(resultat.message);
 
       if (resultat.valide) {
-
         // Le mot est valide, on peut maintenant retirer définitivement les lettres
         const placedLetters = document.querySelectorAll(
           ".square[data-removable='true']"

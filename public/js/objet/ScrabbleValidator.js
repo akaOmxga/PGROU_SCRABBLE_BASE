@@ -87,14 +87,6 @@ export class ScrabbleValidator {
       this.estPremierTour
     );
 
-    // 6. Calculer le score total
-    const score = this.calculerScoreTotal(
-      motsFormes,
-      x,
-      y,
-      direction,
-      this.estPremierTour
-    );
     console.log("le score :", score);
     // Mettre à jour estPremierTour si le placement est valide
     this.estPremierTour = false;
@@ -175,15 +167,12 @@ export class ScrabbleValidator {
         }
       }
     }
+    return connexionTrouvee;
   }
 
   collecterMots(motPrincipal, x, y, direction) {
     const motsFormes = [motPrincipal];
 
-    return connexionTrouvee;
-  }
-
- 
     // Parcourir chaque lettre du mot principal
     for (let i = 0; i < motPrincipal.length; i++) {
       const currentX = direction === "horizontal" ? x + i : x;
