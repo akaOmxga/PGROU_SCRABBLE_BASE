@@ -1,7 +1,4 @@
 
-import { getCurrentUID, getCurrentPseudo } from './firestoreFunction.js';
-import { Scrabble } from './objet/Scrabble.js';
-
 //////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////
 /////////////////////////    Authentification Check     //////////////////////////
@@ -39,38 +36,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-/////////////////////////    Authentification End     ////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////
 
-let scrabbleInstance; // Déclaration de scrabble à l'échelle du module
 
-// Fonction pour créer une nouvelle partie et afficher le code
-async function CreateNewGame(listeJoueurs) {
-    scrabbleInstance = new Scrabble(""); 
-    await scrabbleInstance.initializeGame(listeJoueurs); 
-    return scrabbleInstance; // Retourne l'objet scrabble après l'initialisation grâce à await
-}
-
-// Attendre que le DOM soit complètement chargé
-document.addEventListener("DOMContentLoaded", async function() {
-    console.log("domContentCharged de scriptnewGame");
-    const listeJoueurs = [await getCurrentUID()];
-    scrabbleInstance = await CreateNewGame(listeJoueurs); // Créer et attendre l'objet scrabble
-    console.log("La partie a été créée", scrabbleInstance);
-
-    // Afficher le joueur créateur de la partie : 
-    const pseudo = await getCurrentPseudo(); // Récupère le pseudo depuis Firestore
-    ajouterJoueurFrontEnd(pseudo);
-
-    // Enregistrer l'objet scrabble dans localStorage (en le convertissant en JSON)
-    localStorage.setItem('scrabbleInstance', JSON.stringify(scrabbleInstance));
-    console.log("Objet scrabble sauvegardé dans localStorage:", localStorage.getItem('scrabbleInstance'));
-
-});
-
+/*
 // Sélectionner le tableau
 const tableau = document.getElementById("playersTable");
 // Ajouter une ligne dans le tbody
@@ -86,10 +54,11 @@ function ajouterJoueurFrontEnd(nomJoueur) {
 
     // Remplit la cellule avec le nom du joueur
     cellule.textContent = nomJoueur;
-};
+};*/
 
 // Bouton Lancer la Partie : 
 document.getElementById("startBtn").addEventListener("click", () => {
-    window.location.href = "game.html";
+    window.location.href = "waiting.html";
+    //window.location.href = "game.html";
 
 });

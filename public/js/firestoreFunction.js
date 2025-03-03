@@ -1,7 +1,6 @@
 import { db , checkAuth} from "./firebaseConfig.js";
 import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, doc , setDoc , onSnapshot} from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js';
 import { getAuth } from 'https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js';
-
 // Function to get User ID (from firebase authentification) 
 async function getCurrentUID() {
     const auth = getAuth(); 
@@ -103,12 +102,22 @@ async function getUser(id) {
     return docSnap.exists() ? docSnap.data() : null;
 }
 
+
+
 async function getPartieById(partieId) {
     try {
-        const partieDoc = await getDoc(doc(db, 'parties', partieId));
-        if (partieDoc.exists()) {
+        // Référence au document spécifique
+        const partieRef = doc(db, 'parties', partieId);
+
+        // Récupération du document
+        const partieDoc = await getDoc(partieRef);
+
+        // Vérification de l'existence du document
+        if (partieRef.exists()) {
             return { id: partieDoc.id, ...partieDoc.data() };
         }
+
+        // Si le document n'existe pas
         return null;
     } catch (error) {
         console.error("Erreur lors de la récupération de la partie:", error);
@@ -116,8 +125,10 @@ async function getPartieById(partieId) {
     }
 }
 
+
 // Fonction pour obtenir le score d'un joueur à partir de son ID dans la partie
 async function getScoreFromID(joueurID, partieID) {
+    
     const db = getFirestore();
     
     // Référence au document de la partie
