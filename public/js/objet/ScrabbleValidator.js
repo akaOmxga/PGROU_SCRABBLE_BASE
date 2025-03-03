@@ -118,70 +118,69 @@ export class ScrabbleValidator {
     }
   }
 
-    async validerPlacement(mot, position, direction, lettresJoueur) {
-        const [x, y] = position;
-        // 0. la direction n'est pas valide <=> un mot n'a pas été posé (soit 0 lettre soit pas sur la même ligne/colonne)
-        if (direction == 'invalide'){
-            return { 
-                valide: false, 
-                message: "Cela ne constitue pas un mot" 
-            }; 
-        }
+  async validerPlacement(mot, position, direction, lettresJoueur) {
+      const [x, y] = position;
+      // 0. la direction n'est pas valide <=> un mot n'a pas été posé (soit 0 lettre soit pas sur la même ligne/colonne)
+      if (direction == 'invalide'){
+          return { 
+              valide: false, 
+              message: "Cela ne constitue pas un mot" 
+          }; 
+      }
 
-        // 1. Vérifier les limites du plateau 
-        if (!this.verifierLimitesPlateau(mot, x, y, direction)) {
-            return { 
-                valide: false, 
-                message: "Le mot dépasse les limites du plateau" 
-            };
-        }
+      // 1. Vérifier les limites du plateau 
+      if (!this.verifierLimitesPlateau(mot, x, y, direction)) {
+          return { 
+              valide: false, 
+              message: "Le mot dépasse les limites du plateau" 
+          };
+      }
 
-        // 2. Vérifier le placement au premier tour
-        if (this.estPremierTour) {
-            if (!this.verifierPremierTour(mot, x, y, direction)) {
-                return { 
-                    valide: false, 
-                    message: "Le premier mot doit passer par la case centrale" 
-                };
-            }
-        } else {
-            // 3. Vérifier la connexion aux mots existants
-            if (!this.verifierConnexion(mot, x, y, direction)) {
-                return { 
-                    valide: false, 
-                    message: "Le mot doit être connecté à au moins une lettre existante" 
-                };
-            }
-        }
+      // 2. Vérifier le placement au premier tour
+      if (this.estPremierTour) {
+          if (!this.verifierPremierTour(mot, x, y, direction)) {
+              return { 
+                  valide: false, 
+                  message: "Le premier mot doit passer par la case centrale" 
+              };
+          }
+      } else {
+          // 3. Vérifier la connexion aux mots existants
+          if (!this.verifierConnexion(mot, x, y, direction)) {
+              return { 
+                  valide: false, 
+                  message: "Le mot doit être connecté à au moins une lettre existante" 
+              };
+          }
+      }
 
-        // 4. Collecter tous les mots formés
-        const motsFormes = this.collecterMots(mot, x, y, direction);
-        
-        // 5. Vérifier la validité de chaque mot avec Firebase
-        for (const motForme of motsFormes) {
-            // TODO : implémenter check mot avec firebase
-            // const estValide = await this.verifierMotDansDict(motForme);
-            // pour l'instant :
-            console.log("implémenter la vérification des mots via firebase ici");
-            const estValide = true;
-            if (!estValide) {
-                return {
-                    valide: false,
-                    message: `Le mot "${motForme}" n'est pas dans le dictionnaire`
-                };
-            }
-        }
+      // 4. Collecter tous les mots formés
+      const motsFormes = this.collecterMots(mot, x, y, direction);
+      
+      // 5. Vérifier la validité de chaque mot avec Firebase
+      for (const motForme of motsFormes) {
+          // TODO : implémenter check mot avec firebase
+          // const estValide = await this.verifierMotDansDict(motForme);
+          // pour l'instant :
+          console.log("implémenter la vérification des mots via firebase ici");
+          const estValide = true;
+          if (!estValide) {
+              return {
+                  valide: false,
+                  message: `Le mot "${motForme}" n'est pas dans le dictionnaire`
+              };
+          }
+      }
 
-        // 6. Calculer le score total
-        const score = this.calculerScoreTotal(motsFormes, x, y, direction, this.estPremierTour);
+      // 6. Calculer le score total
+      const score = this.calculerScoreTotal(motsFormes, x, y, direction, this.estPremierTour);
 
-        return {
-            valide: true,
-            score: score,
-            message: `Le mot "${motsFormes[0]}" est valide !`,
-            motsFormes: motsFormes
-        };
-    }
+      return {
+          valide: true,
+          score: score,
+          message: `Le mot "${motsFormes[0]}" est valide !`,
+          motsFormes: motsFormes
+      };
   }
 
   verifierConnexion(mot, x, y, direction) {
@@ -500,6 +499,7 @@ export class ScrabbleValidator {
       position: position,
     };
   }
+}
 
   // Fonction pour récupérer les lettres du joueur
   getLettresJoueur() {
@@ -524,18 +524,5 @@ export class ScrabbleValidator {
             direction: direction,
             lettresJoueur: lettresJoueur
         };
-
+      }
     }
-    // par défaut, pour le cas où on pose 1 seule lettre, la direction = null
-    const direction = this.determineDirection(placedLetters);
-    const { word, position } = this.getFormedWord(placedLetters, direction);
-    const lettresJoueur = this.getLettresJoueur();
-    // position est la position de la lettre qui commence le mot (de gauche à droite, de haut en bas)
-    return {
-      mot: word,
-      position: position,
-      direction: direction,
-      lettresJoueur: lettresJoueur,
-    };
-  }
-}
