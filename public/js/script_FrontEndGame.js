@@ -235,6 +235,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       square.dataset.occupied = "false";
       square.dataset.removable = "false";
       activeLetter = null;
+
+      scrabbleInstance.plateau.placerLettre("",square.dataset.x,square.dataset.y)
+      fstore.updatePlateau(scrabbleInstance.partyId,scrabbleInstance.getPlateau())
     } else {
       activeLetter = null;
     }
@@ -350,7 +353,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           newLetter.textContent = lettre.letter;
           newLetter.dataset.letter = lettre.letter;
           playerInventory.appendChild(newLetter);
-
+          scrabbleInstance.plateau.placerLettre("",x,y)
           // Reset the square
           squareLetter.textContent = "";
           squareLetter.dataset.occupied = "false";
@@ -373,6 +376,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           // });
         }
       }
+    fstore.updatePlateau(scrabbleInstance.partyId,scrabbleInstance.getPlateau())
     });
 });
 
