@@ -20,7 +20,23 @@ class Scrabble {
     this.tourActuel = 0;
     this.partieEnCours = true;
     this.validator = new ScrabbleValidator(this.plateau, this.pioche);
+
+    // Lancer l'écoute du plateau sur Firebase
+    //this.initialiserEcoutePlateau();
   }
+
+  // initialiserEcoutePlateau() {
+  //   const plateauRef = ref(db, `parties/${this.partyId}/plateau`);
+
+  //   onValue(plateauRef, (snapshot) => {
+  //     const data = snapshot.val();
+  //     if (data) {
+  //       // Mettre à jour la matrice du plateau
+  //       this.plateau.contenu = data.contenu || [];
+  //       console.log("Plateau mis à jour :", this.plateau.contenu);
+  //     }
+  //   });
+  // }
 
   passerAuJoueurSuivant() {
     this.tourActuel = (this.tourActuel + 1) % this.joueurs.length;
@@ -49,6 +65,9 @@ class Scrabble {
     );
   }
 
+  getPlateau(){
+    return this.plateau.grille
+  }
   // Procédure de début de partie :
   // Initialisation des variables : Joueurs, Plateau, Pioche - par défaut, on rajoutera ensuite les différents aspects
   async initializeGame(listeJoueurs) {
@@ -80,6 +99,36 @@ class Scrabble {
             // ajouter le joueur à la partie de scrabble : 
             this.joueurs.push(joueur);
         });
+    // Création d'une nouvelle partie aspect firebase
+    let UID = await fstore.getCurrentUID();
+    if (UID) {
+      try {
+        const { code, id } = await lobby.addPartie({ joueurs: [UID] });
+        this.id = id;
+        this.partyId = id
+        // Afficher le code dans le paragraphe prévu
+        document.querySelector(".header p:nth-child(3)").textContent = code;
+        console.log("Partie créée avec le code:", code);
+        console.log(this.partyId);
+        fstore.addPlateau(this.plateau.grille,this.partyId)
+        console.log("le plateau a bien été ajouté");
+      } catch (error) {
+        console.error("Erreur lors de la création de la partie:", error);
+      }
+    } else {
+      console.log(
+        "Aucun utilisateur connecté, impossible de créer une partie."
+      );
+    }
+
+    // Initialisation des joueurs
+    listeJoueurs.forEach((joueurID) => {
+      const joueur = new Joueur(joueurID, fstore.getPseudoFromId(joueurID));
+      // tirer des lettres dans la pioche :
+      joueur.completerLettres(this.pioche);
+      // ajouter le joueur à la partie de scrabble :
+      this.joueurs.push(joueur);
+    });
 
     // Initialisation du plateau et de la pioche
     this.plateau = new Plateau();
