@@ -21,8 +21,8 @@ export class Joueur {
     }
 
     // Retire une lettre spécifique de l'inventaire
-    retirerLettre(lettre) {
-        const index = this.lettres.indexOf(lettre);
+    retirerLettre(valeurLettre) {
+        const index = this.lettres.findIndex(l => l.valeur === valeurLettre);
         if (index > -1) {
             this.lettres.splice(index, 1);
             return true;
@@ -30,6 +30,7 @@ export class Joueur {
         }
         return false;
     }
+    
 
     // Vérifie si le joueur a les lettres nécessaires pour former un mot
     possedeLettre(mot) {
@@ -61,18 +62,48 @@ export class Joueur {
             if (!isValid) return false;
         });
         */
-
-        // Si le mot est valide, retirer les lettres utilisées
+    
+        // Si le mot est valide, Retirer les lettres utilisées du joueur (en comparant par valeur)
         for (let lettre of mot.toUpperCase()) {
             this.retirerLettre(lettre);
         }
-
+    
+        // Debug : vérifier l'état de l'inventaire après retrait
+        console.log("Inventaire après retrait du mot :", this.lettres.map(l => l.valeur));
+    
         // Placer le mot sur le plateau
         plateau.placerMot(mot, position, direction);
-
+    
         // Firebase: Mettre à jour l'état du plateau et l'inventaire du joueur
         return true;
-    }
+    }    
+    
+//   jouerMot(mot, position, direction, plateau) {
+        // Vérifier si le joueur a les lettres nécessaires
+//        if (!this.possedeLettre(mot)) {
+//            return false;
+//        }
+
+        // Vérifier si le mot est valide dans le dictionnaire
+        // TODO: Implémenter la vérification avec la base de données externe
+        /* 
+        checkWordInDictionary(mot).then(isValid => {
+            if (!isValid) return false;
+        });
+        */
+
+        // Si le mot est valide, retirer les lettres utilisées
+//        for (let lettre of mot.toUpperCase()) {
+//            this.retirerLettre(lettre);
+//        }
+
+        // Placer le mot sur le plateau
+//        plateau.placerMot(mot, position, direction);
+
+        // Firebase: Mettre à jour l'état du plateau et l'inventaire du joueur
+//        return true;
+//    } 
+
 
     completerLettres(pioche) {
         while (this.lettres.length < 7 && !pioche.estVide()) {
