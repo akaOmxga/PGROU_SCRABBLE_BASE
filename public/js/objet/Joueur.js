@@ -36,16 +36,17 @@ export class Joueur {
     possedeLettre(mot) {
         const lettresTemp = [...this.lettres];
         for (let lettre of mot.toUpperCase()) {
-            const index = lettresTemp.indexOf(lettre);
+            // On cherche l'objet dont la propriété "valeur" correspond à la lettre
+            const index = lettresTemp.findIndex(l => l.valeur === lettre);
             if (index === -1) {
-                // Vérifier si on a un joker (*) disponible
-                const jokerIndex = lettresTemp.indexOf('*');
-                if (jokerIndex === -1) return false;
-                lettresTemp.splice(jokerIndex, 1);
+              // Même chose pour le joker :
+              const jokerIndex = lettresTemp.findIndex(l => l.valeur === '*');
+              if (jokerIndex === -1) return false;
+              lettresTemp.splice(jokerIndex, 1);
             } else {
-                lettresTemp.splice(index, 1);
+              lettresTemp.splice(index, 1);
             }
-        }
+          }
         return true;
     }
 
