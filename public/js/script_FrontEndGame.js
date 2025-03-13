@@ -292,17 +292,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         scrabbleInstance.plateau.placerMot(mot, position, direction);
         // Réinitialiser toutes les valeurs removable à Off
         removableOffAll();
+        // **Ensure played letters are removed from the board before refilling inventory**
+        document.querySelectorAll("#board .square").forEach((square) => {
+          if (square.dataset.occupied === "true") {
+              square.textContent = "";
+              square.dataset.occupied = "false";
+          }
+        });
         // Redonner des lettres au joueur :
         const playerInventory = document.querySelector("#player-letters");
-        while (playerInventory.children.length < 7) {
-          // 7 lettres + une barre
-          const lettre = scrabbleInstance.pioche.piocherLettre(); // de type lettre cf Plateau.js
+        const letterTiles = playerInventory.querySelectorAll(".letter");
+        const missingLetters = 7 - letterTiles.length;
+        for (let i = 0; i < missingLetters; i++) {
+          const lettre = scrabbleInstance.pioche.piocherLettre();
+          if (!lettre) break; // Stop if no more letters in the pool
+
           const newLetter = document.createElement("div");
           newLetter.className = "letter";
           newLetter.draggable = "true";
           newLetter.textContent = lettre.valeur;
           newLetter.dataset.letter = lettre.valeur;
-          // Ajouter l'écouteur d'événements pour la nouvelle lettre
+
           newLetter.addEventListener("click", () => {
             console.log("letter clicked");
             if (activeLetter === newLetter) {
@@ -310,10 +320,9 @@ document.addEventListener("DOMContentLoaded", async () => {
               newLetter.classList.remove("selected");
             } else {
               activeLetter = newLetter;
-              const allLetters = document.querySelectorAll(
-                "#player-letters .letter"
+              document.querySelectorAll("#player-letters .letter").forEach((l) => 
+                l.classList.remove("selected")
               );
-              allLetters.forEach((l) => l.classList.remove("selected"));
               newLetter.classList.add("selected");
             }
           });

@@ -11,6 +11,7 @@ export class Joueur {
         if (this.lettres.length < 7) {
             this.lettres.push(lettre);
         }
+        console.log("lettre ajoutée", this.lettre)
     }
 
     retirerLettre(valeurLettre) {
@@ -19,6 +20,7 @@ export class Joueur {
             this.lettres.splice(index, 1);
             return true;
         }
+        console.log("lettre retirée", valeurLettre)
         return false;
     }
 
@@ -54,11 +56,12 @@ export class Joueur {
 
     completerLettres(pioche) {
         while (this.lettres.length < 7 && !pioche.estVide()) {
-            const lettre = pioche.piocherLettre();
+            const lettre = pioche.piocherLettre(this);
             if (lettre) {
                 this.ajouterLettre(lettre);
             }
         }
+        console.log("Lettres après complétion :", this.lettres);
     }
 
     passerTour() {
