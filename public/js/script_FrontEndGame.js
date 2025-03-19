@@ -293,12 +293,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Réinitialiser toutes les valeurs removable à Off
         removableOffAll();
         // **Ensure played letters are removed from the board before refilling inventory**
-        document.querySelectorAll("#board .square").forEach((square) => {
-          if (square.dataset.occupied === "true") {
-              square.textContent = "";
-              square.dataset.occupied = "false";
+        if (!resultat.valide) {
+          console.log("Le mot est invalide, suppression des lettres placées...");
+          const letters = scrabbleInstance.validator.getNewlyPlacedLetters();
+          for (let i = 0; i < letters.length; i++) {
+            const lettre = letters[i];
+            const square = document.querySelector(
+              `#board .square[data-x='${lettre.x}'][data-y='${lettre.y}']`
+            );
+            square.textContent = "";
+            square.dataset.occupied = "false";
+            square.dataset.removable = "false";
           }
-        });
+        } else {
+          console.log("Le mot est valide, il reste sur le plateau !");
+        }        
         // Redonner des lettres au joueur :
         const playerInventory = document.querySelector("#player-letters");
         const letterTiles = playerInventory.querySelectorAll(".letter");
