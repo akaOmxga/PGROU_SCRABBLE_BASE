@@ -173,42 +173,33 @@ class Scrabble {
     return this.verifierFinPartie();
   }
 
-  verifierEtPlacerMot(coup, joueur) {
-    // Vérification spéciale pour le premier mot
+  async verifierEtPlacerMot(coup, joueur) {
+    // Vérifier le premier mot (doit passer par le centre)
     if (this.estPremierMot()) {
-      const passeCentre = this.verifiePassageCentre(
-        coup.mot,
-        coup.position,
-        coup.direction
-      );
+      const passeCentre = this.verifiePassageCentre(coup.mot, coup.position, coup.direction);
       if (!passeCentre) {
         return {
           valide: false,
-          message: "Le premier mot doit passer par la case centrale",
+          message: "Le premier mot doit passer par la case centrale"
         };
       }
     }
-
-    // Vérification de la validité du mot
-    // TODO: Vérification avec la base de données des mots valides
-
-    // Placement du mot sur le plateau
-    const placementReussi = this.jeu.plateau.placerMot(
-      coup.mot,
-      coup.position,
-      coup.direction
-    );
+  
+    // Vérifier si le mot est dans le dictionnaire Firebase
+    const motValide = await this.validator.verifierMotDansDictionnaire(coup.mot);
+    if (!motValide) {
+      return { valide: false, message: "Ce mot n'existe pas dans le dictionnaire Scrabble !" };
+    }
+  
+    // Si le mot est valide, placer sur le plateau
+    const placementReussi = this.plateau.placerMot(coup.mot, coup.position, coup.direction);
     if (!placementReussi) {
       return { valide: false, message: "Placement impossible" };
     }
-
-    // Calcul des points
-    const points = this.jeu.plateau.calculerScore(
-      coup.mot,
-      coup.position,
-      coup.direction
-    );
-
+  
+    // Calculer le score
+    const points = this.plateau.calculerScore(coup.mot, coup.position, coup.direction);
+  
     return { valide: true, points };
   }
 
