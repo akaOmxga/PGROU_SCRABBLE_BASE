@@ -8,6 +8,26 @@ export class ScrabbleValidator {
     this.CENTRE = 7;
     this.estPremierTour = true;
   }
+  // Vérifier si un mot est valide via Firebase
+  async motExisteDansDictionnaire(mot) {
+    const url = `https://your-firebase-endpoint.com/dictionnaire/${mot.toUpperCase()}`;
+    console.log("Requête envoyée à :", url);
+  
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        console.error("Erreur de récupération du mot :", response.status);
+        return false;
+      }
+  
+      const data = await response.json();
+      console.log("Réponse reçue :", data);
+      return data.exists;
+    } catch (error) {
+      console.error("Erreur de requête Firebase :", error);
+      return false;
+    }
+  }
 
   async validerPlacement(mot, position, direction, lettresJoueur) {
     const [x, y] = position;
@@ -310,18 +330,10 @@ export class ScrabbleValidator {
     return score * multiplicateurMot;
   }
 
-  // Vérification avec Firebase
-  async verifierMotDansDict(mot) {
-    const db = getDatabase();
-    const dbRef = ref(db);
-    const snapshot = await get(child(dbRef, `words/${mot}`));
-    if (snapshot.exists()) {
-      console.log(`${mot} est un mot valide !`);
-      return true;
-    } else {
-      console.log(`${mot} n'est pas valide.`);
-      return false;
-    }
+  // Vérifier si le mot est valide via Firebase
+  async verifierMotDansDictionnaire(mot) {
+    mot = mot.toUpperCase(); // Standardiser les mots en majuscules
+    return await this.motExisteDansDictionnaire(mot);
   }
 
   trouverPositionMotPerpendiculaire(
