@@ -224,6 +224,13 @@ async function addPlateau(data,partieId) {
     }
 }
 
+// Function to get a Plateau document by ID
+async function getPlateau(id) {
+    const docRef = doc(db, "Plateaux", id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+}
+
 // Function to update an existing Plateau document
 async function updatePlateau(id, data) {
     try {
@@ -235,23 +242,11 @@ async function updatePlateau(id, data) {
     }
 }
 
-function formatPioche(lettres){
-    let formattedPioche = [];
-    Object.keys(lettres).forEach(key => {
-        const newLetter = [lettres[key].valeur,lettres[key].points.toString(),lettres[key].occurrences.toString()];
-        formattedPioche = formattedPioche.concat(newLetter);
-    });
-    return formattedPioche;
-}
-
 // Function to create a new Pioche document
-// La pioche est implémentée dans firestore via un tableau où les éléments respectent le patterne suivant : [lettre n°1-score n°1-occurence n°1-lettre n°2-...]
-async function addPioche(data,partieId) {
+async function addPioche(data) {
     try {
-        const formattedData = { pioche : formatPioche(data)};
-        const docRef = doc(db, "parties", partieId);
-        await setDoc(docRef, formattedData, { merge: true });
-        console.log("Pioche created with ID");
+        const docRef = await addDoc(collection(db, "Pioches"), data);
+        console.log("Pioche created with ID: ", docRef.id);
         return docRef.id;
     } catch (e) {
         console.error("Error adding Pioche: ", e);
@@ -259,12 +254,19 @@ async function addPioche(data,partieId) {
     }
 }
 
+// Function to get a Pioche document by ID
+async function getPioche(id) {
+    const docRef = doc(db, "Pioches", id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : null;
+}
+
 // Function to update an existing Pioche document
-async function updatePioche(data, id) {
+async function updatePioche(id, data) {
     try {
-        const formattedData = { pioche : formatPioche(data)};
-        const docRef = doc(db, "parties", id);
-        await updateDoc(docRef, formattedData);
+        const docRef = doc(db, "Pioches", id);
+        await updateDoc(docRef, data);
+        console.log("Pioche updated successfully");
     } catch (e) {
         console.error("Error updating Pioche: ", e);
     }
@@ -303,4 +305,4 @@ function updateLettrePlateau(plateau){
   }
 
 
-export { listenToPlateau , getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , updatePlateau , addPioche , updatePioche };
+export { listenToPlateau , getPseudoFromId, getScoreFromID, getCurrentPseudo, getJoueurNomById , getCurrentUID , addUser , getUser , getPartieById , updatePartie , addJoueur , getJoueur , updateJoueur , addPlateau , getPlateau , updatePlateau , addPioche , getPioche , updatePioche };
