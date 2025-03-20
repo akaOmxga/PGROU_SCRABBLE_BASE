@@ -69,11 +69,7 @@ export class ScrabbleValidator {
 
     // 5. Vérifier la validité de chaque mot avec Firebase
     for (const motForme of motsFormes) {
-      // TODO : implémenter check mot avec firebase
-      // const estValide = await this.verifierMotDansDict(motForme);
-      // pour l'instant :
-      console.log("implémenter la vérification des mots via firebase ici");
-      const estValide = true;
+      const estValide = await this.motExisteDansDictionnaire(motForme);
       if (!estValide) {
         return {
           valide: false,
