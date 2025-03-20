@@ -19,6 +19,10 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+//Set Firebase services as global variables
+window.firebaseAuth = auth;
+window.firebaseDB = db;
+
 // Fonction simple pour vérifier l'authentification sans logique UI
 export function checkAuth() {
 
@@ -36,4 +40,3 @@ export function checkAuth() {
 }
 
 export { app, auth, db, ref, onValue};
-
