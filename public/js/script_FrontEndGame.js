@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   console.log(scrabbleInstance.partyId,scrabbleInstance.plateau)
-  fstore.listenToPlateau(scrabbleInstance.partyId,scrabbleInstance.plateau)
+  //fstore.listenToPlateau(scrabbleInstance.partyId,scrabbleInstance.plateau)
 
   // Fonction pour déterminer le type de la case en fonction de son indice de création (i allant de 0 à 224)
   function getSquareType(i) {
@@ -257,12 +257,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   document
     .getElementById("validate-word")
     .addEventListener("click", async () => {
+      console.log("enter function");
       // prendre les informations du tour :
       const infos = scrabbleInstance.validator.getPlacementInfo();
+      console.log("3");
       const mot = infos.mot; // récupérer le mot formé
       const position = infos.position; // récupérer la position [x, y]
       const direction = infos.direction; // récupérer la direction : null => une seule lettre / sinon direction vaut soit horizontale/verticale/invalide (invalide = les lettres placées ne sont ni sur la même ligne ni sur la même colonne)
       const lettresJoueur = infos.lettresJoueur; // récupérer les lettres du joueur
+      console.log("2");
       const resultat = await scrabbleInstance.validator.validerPlacement(
         mot,
         position,
