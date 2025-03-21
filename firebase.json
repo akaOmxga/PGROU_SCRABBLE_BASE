@@ -15,7 +15,7 @@
     {
       "source": "public/functions",
       "codebase": "default",
-      "runtime" : "python310",
+      "runtime" : "nodejs18",
       "ignore": [
         "venv",
         ".git",

@@ -10,22 +10,30 @@ export class ScrabbleValidator {
   }
   // Vérifier si un mot est valide via Firebase
   async motExisteDansDictionnaire(mot) {
-    const url = `https://your-firebase-endpoint.com/dictionnaire/${mot.toUpperCase()}`;
-  
+    const url = `http://localhost:5000/scrabblewepapp/us-central1/search_dictionary?word=${mot.toUpperCase()}`;
+    
     try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        console.error("Erreur lors de la récupération du mot :", response.status);
-        return false;
-      }
-  
-      const data = await response.json();
-      return data.exists; // Assurez-vous que l'API retourne { exists: true } pour les mots valides
+        const response = await fetch(url, {
+            method: "GET",
+            mode: "cors",  // Force CORS mode
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            console.error("Erreur lors de la récupération du mot :", response.status);
+            return false;
+        }
+
+        const data = await response.json();
+        return data.exists;
     } catch (error) {
-      console.error("Erreur de requête Firebase :", error);
-      return false;
+        console.error("Erreur de requête Firebase :", error);
+        return false;
     }
-  }
+}
+
   
 
   async validerPlacement(mot, position, direction, lettresJoueur) {
