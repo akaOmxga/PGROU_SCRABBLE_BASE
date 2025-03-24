@@ -27,7 +27,7 @@ export class ScrabbleValidator {
         }
 
         const data = await response.json();
-        return data.exists;
+        return data.found;
     } catch (error) {
         console.error("Erreur de requête Firebase :", error);
         return false;
